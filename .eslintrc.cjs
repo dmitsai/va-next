@@ -19,7 +19,8 @@ const config = {
   ],
   "rules": {
     "react/no-unescaped-entities": "off",
-    "react/jsx-props-no-spreading": "off",
+     "react/jsx-props-no-spreading": "off",
+    //TODO: fix this later
     "import/no-extraneous-dependencies": [
       "error",
       {

@@ -6,7 +6,6 @@ import './page.css';
 type User = {
   name: string;
 };
-
 export const Page: React.FC = () => {
   const [user, setUser] = React.useState<User>();
 
@@ -34,8 +33,7 @@ export const Page: React.FC = () => {
           data in Storybook:
         </p>
         <ul>
-          <li>Use a higher-level connected component. Storybook helps you compose such data from the "args" of child component stories
-          </li>
+          <li>Use a higher-level connected component. Storybook helps you compose such data from the "args" of child component stories</li>
           <li>
             Assemble data in the page component from your services. You can mock these services out
             using Storybook.
