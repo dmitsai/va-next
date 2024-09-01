@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Button } from './Button';
 import './header.css';
+import {Button} from "~/stories/Button";
 
 type User = {
   name: string;
@@ -42,6 +42,7 @@ export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps
             <span className="welcome">
               Welcome, <b>{user.name}</b>!
             </span>
+            {/* eslint-disable-next-line react/jsx-no-undef */}
             <Button size="small" onClick={onLogout} label="Log out" />
           </>
         ) : (

@@ -4,12 +4,13 @@ import * as Sentry from "@sentry/nextjs";
 import NextError from "next/error";
 import { useEffect } from "react";
 
-export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
+export default ({error}: { error: Error & { digest?: string } }) => {
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
 
   return (
+      // eslint-disable-next-line jsx-a11y/html-has-lang
     <html>
       <body>
         {/* `NextError` is the default Next.js error page component. Its type
