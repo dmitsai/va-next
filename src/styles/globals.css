@@ -1,3 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @tailwind base;
+@layer base {
+    h1 {
+        @apply text-[48px] leading-[48px] tracking-[-1.2%] font-[800]
+    }
+    h2 {
+        @apply text-[30px] leading-[36px] tracking-[-0.75%] font-[600]
+    }
+    h3 {
+        @apply text-[24pt] leading-[32px] tracking-[-0.6%] font-[600]
+    }
+    h4 {
+        @apply text-[20px] leading-[28px] tracking-[-0.5%] font-[600]
+    }
+    p {
+        @apply text-[16px] leading-[28px] tracking-[0%] font-[400]
+    }
+}
 @tailwind components;
+@layer components {
+    .lead {
+        @apply text-[20px] leading-[28px] tracking-[0%] font-[400]
+    }
+    .large {
+        @apply text-[18px] leading-[28px] tracking-[0%] font-[600]
+    }
+    .blockquote {
+        @apply text-[16px] leading-[24px] tracking-[0%] italic font-[400]
+    }
+    .table-ul {
+        @apply text-[16px] leading-[24px] tracking-[0%] font-[700]
+    }
+    .table-li {
+        @apply text-[16px] leading-[24px] tracking-[0%] font-[400]
+    }
+    .list {
+        @apply text-[16px] leading-[24px] tracking-[0%] font-[400]
+    }
+    .inline-code {
+        @apply text-[14px] leading-[20px] tracking-[0%] font-[400]
+    }
+    .small {
+        @apply text-[14px] leading-[14px] tracking-[0%] font-[500]
+    }
+    .muted {
+        @apply text-[12px] leading-[20px] tracking-[0%] font-[500]
+    }
+}
 @tailwind utilities;
