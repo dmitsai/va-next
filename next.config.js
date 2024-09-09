@@ -1,3 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
@@ -5,7 +9,46 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const nextConfig = {
+    webpack: config => {
+        // Grab the existing rule that handles SVG imports
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
+        const fileLoaderRule = config.module.rules.find(rule => rule.test?.test?.('.svg'));
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        config.module.rules.push(
+            // Reapply the existing rule, but only for svg imports ending in ?url
+            {
+                ...fileLoaderRule,
+                test: /\.svg$/i,
+                resourceQuery: /url/, // *.svg?url
+            },
+            // Convert all other *.svg imports to React components
+            {
+                test: /\.svg$/i,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                issuer: fileLoaderRule.issuer,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
+                use: [
+                    {
+                        loader: '@svgr/webpack',
+                        options: {
+                            icon: true,
+                            dimensions: false,
+                            memo: true,
+                        },
+                    },
+                ],
+            }
+        );
+
+        // Modify the file loader rule to ignore *.svg, since we have it handled now.
+        fileLoaderRule.exclude = /\.svg$/i;
+
+        return config;
+    },
+};
 
 
 
@@ -15,7 +58,7 @@ const config = {};
 import { withSentryConfig } from "@sentry/nextjs";
 
 export default withSentryConfig(
-    config,
+    nextConfig,
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
