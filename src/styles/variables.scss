@@ -1,0 +1,11 @@
+:root {
+  --page-padding: 1.5rem;
+  --page-margin: 1.5rem;
+  --page-gap: 1.5rem;
+  --page-height: calc(100vh - var(--page-padding) * 2);
+
+  --popup-min-width: 24rem;
+  --popup-max-width: 48rem;
+  --popup-min-height: 16rem;
+  --popup-max-height: 75vh;
+}
