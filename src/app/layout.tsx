@@ -3,7 +3,7 @@ import "~/styles/globals.css";
 // eslint-disable-next-line import/no-unresolved
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import React from "react";
+import type React from "react";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -11,10 +11,8 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default ({
-                  children,
-                }: Readonly<{ children: React.ReactNode }>) => (
-    <html lang="en" className={`${GeistSans.variable}`}>
+export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
+  <html lang="en" className={`${GeistSans.variable}`}>
     <body>{children}</body>
-    </html>
-)
+  </html>
+);
