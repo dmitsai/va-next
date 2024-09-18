@@ -44,6 +44,7 @@ yarn-error.log*
 
 # idea files
 .idea
+ .vscode/
 
 #lock
 pnpm-lock.yaml
