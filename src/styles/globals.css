@@ -16,6 +16,7 @@
   p {
     @apply text-[1.25rem] font-[400] leading-[1.75rem] tracking-[0%];
   }
+
 }
 @tailwind components;
 @layer components {
@@ -29,7 +30,7 @@
     @apply text-[1rem] font-[400] italic leading-[1.5rem] tracking-[0%];
   }
   .table-ul {
-    @apply leading-[1.5rem]] text-[1rem] font-[700] tracking-[0%];
+    @apply leading-[1.5rem] text-[1rem] font-[700] tracking-[0%];
   }
   .table-li {
     @apply ext-[1rem] font-[400] leading-[1.5rem] tracking-[0%];
@@ -45,6 +46,10 @@
   }
   .muted {
     @apply leading-[1.25rem]tracking-[0%] text-[0.75rem] font-[500];
+  }
+  /* FIXME: temp solution for lib components */
+  .font-jbm {
+    @apply !font-sans
   }
 }
 @tailwind utilities;

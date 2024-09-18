@@ -9,7 +9,7 @@ export default () => {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     toast("Error", {
-      duration: 10000,
+      duration: 10000000,
       description: "Your session has expired. Please log in again.  ",
       icon: <IconSonnerInfo />,
       closeButton: true,

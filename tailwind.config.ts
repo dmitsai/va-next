@@ -29,7 +29,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["JetBrains Mono", "monospace"],
+        sans: ['var(--font-jbm)']
       },
       colors: {
         "rosewater-light": "#dc8a78",

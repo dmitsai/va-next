@@ -16,7 +16,7 @@ const Toaster = ({ type, ...props }: ToasterProps & IToaster) => {
   return (
     <Sonner
       theme={theme}
-      className="toaster group"
+      className="toaster group font-jbm "
       toastOptions={{
         classNames: {
           toast: `group toast group-[.toaster]:bg-base-dark group-[.toaster]:text-text-dark group-[.toaster]:p-[0.75rem] rounded-6 small ${type === "error" ? "border-red-dark" : "border-mauve-dark"}`,
