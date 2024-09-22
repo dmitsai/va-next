@@ -44,7 +44,10 @@
     @apply text-[0.875rem] font-[500] leading-[0.875rem] tracking-[0%];
   }
   .muted {
-    @apply leading-[1.25rem]tracking-[0%] text-[0.75rem] font-[500];
+    @apply leading-[1.25rem] tracking-[0%] text-[0.75rem] font-[500];
+  }
+  .badge {
+    @apply leading-[1.25rem] tracking-[0%] text-[0.75rem] font-[600]
   }
 }
 @tailwind utilities;
