@@ -1,6 +1,6 @@
 "use client";
 
-import Toaster from "~/entities/sonner/ui/index";
+import Toaster from "~/shared/ui/index";
 import { toast } from "sonner";
 import IconSonnerInfo from "~/shared/assets/icons/icon-sonner-info.svg";
 
