@@ -29,7 +29,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-jbm)']
+        sans: ["var(--font-jbm)"],
       },
       colors: {
         "rosewater-light": "#dc8a78",
