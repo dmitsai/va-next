@@ -1,5 +1,5 @@
 import type { Preview } from "@storybook/react";
-import "../src/styles/globals.css";
+import "../src/styles/globals.scss";
 
 const preview: Preview = {
   parameters: {
@@ -10,6 +10,13 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [
+    (Story) => {
+      document.documentElement.setAttribute("data-theme", "dark");
+
+      return <Story />;
+    },
+  ],
 };
 
 export default preview;
