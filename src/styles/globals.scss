@@ -1,11 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+@import "theme.scss";
 @tailwind base;
 
 @layer base {
   * {
-    font-family: 'JetBrains Mono', sans-serif;
+    font-family: "JetBrains Mono", sans-serif;
   }
 
+  html,
+  html[data-theme="light"] {
+    @include light;
+  }
+
+  html[data-theme="dark"] {
+    @include dark;
+  }
   h1 {
     @apply text-[3rem] font-[800] leading-[3rem] tracking-[-1.2%];
   }
@@ -25,7 +34,6 @@
   p {
     @apply text-[1.25rem] font-[400] leading-[1.75rem] tracking-[0%];
   }
-
 }
 
 @tailwind components;
@@ -44,15 +52,15 @@
   }
 
   .table-ul {
-    @apply leading-[1.5rem] text-[1rem] font-[700] tracking-[0%];
+    @apply text-[1rem] font-[700] leading-[1.5rem] tracking-[0%];
   }
 
   .table-li {
-    @apply ext-[1rem] font-[400] leading-[1.5rem] tracking-[0%];
+    @apply text-[1rem] font-[400] leading-[1.5rem] tracking-[0%];
   }
 
   .list {
-    @apply ext-[1rem] font-[400] leading-[1.5rem] tracking-[0%];
+    @apply text-[1rem] font-[400] leading-[1.5rem] tracking-[0%];
   }
 
   .inline-code {
@@ -69,7 +77,7 @@
 
   /* FIXME: temp solution for lib components */
   .font-jbm {
-    @apply !font-sans
+    @apply font-sans !important;
   }
 }
 

@@ -12,7 +12,7 @@ export default {
 
 export const Info = () => {
   const triggerToast = () => {
-    toast("Heads up!", {
+    toast.info("Heads up!", {
       duration: 10000000,
       description: "You can add components to your app using the cli.",
       // Throwing an icon through here, since storybook doesn't work with svgr :(
@@ -40,7 +40,7 @@ export const Info = () => {
 
 export const Error = () => {
   const triggerToast = () => {
-    toast("Error!", {
+    toast.error("Error!", {
       duration: 10000000,
       description: "Something went wrong.",
       // Throwing an icon through here, since storybook doesn't work with svgr :(

@@ -1,4 +1,4 @@
-import "~/styles/globals.css";
+import "~/styles/globals.scss";
 // eslint-disable-next-line import/no-unresolved
 import { type Metadata } from "next";
 
@@ -18,7 +18,11 @@ export const metadata: Metadata = {
 };
 
 export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
-  <html lang="en" className={`${jetBrainsMono.variable} !font-sans`}>
+  <html
+    lang="en"
+    className={`${jetBrainsMono.variable} !font-sans`}
+    data-theme="dark"
+  >
     <body>{children}</body>
   </html>
 );
