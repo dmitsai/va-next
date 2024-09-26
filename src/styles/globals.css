@@ -46,5 +46,11 @@
   .muted {
     @apply leading-[1.25rem]tracking-[0%] text-[0.75rem] font-[500];
   }
+  .btn-small {
+    @apply py-1.5 px-3 h-6
+  }
+  .btn-large {
+    @apply px-4 py-3 h-10
+  }
 }
 @tailwind utilities;
