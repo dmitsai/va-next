@@ -3,7 +3,7 @@ import IconSonnerError from "~/shared/assets/icons/icon-sonner-error.svg?url";
 import Image from "next/image";
 
 import { toast } from "sonner";
-import Toaster from "~/shared/ui/index";
+import Toaster from "~/shared/ui/sonner/index";
 
 export default {
   component: Toaster,
@@ -15,6 +15,7 @@ export const Info = () => {
     toast("Heads up!", {
       duration: 10000000,
       description: "You can add components to your app using the cli.",
+      // Throwing an icon through here, since storybook doesn't work with svgr :(
       icon: (
         <Image
           src={IconSonnerInfo as string}
@@ -32,7 +33,7 @@ export const Info = () => {
       <button type="button" onClick={triggerToast}>
         Trigger Info Toast
       </button>
-      <Toaster type="info" />
+      <Toaster />
     </div>
   );
 };
@@ -42,6 +43,7 @@ export const Error = () => {
     toast("Error!", {
       duration: 10000000,
       description: "Something went wrong.",
+      // Throwing an icon through here, since storybook doesn't work with svgr :(
       icon: (
         <Image
           src={IconSonnerError as string}
@@ -59,7 +61,7 @@ export const Error = () => {
       <button type="button" onClick={triggerToast}>
         Trigger Error Toast
       </button>
-      <Toaster type="error" />
+      <Toaster />
     </div>
   );
 };
