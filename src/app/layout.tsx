@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default ({
                   children,
                 }: Readonly<{ children: React.ReactNode }>) => (
-    <html lang="en" className={`${jetBrainsMono.variable} font-sans`} data-theme="light">
+    <html lang="en" className={`${jetBrainsMono.variable} font-sans`} data-theme="dark">
     <body>{children}</body> 
     </html>
 )

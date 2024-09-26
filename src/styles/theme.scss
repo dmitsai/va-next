@@ -1,64 +1,64 @@
 @mixin light {
-  --rosewater: 220 138 120 1;
-  --flamingo: 221 120 120 1;
-  --pink: 234 118 203 1;
-  --mauve: 136 57 239 1;
-  --red: 210 15 57 1;
-  --maroon:  230 69 83 1;
-  --peach: 254 100 11 1;
-  --yellow: 223 142 29 1;
-  --green: 64 160 43 1;
-  --teal: 23 146 153 1;
-  --sky: 4 165 229 1;
-  --sapphire: 32 159 181 1;
-  --blue: 30 102 245 1;
-  --lavender: 114 135 253 1;
+  --rosewater: 220 138 120;
+  --flamingo: 221 120 120;
+  --pink: 234 118 203;
+  --mauve: 136 57 239;
+  --red: 210 15 57;
+  --maroon:  230 69 83;
+  --peach: 254 100 11 ;
+  --yellow: 223 142 29;
+  --green: 64 160 43;
+  --teal: 23 146 153;
+  --sky: 4 165 229;
+  --sapphire: 32 159 181;
+  --blue: 30 102 245;
+  --lavender: 114 135 253;
 
-  --text: 76 79 105 1;
-  --sub: 92 95 119 1;
-  --sub-secondary:  108 111 133 0.7;
+  --text: 76 79 105;
+  --sub: 92 95 119;
+  --sub-secondary:  108 111 133;
 
-  --overlay:  124 127 147 1;
-  --overlay-secondary: 140 143 161 1;
-  --overlay-tertiary: 156 160 176 1;
+  --overlay:  124 127 147;
+  --overlay-secondary: 140 143 161;
+  --overlay-tertiary: 156 160 176;
 
-  --surface: 172 176 190 1;
-  --surface-secondary: 188 192 204 1;
-  --surface-tertiary: 204 208 218 1;
+  --surface: 172 176 190;
+  --surface-secondary: 188 192 204;
+  --surface-tertiary: 204 208 218;
 
-  --base: 239 241 245 1;
-  --mantle: 230 233 239 1;
-  --crust: 220 224 232 1;
+  --base: 239 241 245;
+  --mantle: 230 233 239;
+  --crust: 220 224 232;
 }
 @mixin dark {
-  --rosewater: 245 224 220 1;
-  --flamingo: 242 205 205 1;
-  --pink: 245 194 231 1;
-  --mauve: 203 166 247 1;
-  --red: 243 139 168 1;
-  --maroon:  235 160 172 1;
-  --peach: 250 179 135 1;
-  --yellow: 249 226 175 1;
-  --green: 166 227 161 1;
-  --teal: 148 226 213 1;
-  --sky: 137 220 235 1;
-  --sapphire: 116 199 236 1;
-  --blue: 137 180 250 1;
-  --lavender: 180 190 254 1;
+  --rosewater: 245 224 220;
+  --flamingo: 242 205 205;
+  --pink: 245 194 231;
+  --mauve: 203 166 247;
+  --red: 243 139 168;
+  --maroon:  235 160 172;
+  --peach: 250 179 135;
+  --yellow: 249 226 175;
+  --green: 166 227 161;
+  --teal: 148 226 213;
+  --sky: 137 220 235;
+  --sapphire: 116 199 236;
+  --blue: 137 180 250;
+  --lavender: 180 190 254;
 
-  --text: 205 214 244 1;
-  --sub: 186 194 222 1;
-  --sub-secondary:  166 173 200 0.7;
+  --text: 205 214 244;
+  --sub: 186 194 222;
+  --sub-secondary: 166 173 200;
 
-  --overlay: 147 153 178 1;
-  --overlay-secondary: 127 132 156 1;
-  --overlay-tertiary: 108 112 134 1;
+  --overlay: 147 153 178;
+  --overlay-secondary: 127 132 156;
+  --overlay-tertiary: 108 112 134;
 
-  --surface: 88 91 112 1;
-  --surface-secondary: 69 71 90 1;
-  --surface-tertiary: 49, 50, 68, 1;
+  --surface: 88 91 112;
+  --surface-secondary: 69 71 90;
+  --surface-tertiary: 49 50 68;
 
-  --base: 30 30 46 1;
-  --mantle: 24 24 37 1;
-  --crust: 17 17 27 1;
+  --base: 30 30 46;
+  --mantle: 24 24 37;
+  --crust: 17 17 27;
 }
