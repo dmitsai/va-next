@@ -3,11 +3,11 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import React from "react";
-import {JetBrains_Mono} from '@next/font/google'
+import { JetBrains_Mono } from '@next/font/google'
 
 const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin','cyrillic'],
-  weight: ['100','200','300','400','500','600','700','800'],
+  subsets: ['latin', 'cyrillic'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
   variable: '--font-jbm',
 })
 export const metadata: Metadata = {
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default ({
-                  children,
-                }: Readonly<{ children: React.ReactNode }>) => (
-    <html lang="en" className={`${jetBrainsMono.variable} font-sans`}>
-    <body>{children}</body> 
-    </html>
+  children,
+}: Readonly<{ children: React.ReactNode }>) => (
+  <html lang="en" className={`${jetBrainsMono.variable} font-sans`}>
+    <body>{children}</body>
+  </html>
 )
