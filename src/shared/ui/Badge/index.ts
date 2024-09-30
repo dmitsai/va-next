@@ -1,1 +1,3 @@
-export { Badge } from './ui/Badge';
+import { Badge } from "./Badge";
+
+export default Badge;
