@@ -1,5 +1,7 @@
-export {
+import {
     Button,
     ButtonView,
     type ButtonViewType
-} from './ui/Button';
+} from './Button';
+export { ButtonView, type ButtonViewType };
+export default Button;
