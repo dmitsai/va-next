@@ -1,6 +1,3 @@
-import IconSonnerInfo from "~/shared/assets/icons/icon-sonner-info.svg?url";
-import Image from "next/image";
-
 import { toast } from "sonner";
 import Toaster from "~/shared/ui/sonner/index";
 
