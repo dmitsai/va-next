@@ -15,6 +15,7 @@
   html[data-theme="dark"] {
     @include dark;
   }
+
   h1 {
     @apply text-[3rem] font-[800] leading-[3rem] tracking-[-1.2%];
   }
