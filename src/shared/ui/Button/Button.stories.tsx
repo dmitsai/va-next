@@ -1,10 +1,8 @@
 
 import { type Meta, type StoryObj } from '@storybook/react';
 import React from 'react';
-import IconSettings from "~/shared/assets/icons/settings-icon.svg?url";
-import IconSettingLight from "~/shared/assets/icons/settings-light-icon.svg?url";
-import DeleteIcon from '~/shared/assets/icons/delete-icon.svg?url';
-import Image from "next/image";
+import { ReactComponent as IconSettings } from "~/shared/assets/icons/settings-icon.svg";
+import { ReactComponent as DeleteIcon } from '~/shared/assets/icons/delete-icon.svg';
 import { Button, ButtonView } from './Button';
 
 const meta: Meta<typeof Button> = {
@@ -25,7 +23,7 @@ export const Enter: Story = {
         className: 'text-base bg-mauve hover:bg-text transition-colors',
     },
     render: (args) => <Button {...args}>
-        <p>{'Sign up / Log in'}</p>
+        {'Sign up / Log in'}
     </Button>,
 };
 
@@ -35,16 +33,7 @@ export const Settings: Story = {
         buttonView: ButtonView.LARGE,
     },
     render: (args) => <Button {...args} >
-        <Image
-            src={IconSettings as string}
-            alt="Sonner icon"
-            className={'absolute w-4 h-4 visible group-hover:invisible'}
-        />
-        <Image
-            src={IconSettingLight as string}
-            className={'absolute w-4 h-4 invisible group-hover:visible'}
-            alt="Sonner icon"
-        />
+        <IconSettings className={'absolute fill-text group-hover:fill-base'} />
     </Button>
 };
 
@@ -54,11 +43,7 @@ export const Delete: Story = {
         className: 'bg-red hover:bg-text transition-colors'
     },
     render: (args) => <Button {...args}>
-        <Image
-            src={DeleteIcon as string}
-            alt="Sonner icon"
-            className={'w-full h-full'}
-        />
+        <DeleteIcon className={'w-full h-full'} />
         <span className={'text-base'}>{'Delete'}</span>
     </Button>
 }
