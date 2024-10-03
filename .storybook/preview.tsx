@@ -10,13 +10,6 @@ const preview: Preview = {
       },
     },
   },
-  decorators: [
-    (Story) => {
-      document.documentElement.setAttribute("data-theme", "dark");
-
-      return <Story />;
-    },
-  ],
 };
 
 export default preview;
