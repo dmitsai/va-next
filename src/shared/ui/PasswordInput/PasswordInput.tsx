@@ -5,8 +5,6 @@ import { ReactComponent as EyeIcon } from '~/shared/assets/icons/eye-icon.svg';
 import { ReactComponent as ClosedEyeIcon } from '~/shared/assets/icons/closed-eye-icon.svg';
 import DefaultInput, { type InputProps } from "../DefaultInput";
 
-
-
 export const PasswordInput: React.FC<InputProps> = (props) => {
     const [isHidden, setIsHidden] = useState(true);
     const handleIsHidden = () => {

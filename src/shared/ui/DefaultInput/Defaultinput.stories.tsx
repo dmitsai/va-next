@@ -6,7 +6,7 @@ import { type Meta, type StoryObj } from '@storybook/react';
 import EmailInput from '~/shared/ui/EmailInput';
 import PasswordInput from '~/shared/ui/PasswordInput';
 import SearchInput from '~/shared/ui/SearchInput';
-import DefaultInput from './DefaultInput';
+import { DefaultInput } from './DefaultInput';
 
 const meta: Meta<typeof EmailInput> = {
     component: DefaultInput,
