@@ -6,22 +6,23 @@ import React from 'react';
 import cn from 'classnames';
 
 interface RenderInputProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
-    Icon?: React.FC<React.SVGProps<SVGSVGElement>>,
+    icon?: React.FC<React.SVGProps<SVGSVGElement>>,
     iconProps?: React.DetailedHTMLProps<React.SVGProps<SVGSVGElement>, SVGSVGElement>,
     labelClassName?: string,
 }
+
+//TODO: add custom styles for autocomplete
 const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({ placeholder, ...props }) => {
 
-    const { invalid, isDirty, Icon, className, iconProps, labelClassName } = props;
+    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName } = props;
     const { className: iconClassName, ...otherIconProps } = iconProps || {};
 
     return (
-        <div className={cn('group relative w-fit font-400 text-14 leading-5 max-h-10')}>
+        <div className={cn('group relative w-full max-w-input font-400 text-14 leading-5')}>
             <input
-                autoComplete={'off'}
                 {...props}
                 className={cn(
-                    'peer w-full outline-none rounded-6 bg-mantle py-3 border-2 border-transparent focus:border-mauve caret-text text-text pr-4 max-h-10 max-w-96',
+                    'peer w-full outline-none rounded-6 bg-mantle py-2 border-2 border-transparent focus:border-mauve caret-text text-text pr-4 max-w-input',
                     Icon ? 'pl-11' : 'pl-4',
                     invalid && 'border-red',
                     className

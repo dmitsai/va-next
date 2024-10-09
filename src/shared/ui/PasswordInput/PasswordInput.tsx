@@ -14,13 +14,13 @@ export const PasswordInput: React.FC<InputProps> = (props) => {
         <DefaultInput
             placeholder={'Password'}
             type={isHidden ? 'password' : 'text'}
-            className={`!pl-4`}
-            labelClassName={'!left-4'}
+            className={`pl-4`}
+            labelClassName={'left-4'}
             iconProps={{
                 onClick: handleIsHidden,
-                className: 'right-4 !left-auto fill-sub'
+                className: 'right-4 left-auto fill-sub'
             }}
-            Icon={isHidden ? ClosedEyeIcon : EyeIcon}
+            icon={isHidden ? ClosedEyeIcon : EyeIcon}
             {...props}
         />
     )

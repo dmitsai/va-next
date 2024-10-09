@@ -16,14 +16,18 @@ const meta: Meta<typeof EmailInput> = {
 export default meta;
 type Story = StoryObj<typeof EmailInput>;
 
-const EmailInputWithHook = () => {
-    const { handleSubmit, control } = useForm({
+type EmailFormData = {
+    email: string;
+};
+
+const RenderEmailInput = () => {
+    const { handleSubmit, control } = useForm<EmailFormData>({
         defaultValues: {
             email: '',
         }
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onSubmit = (data: any) => {
+
+    const onSubmit = (data: EmailFormData) => {
         alert(JSON.stringify(data));
     };
     return (
@@ -34,17 +38,21 @@ const EmailInputWithHook = () => {
 }
 
 export const Email: Story = {
-    render: () => <EmailInputWithHook />
+    render: () => <RenderEmailInput />
 }
 
-const PasswordInputWithHook = () => {
-    const { handleSubmit, control } = useForm({
+type PasswordFormData = {
+    password: string;
+};
+
+const RenderPasswordInput = () => {
+    const { handleSubmit, control } = useForm<PasswordFormData>({
         defaultValues: {
             password: '',
         }
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onSubmit = (data: any) => {
+
+    const onSubmit = (data: PasswordFormData) => {
         alert(JSON.stringify(data));
     };
     return (
@@ -55,17 +63,21 @@ const PasswordInputWithHook = () => {
 }
 
 export const Password: Story = {
-    render: () => <PasswordInputWithHook />
+    render: () => <RenderPasswordInput />
 }
 
-const SearchInputWithHook = () => {
-    const { handleSubmit, control } = useForm({
+type SearchFormData = {
+    search: string;
+};
+
+const RenderSearchInput = () => {
+    const { handleSubmit, control } = useForm<SearchFormData>({
         defaultValues: {
             search: '',
         }
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onSubmit = (data: any) => {
+
+    const onSubmit = (data: SearchFormData) => {
         alert(JSON.stringify(data));
     };
     return (
@@ -76,5 +88,5 @@ const SearchInputWithHook = () => {
 }
 
 export const Search: Story = {
-    render: () => <SearchInputWithHook />
+    render: () => <RenderSearchInput />
 }

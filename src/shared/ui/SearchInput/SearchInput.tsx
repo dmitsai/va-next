@@ -3,5 +3,5 @@ import { ReactComponent as SearchIcon } from '~/shared/assets/icons/search-icon.
 import DefaultInput, { type InputProps } from "~/shared/ui/DefaultInput";
 
 export const SearchInput: React.FC<InputProps> = (props) => (
-    <DefaultInput placeholder={'Search...'} Icon={SearchIcon} iconProps={{ className: 'fill-sub' }} {...props} />
+    <DefaultInput placeholder={'Search...'} icon={SearchIcon} iconProps={{ className: 'fill-sub' }} {...props} />
 )
