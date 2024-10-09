@@ -3,8 +3,8 @@
 import cn from 'classnames';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import type React from "react";
-import { ReactComponent as CheckPurpleIcon } from '~/shared/assets/icons/check-purple-icon.svg';
-import { ReactComponent as ChevroIcon } from '~/shared/assets/icons/chevron-icon.svg';
+import { ReactComponent as CheckIcon } from '~/shared/assets/icons/check-icon.svg';
+import { ReactComponent as ChevronIcon } from '~/shared/assets/icons/chevron-icon.svg';
 
 export interface SelectProps {
     selected?: string,
@@ -17,15 +17,15 @@ export const Select: React.FC<SelectProps> = (props) => {
         <Listbox value={selected} onChange={setSelected}>
             <ListboxButton
                 className={cn(
-                    'relative flex flex-row justify-between items-center max-w-52 w-full group',
+                    'relative flex flex-row justify-between items-center max-w-select w-full group',
                     'rounded-6 bg-mantle  py-1.5 pr-8 pl-4 text-left text-text  font-400 text-14 leading-6',
                     ' hover:text-base hover:bg-text transition-colors'
                 )}
             >
                 {selected}
-                <ChevroIcon
+                <ChevronIcon
                     className={cn(
-                        'group-hover:fill-base fill-sub group-data-[open]:rotate-0 rotate-180',
+                        'group-hover:fill-base fill-sub group-data-[open]:rotate-180 rotate-0',
                         'pointer-events-none absolute right-4 transition-transform'
                     )}
                     aria-hidden="true"
@@ -47,7 +47,7 @@ export const Select: React.FC<SelectProps> = (props) => {
                             'group flex cursor-default items-center gap-2 rounded-6 py-1.5 px-3 select-none data-[focus]:bg-mantle'
                         )}
                     >
-                        <CheckPurpleIcon className={cn('invisible size-4 fill-white group-data-[selected]:visible')} />
+                        <CheckIcon className={cn('invisible size-4 group-data-[selected]:visible fill-mauve')} />
                         <div className={cn('font-400 text-14 leading-5 text-text')}>{item}</div>
                     </ListboxOption>
                 ))}

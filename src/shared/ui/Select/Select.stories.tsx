@@ -13,7 +13,7 @@ const meta: Meta<typeof Select> = {
 export default meta;
 type Story = StoryObj<typeof Select>;
 
-const SelectWithHook = () => {
+const RenderSelect = () => {
     const state = [
         'Vacancy',
         'Internship',
@@ -24,5 +24,5 @@ const SelectWithHook = () => {
 }
 
 export const ExampleSelect: Story = {
-    render: () => <SelectWithHook />
+    render: () => <RenderSelect />
 }
