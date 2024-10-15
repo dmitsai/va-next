@@ -70,7 +70,8 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "storybook": "^8.3.3",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "url-loader": "^4.1.1"
   },
   "ct3aMetadata": {
     "initVersion": "7.37.0"
