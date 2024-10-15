@@ -16,7 +16,9 @@
   html[data-theme="dark"] {
     @include dark;
   }
-
+  body {
+    @apply text-text bg-base
+}
   h1 {
     @apply text-[3rem] font-[800] leading-[3rem] tracking-[-1.2%];
   }
@@ -74,7 +76,7 @@
   }
 
   .muted {
-    @apply leading-[1.25rem]tracking-[0%] text-[0.75rem] font-[500];
+    @apply leading-[1.25rem] tracking-[0%] text-[0.75rem] font-[500];
   }
 
   /* FIXME: temp solution for lib components */
