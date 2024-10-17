@@ -18,6 +18,7 @@ const config = {
     "prettier"
   ],
   "rules": {
+    "react/jsx-curly-brace-presence" : 'off',
     "react/no-unescaped-entities": "off",
      "react/jsx-props-no-spreading": "off",
     //TODO: fix this later

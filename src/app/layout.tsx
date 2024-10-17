@@ -29,7 +29,6 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
       <body>
         <TopBar isAuth={true} />
         {children}
-
       </body>
     </AppProviders>
   </html>

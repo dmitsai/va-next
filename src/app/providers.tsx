@@ -1,21 +1,19 @@
 'use client';
 
-import { ThemeProvider } from "next-themes";
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import { ThemeProvider, } from "next-themes";
+import React, { type PropsWithChildren, useEffect } from "react";
+import { Theme, type ThemeType, useTheme } from "~/shared/lib/theme";
 
 const AppProviders: React.FC<PropsWithChildren> = ({ children }) => {
-    const [mounted, setMounted] = useState(false);
-
+    const { setTheme } = useTheme();
     useEffect(() => {
-        setMounted(true);
+        const selectedTheme = localStorage.getItem('theme');
+        setTheme(!selectedTheme ? Theme.system : selectedTheme as ThemeType);
     }, [])
 
-    return !mounted ?
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        <>{children}</>
-        :
-        <ThemeProvider>
+    return (
+        <ThemeProvider defaultTheme={Theme.system}>
             {children}
-        </ThemeProvider>
+        </ThemeProvider>);
 }
 export default AppProviders;

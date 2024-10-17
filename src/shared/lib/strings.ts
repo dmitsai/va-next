@@ -1,12 +1,12 @@
 export const CONSTANTS  = {
     topBar : {
         placeholder: 'vakansiy.net',
-        vacancies: 'Vacancies',
-        internships : 'Internships',
-        events : 'Events',
+        vacancies: 'Вакансии',
+        internships : 'Стажировки',
+        events : 'События',
     },
     auth: {
-        signUp: 'Sign up',
-        logIn: 'Log in',
+        signUp: 'Зарегистрироваться',
+        logIn: 'Войти',
     }
 } as const;
