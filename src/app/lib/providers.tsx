@@ -8,7 +8,7 @@ const AppProviders: React.FC<PropsWithChildren> = ({ children }) => {
     const { setTheme } = useTheme();
     useEffect(() => {
         const selectedTheme = localStorage.getItem('theme');
-        setTheme(!selectedTheme ? Theme.system : selectedTheme as ThemeType);
+        setTheme(selectedTheme ? selectedTheme as ThemeType : Theme.system);
     }, [])
 
     return (

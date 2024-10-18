@@ -12,7 +12,7 @@ export const useTheme = () => {
     const { theme: nextTheme, setTheme: setNextTheme , systemTheme, ...other } = useNextTheme();
 
     const setTheme = (value:ThemeType) => {
-       const selectedTheme = value === Theme.system ?  systemTheme as ThemeType ?? Theme.light : value;
+       const selectedTheme = value === Theme.system ?  systemTheme as ThemeType ?? Theme.dark : value;
         localStorage.setItem('theme',selectedTheme);
         setNextTheme(selectedTheme);
     };

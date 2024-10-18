@@ -8,6 +8,7 @@ import { ReactComponent as IconSun } from '~/shared/assets/icons/icon-sun.svg';
 import { ReactComponent as IconSystem } from '~/shared/assets/icons/icon-system.svg';
 import { Theme, type ThemeType, useTheme } from '~/shared/lib/theme';
 import { type Icon } from '~/shared/lib/types';
+import { CONSTANTS } from '~/shared/lib/strings';
 
 export interface ThemePickerItem {
     icon: Icon,
@@ -21,21 +22,21 @@ export const ThemePicker: React.FC = () => {
         {
             icon: IconSun,
             value: Theme.light,
-            label: 'Светлая',
+            label: CONSTANTS.topBar.theme.light,
         },
         {
             icon: IconMoon,
             value: Theme.dark,
-            label: 'Темная',
+            label: CONSTANTS.topBar.theme.dark,
         },
         {
             icon: IconSystem,
             value: Theme.system,
-            label: 'Системная',
+            label: CONSTANTS.topBar.theme.system,
         },
     ];
     return (
-        <Listbox value={theme} onChange={setTheme} as={'div'} className={'relative'}>
+        <Listbox value={theme} onChange={setTheme}>
             <ListboxButton
                 className={cn(
                     'flex flex-row justify-center items-center max-h-6 group',
@@ -44,6 +45,7 @@ export const ThemePicker: React.FC = () => {
                 )}
             >
                 {
+
                     theme === Theme.dark ?
                         <IconMoon
                             className={cn(

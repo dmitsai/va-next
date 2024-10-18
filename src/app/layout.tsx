@@ -5,8 +5,8 @@ import { type Metadata } from "next";
 import type React from "react";
 // eslint-disable-next-line camelcase
 import { JetBrains_Mono } from "@next/font/google";
-import { TopBar } from "~/features/topBar";
-import AppProviders from "./providers";
+import { TopBar } from "~/widgets/topBar";
+import AppProviders from "./lib/providers";
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin", "cyrillic"],

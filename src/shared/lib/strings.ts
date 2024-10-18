@@ -4,6 +4,11 @@ export const CONSTANTS  = {
         vacancies: 'Вакансии',
         internships : 'Стажировки',
         events : 'События',
+        theme: {
+            light: 'Светлая',
+            dark: 'Темная',
+            system: 'Системная'
+        }
     },
     auth: {
         signUp: 'Зарегистрироваться',
