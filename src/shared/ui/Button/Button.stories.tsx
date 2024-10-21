@@ -43,7 +43,7 @@ export const Delete: Story = {
         className: 'bg-red hover:bg-text transition-colors'
     },
     render: (args) => <Button {...args}>
-        <DeleteIcon className={'w-full h-full'} />
+        <DeleteIcon className={'w-full h-full fill-base'} />
         <span className={'text-base'}>{'Delete'}</span>
     </Button>
 }
