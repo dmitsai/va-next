@@ -3,10 +3,12 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { type Meta, type StoryObj } from '@storybook/react';
-import EmailInput from '~/shared/ui/EmailInput';
-import PasswordInput from '~/shared/ui/PasswordInput';
-import SearchInput from '~/shared/ui/SearchInput';
+import EmailInput, { emailSchema } from '~/shared/ui/EmailInput';
+import PasswordInput, { passwordSchema } from '~/shared/ui/PasswordInput';
+import SearchInput, { searchSchema } from '~/shared/ui/SearchInput';
 import { DefaultInput } from './DefaultInput';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const meta: Meta<typeof EmailInput> = {
     component: DefaultInput,
@@ -21,7 +23,11 @@ type EmailFormData = {
 };
 
 const RenderEmailInput = () => {
+    const formSchema = z.object({
+        email: emailSchema
+    })
     const { handleSubmit, control } = useForm<EmailFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             email: '',
         }
@@ -46,7 +52,11 @@ type PasswordFormData = {
 };
 
 const RenderPasswordInput = () => {
+    const formSchema = z.object({
+        password: passwordSchema
+    })
     const { handleSubmit, control } = useForm<PasswordFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             password: '',
         }
@@ -71,7 +81,11 @@ type SearchFormData = {
 };
 
 const RenderSearchInput = () => {
+    const formSchema = z.object({
+        search: searchSchema
+    })
     const { handleSubmit, control } = useForm<SearchFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             search: '',
         }
