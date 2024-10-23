@@ -41,7 +41,7 @@ export const ThemePicker: React.FC = () => {
                 className={cn(
                     'flex flex-row justify-center items-center max-h-6 group',
                     'rounded-6 bg-mantle p-1.5 ',
-                    'hover:text-sub/70 hover:bg-surface transition-colors data-[open]:bg-mauve'
+                    'hover:text-base hover:bg-text disabled:text-sub-secondary/70 disabled:bg-surface-tertiary transition-colors data-[open]:bg-mauve'
                 )}
             >
                 {
@@ -49,13 +49,13 @@ export const ThemePicker: React.FC = () => {
                     theme === Theme.dark ?
                         <IconMoon
                             className={cn(
-                                'fill-text group-hover:fill-sub/70 group-data-[open]:fill-base pointer-events-none'
+                                'fill-text group-disabled:fill-sub-secondary/70 group-hover:fill-base group-data-[open]:fill-base pointer-events-none'
                             )}
                         />
                         :
                         <IconSun
                             className={cn(
-                                'fill-text group-hover:fill-sub/70 group-data-[open]:fill-base pointer-events-none'
+                                'fill-text group-disabled:fill-sub-secondary/70 group-hover:fill-base group-data-[open]:fill-base pointer-events-none'
                             )}
                         />
                 }

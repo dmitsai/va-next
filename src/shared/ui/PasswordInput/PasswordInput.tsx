@@ -20,7 +20,7 @@ export const PasswordInput: React.FC<InputProps> = (props) => {
                 onClick: handleIsHidden,
                 className: 'right-4 left-auto fill-sub'
             }}
-            icon={isHidden ? ClosedEyeIcon : EyeIcon}
+            icon={isHidden ? EyeIcon : ClosedEyeIcon}
             {...props}
         />
     )

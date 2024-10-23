@@ -63,7 +63,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
                 <div className={'flex flex-row gap-x-6'}>
                     {
                         links.map(link => (
-                            <Link key={link.label} href={link.href} className={'muted text-sub/70 hover:text-text'}>
+                            <Link key={link.label} href={link.href} className={'muted text-sub-secondary/70 hover:text-text'}>
                                 {link.label}
                             </Link>
                         ))
@@ -82,7 +82,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
                             {
                                 buttons.map(button => (
                                     <Button key={button.key} buttonView={ButtonView.SMALL} className={'bg-mantle !px-1.5  transition-colors'}>
-                                        <button.icon className={'fill-text group-hover:fill-sub/70'} />
+                                        <button.icon className={'fill-text group-disabled:fill-sub-secondary/70 group-hover:fill-base'} />
                                     </Button>
                                 ))
                             }
