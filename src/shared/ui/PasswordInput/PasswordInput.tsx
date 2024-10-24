@@ -12,7 +12,6 @@ export const PasswordInput: React.FC<InputProps> = (props) => {
     };
     return (
         <DefaultInput
-            rules={{}}
             placeholder={'Password'}
             type={isHidden ? 'password' : 'text'}
             className={`pl-4`}
