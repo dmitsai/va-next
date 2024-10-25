@@ -14,7 +14,7 @@ interface RenderInputProps extends React.DetailedHTMLProps<React.InputHTMLAttrib
 //TODO: add custom styles for autocomplete
 const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({ placeholder, ...props }) => {
 
-    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName } = props;
+    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName, error } = props;
     const { className: iconClassName, ...otherIconProps } = iconProps || {};
 
     return (
@@ -38,6 +38,7 @@ const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({
             >
                 {placeholder}
             </label>
+            {invalid && <p className='absolute mt-2 left-0 font-400 text-14 leading-5 text-red whitespace-nowrap'>{error?.message}</p>}
         </div>
     );
 }
