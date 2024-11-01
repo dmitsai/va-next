@@ -212,7 +212,8 @@ export default {
         "11/12": "91.666667%",
         popup: "var(--popup-max-width)",
         input: "var(--input-max-width)",
-        select: "var(--select-max-width)"
+        select: "var(--select-max-width)",
+        "filter-menu": "var(--filter-menu-max-width)",
       },
       minHeight: {
         "0": "0px",

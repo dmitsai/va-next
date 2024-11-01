@@ -28,5 +28,25 @@ export const CONSTANTS  = {
 
             },
         }
+    },
+    filterMenu: {
+        label: 'Фильтры',
+        vacancy: {
+            specialty:'Специальность',
+            workSchedule: 'График работы',
+            experience: 'Опыт работы',
+            education: 'Образование',
+            employmentType: 'Тип занятости',
+            salary: 'Зарплата от, рубли',
+            region: 'Регион',
+            sortDate: {
+                day: 'День',
+                month: 'Месяц',
+                threeMonth: 'Три месяца',
+                AllTime: 'Все время',
+            }
+        },
+        clean: 'Очистить фильтры',
+        search: 'Поиск',
     }
 } as const;
