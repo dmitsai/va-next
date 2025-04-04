@@ -18,9 +18,11 @@ const config = {
     "prettier"
   ],
   "rules": {
+    "no-shadow": "off",
+    "no-unused-vars": ["warn", { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
     "react/jsx-curly-brace-presence" : 'off',
     "react/no-unescaped-entities": "off",
-     "react/jsx-props-no-spreading": "off",
+    "react/jsx-props-no-spreading": "off",
     "jsx-a11y/label-has-associated-control" : "off",
     "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/consistent-type-imports": "off",

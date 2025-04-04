@@ -2,7 +2,7 @@
 
 import NextError from "next/error";
 
-export default ({ error }: { error: Error & { digest?: string } }) => (
+export default () => (
   // eslint-disable-next-line jsx-a11y/html-has-lang
   <html>
     <body>

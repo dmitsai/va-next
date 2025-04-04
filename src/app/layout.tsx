@@ -27,7 +27,7 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
   >
     <AppProviders>
       <body className="h-screen flex flex-col">
-        <TopBar isAuth={true} />
+        <TopBar isAuth />
         {children}
       </body>
     </AppProviders>

@@ -20,8 +20,6 @@ export const ProfileFileUploader = () => {
 
     const [isEditMode, setIsEditMode] = useState(false);
 
-    const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
-
     const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
     const [numPages, setNumPages] = useState<number>(0);
@@ -63,7 +61,6 @@ export const ProfileFileUploader = () => {
     }, []);
 
     const onDrop = useCallback((files: File[]) => {
-        setAcceptedFiles(files);
         if (files.length > 0) {
             const file = files[0];
 
@@ -106,7 +103,6 @@ export const ProfileFileUploader = () => {
     const handleDeleteResume = () => {
         setResumeUrl(null);
         localStorage.removeItem('resume');
-        setAcceptedFiles([]);
         setNumPages(1);
         setPageNumber(1);
     };

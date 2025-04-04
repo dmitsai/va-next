@@ -1,5 +1,5 @@
-//TODO: fix parsing logic
-//TODO: fix error handling
+// TODO: fix parsing logic
+// TODO: fix error handling
 
 'use client';
 
@@ -65,15 +65,15 @@ interface PreferencesData {
 const getEmploymentTypes = (full: boolean, partTime: boolean, internship: boolean) => {
     const flags = { full, partTime, internship };
     return Object.entries(flags)
-        .filter(([key, value]) => value)
-        .map(([key, value]) => employmentTypes[key as EmploymentTypesKeys]) as Array<EmploymentTypes>;
+        .filter(([_key, value]) => value)
+        .map(([key, _value]) => employmentTypes[key as EmploymentTypesKeys]) as Array<EmploymentTypes>;
 }
 const getSelectedWorkSchedules = (fullday: boolean, shift: boolean, flexible: boolean, remote: boolean) => {
     const flags = { fullday, shift, flexible, remote };
 
     return Object.entries(flags)
-        .filter(([key, value]) => value)
-        .map(([key, value]) => workSchedule[key as WorkScheduleKeys]) as Array<WorkSchedule>;
+        .filter(([_key, value]) => value)
+        .map(([key, _value]) => workSchedule[key as WorkScheduleKeys]) as Array<WorkSchedule>;
 }
 const parseForm = (data: FormData, selectedSalaryCurrency: SalaryCurrency) => {
     const { salary: selectedSalary, full, partTime, internship, fullday, shift, flexible, remote } = data;

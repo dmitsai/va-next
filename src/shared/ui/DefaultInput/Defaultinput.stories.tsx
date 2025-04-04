@@ -6,9 +6,9 @@ import { type Meta, type StoryObj } from '@storybook/react';
 import EmailInput, { emailSchema } from '~/shared/ui/EmailInput';
 import PasswordInput, { passwordSchema } from '~/shared/ui/PasswordInput';
 import SearchInput, { searchSchema } from '~/shared/ui/SearchInput';
-import { DefaultInput } from './DefaultInput';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DefaultInput } from './DefaultInput';
 
 const meta: Meta<typeof EmailInput> = {
     component: DefaultInput,

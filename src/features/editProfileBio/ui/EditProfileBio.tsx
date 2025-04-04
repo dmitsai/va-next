@@ -45,7 +45,7 @@ export const EditProfileBio: React.FC<EditProfileBioProps> = (props) => {
         },
     });
     const onSubmit = (data: PersonalInfoForm) => {
-        alert(JSON.stringify(data));
+        console.info('personal info:', JSON.stringify(data));
         setIsOpen(false);
     };
     return (

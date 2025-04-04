@@ -45,7 +45,7 @@ export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
                 <div className={'flex flex-col gap-y-3'}>
                     <span className={'text-text  text-14 font-600'}>{'Контакты'}</span>
                     <div className={'flex flex-col gap-y-2'}>
-                        {/*NOTE: temp solution,  rewrite after adding parse contacts logic */}
+                        {/* NOTE: temp solution,  rewrite after adding parse contacts logic */}
                         {telegram && <ProfileContact placeholder={"Телеграм"} url={""} icon={IconTelegram} value={telegram} />}
                         {phoneNumber && <ProfileContact placeholder={"Телефон"} url={""} icon={IconPhone} value={phoneNumber} />}
                         {email && <ProfileContact placeholder={"Почта"} url={""} icon={IconEmail} value={email} />}

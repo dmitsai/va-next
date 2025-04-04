@@ -21,7 +21,7 @@ export const EditProfileAboutMe: React.FC<EditProfileAboutMeProps> = (props) => 
     });
 
     const onSubmit = (data: AboutMeForm) => {
-        alert(JSON.stringify(data));
+        console.info('about me:', JSON.stringify(data));
         setIsOpen(false);
     };
 

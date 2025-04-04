@@ -12,7 +12,7 @@ interface RenderInputProps extends React.DetailedHTMLProps<React.InputHTMLAttrib
     wrapperClassName?: string,
 }
 
-//TODO: add custom styles for autocomplete
+// TODO: add custom styles for autocomplete
 const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({ placeholder, ...props }) => {
 
     const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName, error, wrapperClassName } = props;
