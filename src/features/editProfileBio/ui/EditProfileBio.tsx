@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import Button, { ButtonView } from "~/shared/ui/Button";
 import EmailInput, { emailSchema } from "~/shared/ui/EmailInput";
@@ -52,15 +52,15 @@ export const EditProfileBio: React.FC<EditProfileBioProps> = (props) => {
         <Popup title="Редактирование персональной информации" {...props}>
             <form className={'flex flex-col gap-y-8 w-full items-end'} onSubmit={handleSubmit(onSubmit)}>
                 <div className={'grid grid-cols-2 gap-6'}>
-                    <TextInput control={control} placeholder={"Имя"} name={'firstName'} />
-                    <TextInput control={control} placeholder={"Фамилия"} name={'lastName'} />
-                    <TextInput control={control} placeholder={"Отчество (при наличии)"} name={'patronymic'} />
+                    <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Имя"} name={'firstName'} />
+                    <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Фамилия"} name={'lastName'} />
+                    <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Отчество (при наличии)"} name={'patronymic'} />
                 </div>
-                {/*TODO: fix after add parsing contacts */}
+                {/* TODO: fix after add parsing contacts */}
                 <div className={'grid grid-cols-2 gap-6'}>
-                    <TextInput control={control} placeholder={"@telegram"} name={"telegram"} />
-                    <EmailInput control={control} name={"email"} />
-                    <PhoneInput control={control} name={"phone"} />
+                    <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"@telegram"} name={"telegram"} />
+                    <EmailInput control={(control as unknown) as Control<FieldValues>} name={"email"} />
+                    <PhoneInput control={(control as unknown) as Control<FieldValues>} name={"phone"} />
                 </div>
                 <Button type={'submit'} buttonView={ButtonView.LARGE} className=" w-1/4 text-base bg-mauve hover:bg-text transition-colors">
                     {'Сохранить'}

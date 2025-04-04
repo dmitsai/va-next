@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import { Checkbox } from "~/shared/ui/checkbox/Checkbox";
 import { Popup, PopupProps } from "~/shared/ui/Popup";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -117,23 +117,19 @@ export const EditProfilePreferences: React.FC<EditProfilePreferencesProps> = (pr
                 <div className={'flex flex-col gap-y-4 w-full'}>
                     <span className={'text-14 text-text font-500'}>{"Тип занятости"}</span>
                     {
-                        employmentTypesArray.map(([key, value]) => {
-                            return <Checkbox key={key} control={control} name={key} label={value} />
-                        })
+                        employmentTypesArray.map(([key, value]) => <Checkbox key={key} control={(control as unknown) as Control<FieldValues>} name={key} label={value} />)
                     }
                 </div>
                 <div className={'flex flex-col gap-y-4 w-full'}>
                     <span className={'text-14 text-text font-500'}>{"График работы"}</span>
                     {
-                        workScheduleArray.map(([key, value]) => {
-                            return <Checkbox key={key} control={control} name={key} label={value} />
-                        })
+                        workScheduleArray.map(([key, value]) => <Checkbox key={key} control={(control as unknown) as Control<FieldValues>} name={key} label={value} />)
                     }
                 </div>
                 <div className={'flex flex-col gap-y-4 w-full'}>
                     <span className={'text-14 text-text font-500'}>{"Уровень дохода"}</span>
                     <div className={'flex flex-row gap-x-2'}>
-                        <TextInput control={control} placeholder={"100 000"} name={"salary"} />
+                        <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"100 000"} name={"salary"} />
                         <Select className={'!w-1/3'} state={salaryCurrencyArray} selected={selected} setSelected={(value) => setSelected(value as SalaryCurrency)} />
                     </div>
                 </div>
