@@ -5,7 +5,7 @@ import { type EmploymentTypes, type SalaryCurrency, type WorkSchedule } from "~/
 import { ReactComponent as IconEmploymentType } from '~/shared/assets/icons/icon-employment-type.svg';
 import { ReactComponent as IconWorkSchedule } from '~/shared/assets/icons/icon-work-schedule.svg';
 import { ReactComponent as IconSalary } from '~/shared/assets/icons/icon-salary.svg';
-import Badge from "~/shared/ui/badge";
+import Badge from "~/shared/ui/Badge";
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { EditProfilePreferences } from "~/features/editProfilePreferences/ui/EditProfilePreferences";
 import { PreferencesItem } from "./PreferencesItem";
