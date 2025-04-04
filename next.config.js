@@ -19,6 +19,7 @@ const nextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack', 'url-loader'],
     });
+    config.resolve.alias.canvas = false;
 
     return config;
   },

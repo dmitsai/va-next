@@ -1,0 +1,1 @@
+export { ProfileBio, type ProfileBioProps } from './ui/ProfileBio';

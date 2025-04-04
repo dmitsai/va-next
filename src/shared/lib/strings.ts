@@ -27,6 +27,9 @@ export const CONSTANTS  = {
                 specialCharacter: 'Пароль должен содержать хотя бы один спецсимвол',
 
             },
+            phone: {
+                invalid: 'Неверный формат телефона'
+            }
         }
     }
 } as const;

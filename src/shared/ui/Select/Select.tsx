@@ -9,17 +9,19 @@ import { ReactComponent as ChevronIcon } from '~/shared/assets/icons/chevron-ico
 export interface SelectProps {
     selected?: string,
     setSelected: (value: string) => void,
-    state: string[]
+    state: string[],
+    className?: string,
 }
 export const Select: React.FC<SelectProps> = (props) => {
-    const { state, selected, setSelected } = props;
+    const { state, selected, setSelected, className } = props;
     return (
         <Listbox value={selected} onChange={setSelected}>
             <ListboxButton
                 className={cn(
                     'relative flex flex-row justify-between items-center max-w-select w-full group',
                     'rounded-6 bg-mantle  py-1.5 pr-8 pl-4 text-left text-text  font-400 text-14 leading-6',
-                    ' hover:text-base hover:bg-text transition-colors'
+                    ' hover:text-base hover:bg-text transition-colors',
+                    className
                 )}
             >
                 {selected}

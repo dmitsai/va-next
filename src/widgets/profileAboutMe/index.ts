@@ -1,0 +1,1 @@
+export { ProfileAboutMe, type ProfileAboutMeProps} from './ui/ProfileAboutMe';

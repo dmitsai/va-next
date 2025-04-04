@@ -21,7 +21,11 @@ const config = {
     "react/jsx-curly-brace-presence" : 'off',
     "react/no-unescaped-entities": "off",
      "react/jsx-props-no-spreading": "off",
-    //TODO: fix this later
+    "jsx-a11y/label-has-associated-control" : "off",
+    "@typescript-eslint/no-empty-object-type": "off",
+    "@typescript-eslint/consistent-type-imports": "off",
+    "react/prop-types": "off",
+    // TODO: fix this later
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -55,13 +59,6 @@ const config = {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx",".tsx",".ts"] }],
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "warn",
-      {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports"
-      }
-    ],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
