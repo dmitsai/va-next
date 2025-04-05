@@ -120,7 +120,7 @@ export const ProfileFileUploader = () => {
                 />
             }
             <div className={cn('relative flex flex-col w-full h-full items-center', resumeUrl ? 'py-4' : 'p-32  justify-center')}>
-                <IconEdit className={'absolute right-5 top-4 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />
+                {resumeUrl && <IconEdit className={'absolute right-5 top-4 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />}
                 {!resumeUrl &&
                     <div
                         {...getRootProps()}
