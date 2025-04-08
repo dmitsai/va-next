@@ -1,0 +1,1 @@
+export {dividerView, type DividerView, Divider, type DividerProps} from './ui/Divider';

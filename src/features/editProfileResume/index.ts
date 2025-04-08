@@ -1,0 +1,1 @@
+export { EditProfileResume, type EditProfileResumeProps, type FileInfo} from './ui/EditProfileResume';

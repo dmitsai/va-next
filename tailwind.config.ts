@@ -145,6 +145,7 @@ export default {
         "10/12": "83.333333%",
         "11/12": "91.666667%",
         popup: "var(--popup-min-width)",
+        "popup-dragdrop": "var(--popup-dragdrop-min-width)",
       },
       maxWidth: {
         "0": "0px",
@@ -212,7 +213,8 @@ export default {
         "11/12": "91.666667%",
         popup: "var(--popup-max-width)",
         input: "var(--input-max-width)",
-        select: "var(--select-max-width)"
+        select: "var(--select-max-width)",
+        preferens: "var(--preferens-max-width)"
       },
       minHeight: {
         "0": "0px",
