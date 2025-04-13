@@ -4,8 +4,8 @@ import React from "react";
 import { Combobox } from "~/shared/ui/Combobox";
 import { ReactComponent as IconPlus } from '~/shared/assets/icons/icon-plus.svg';
 import { ReactComponent as DeleteIcon } from '~/shared/assets/icons/icon-trash.svg';
-import { RegionItem, Regions } from "../model/types";
 import Button, { ButtonView } from "~/shared/ui/Button";
+import { RegionItem, Regions } from "../model/types";
 
 
 export interface RegionInputProps {
@@ -39,7 +39,6 @@ export const RegionInput: React.FC<RegionInputProps> = (props) => {
     return (
         <div className={'flex flex-col w-full gap-y-3'}>
             <Combobox
-                state={localState}
                 doFilter={handleFilter}
                 setSelected={handleComboboxSelected}
                 label={InputLabel}

@@ -1,12 +1,11 @@
 'use client';
 
-import { Combobox as HeadlessUICombobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
+import { Combobox as HeadlessUICombobox, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import cn from 'classnames';
-import React, { useEffect, useId, useState } from 'react';
+import React, { useId, useState } from 'react';
 import { ReactComponent as CheckIcon } from '~/shared/assets/icons/check-icon.svg';
 
 export interface ComboboxProps {
-    state: Array<string>;
     doFilter: (query: string) => Array<string>;
     setSelected: (value: string | null) => void;
 
@@ -18,7 +17,7 @@ export interface ComboboxProps {
 }
 
 export const Combobox: React.FC<ComboboxProps> = (props) => {
-    const { state, doFilter, setSelected, selected, label: Label, inputClassName, wrapperClassName, labelClassName } = props;
+    const { doFilter, setSelected, label: Label, inputClassName, wrapperClassName, labelClassName } = props;
     const id = useId();
 
     const [query, setQuery] = useState('');

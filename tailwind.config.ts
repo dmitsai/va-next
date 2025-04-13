@@ -291,6 +291,7 @@ export default {
         screen: "100dvh",
         page: "var(--page-height)",
         popup: "var(--popup-min-height)",
+        card: "var(--card-min-height)",
       },
       maxHeight: {
         "0": "0px",

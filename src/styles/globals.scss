@@ -84,7 +84,7 @@
     @apply font-sans !important;
   }
   .card {
-    @apply relative flex flex-col max-w-card max-h-card w-full h-full rounded-10 items-start px-4 py-3 gap-y-3
+    @apply relative flex flex-col max-w-card max-h-card min-h-card w-full h-full rounded-10 items-start px-4 py-3 gap-y-3
   }
   
   .typed-cursor {

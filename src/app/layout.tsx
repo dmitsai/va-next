@@ -26,7 +26,7 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
     className={`${jetBrainsMono.variable} !font-sans`}
   >
     <AppProviders>
-      <body className="h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col">
         <TopBar isAuth />
         {children}
       </body>
