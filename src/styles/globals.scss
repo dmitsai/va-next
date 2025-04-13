@@ -4,10 +4,6 @@
 @tailwind base;
 
 @layer base {
-  * {
-    font-family: "JetBrains Mono", sans-serif;
-  }
-
   html,
   html[data-theme="light"] {
     @include light;
