@@ -1,0 +1,1 @@
+export {EditProfileBio, type EditProfileBioProps}  from './ui/EditProfileBio';

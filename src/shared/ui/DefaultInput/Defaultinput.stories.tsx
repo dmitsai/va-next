@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useForm } from "react-hook-form";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import { type Meta, type StoryObj } from '@storybook/react';
-import EmailInput from '~/shared/ui/EmailInput';
-import PasswordInput from '~/shared/ui/PasswordInput';
-import SearchInput from '~/shared/ui/SearchInput';
+import EmailInput, { emailSchema } from '~/shared/ui/EmailInput';
+import PasswordInput, { passwordSchema } from '~/shared/ui/PasswordInput';
+import SearchInput, { searchSchema } from '~/shared/ui/SearchInput';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { DefaultInput } from './DefaultInput';
 
 const meta: Meta<typeof EmailInput> = {
@@ -21,7 +23,11 @@ type EmailFormData = {
 };
 
 const RenderEmailInput = () => {
+    const formSchema = z.object({
+        email: emailSchema
+    })
     const { handleSubmit, control } = useForm<EmailFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             email: '',
         }
@@ -32,7 +38,7 @@ const RenderEmailInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <EmailInput name={'email'} control={control} />
+            <EmailInput name={'email'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }
@@ -46,7 +52,11 @@ type PasswordFormData = {
 };
 
 const RenderPasswordInput = () => {
+    const formSchema = z.object({
+        password: passwordSchema
+    })
     const { handleSubmit, control } = useForm<PasswordFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             password: '',
         }
@@ -57,7 +67,7 @@ const RenderPasswordInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <PasswordInput name={'password'} control={control} />
+            <PasswordInput name={'password'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }
@@ -71,7 +81,11 @@ type SearchFormData = {
 };
 
 const RenderSearchInput = () => {
+    const formSchema = z.object({
+        search: searchSchema
+    })
     const { handleSubmit, control } = useForm<SearchFormData>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             search: '',
         }
@@ -82,7 +96,7 @@ const RenderSearchInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <SearchInput name={'search'} control={control} />
+            <SearchInput name={'search'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }

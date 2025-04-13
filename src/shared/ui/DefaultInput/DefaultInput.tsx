@@ -9,16 +9,17 @@ interface RenderInputProps extends React.DetailedHTMLProps<React.InputHTMLAttrib
     icon?: React.FC<React.SVGProps<SVGSVGElement>>,
     iconProps?: React.DetailedHTMLProps<React.SVGProps<SVGSVGElement>, SVGSVGElement>,
     labelClassName?: string,
+    wrapperClassName?: string,
 }
 
-//TODO: add custom styles for autocomplete
+// TODO: add custom styles for autocomplete
 const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({ placeholder, ...props }) => {
 
-    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName } = props;
-    const { className: iconClassName, ...otherIconProps } = iconProps || {};
+    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName, error, wrapperClassName } = props;
+    const { className: iconClassName, ...otherIconProps } = iconProps ?? {};
 
     return (
-        <div className={cn('group relative w-full max-w-input font-400 text-14 leading-5')}>
+        <div className={cn('group relative w-full max-w-input font-400 text-14 leading-5', wrapperClassName)}>
             <input
                 {...props}
                 className={cn(
@@ -38,6 +39,7 @@ const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({
             >
                 {placeholder}
             </label>
+            {invalid && <p className='absolute mt-1 left-0 font-400 text-10 leading-5 text-red whitespace-nowrap'>{error?.message}</p>}
         </div>
     );
 }

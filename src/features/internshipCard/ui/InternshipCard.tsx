@@ -6,7 +6,7 @@ import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg'
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
 import cn from 'classnames';
 
-import { Badge } from "~/shared/ui";
+import { Badge } from "~/shared/ui/Badge";
 import { CONSTANTS } from "~/shared/lib/strings";
 
 export interface InternshipCardProps {

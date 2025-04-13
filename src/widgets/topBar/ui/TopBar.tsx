@@ -57,7 +57,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
     ];
 
     return (
-        <header className={'fixed top-0 left-0 right-0 flex flex-row w-full py-5 px-20 justify-between'}>
+        <header className={'static bg-base z-20 top-0 left-0 right-0 flex flex-row w-full py-5 px-20 justify-between max-h-16'}>
             <div className={'flex flex-row gap-x-8 items-center'}>
                 <Link className={'text-14 font-700 leading-6 text-text hover:text-sub/70'} href={"/"}>{CONSTANTS.topBar.placeholder}</Link>
                 <div className={'flex flex-row gap-x-6'}>
@@ -74,14 +74,14 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
                 {
                     !isAuth ?
                         <div className={'flex flex-row gap-x-1'}>
-                            <Button buttonView={ButtonView.SMALL} className={'muted bg-mauve text-base'} >{CONSTANTS.auth.signUp}</Button>
-                            <Button buttonView={ButtonView.SMALL} className={'muted bg-mantle'} >{CONSTANTS.auth.logIn}</Button>
+                            <Button buttonView={ButtonView.SMALL} className={'muted bg-mauve  hover:text-base hover:bg-text  text-base'} >{CONSTANTS.auth.signUp}</Button>
+                            <Button buttonView={ButtonView.SMALL} className={'muted bg-mantle hover:text-base hover:bg-text'} >{CONSTANTS.auth.logIn}</Button>
                         </div>
                         :
                         <div className={'flex flex-row gap-x-4 items-center justify-center'}>
                             {
                                 buttons.map(button => (
-                                    <Button key={button.key} buttonView={ButtonView.SMALL} className={'bg-mantle !px-1.5  transition-colors'}>
+                                    <Button key={button.key} buttonView={ButtonView.SMALL} className={'bg-mantle  hover:bg-text  !px-1.5  transition-colors'}>
                                         <button.icon className={'fill-text group-disabled:fill-sub-secondary/70 group-hover:fill-base'} />
                                     </Button>
                                 ))
