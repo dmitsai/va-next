@@ -36,6 +36,8 @@ export default {
         flamingo: "rgb(var(--flamingo) / <alpha-value>)",
         pink: "rgb(var(--pink) / <alpha-value>)",
         mauve: "rgb(var(--mauve) / <alpha-value>)",
+        mauveLight: "#8839EF",
+        mantleLight: "#E6E9EF",
         red: "rgb(var(--red) / <alpha-value>)",
         maroon: "rgb(var(--maroon) / <alpha-value>)",
         peach: "rgb(var(--peach) / <alpha-value>)",
@@ -46,6 +48,7 @@ export default {
         sapphire: "rgb(var(--sapphire) / <alpha-value>)",
         blue: "rgb(var(--blue) / <alpha-value>)",
         lavender: "rgb(var(--lavender) / <alpha-value>)",
+
 
         text: "rgb(var(--text) / <alpha-value>)",
         sub: "rgb(var(--sub) / <alpha-value>)",
