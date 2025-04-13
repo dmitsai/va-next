@@ -7,9 +7,7 @@ const meta = {
     component: InternshipCard,
     title: 'Internship Card',
     args: {
-        wrapperProps: {
-            className: 'bg-sapphire'
-        },
+        wrappeclassName: 'bg-sapphire'
         title: 'UI/UX designer',
         isFavorited: false,
         tags: ['Paid', 'From 20 hours a week', 'In the office or remotely'],

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from "react";
-import Card, { type CardWrapperProps } from "~/entities/cardWrapper";
 import Button, { ButtonView } from "~/shared/ui/Button";
 import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg';
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
@@ -19,11 +18,11 @@ export interface InternshipCardProps {
         imgUrl?: string,
         title: string,
     }
-    wrapperProps?: CardWrapperProps
+    wrapperClassName?: string,
 }
 
 export const InternshipCard: React.FC<InternshipCardProps> = (props) => {
-    const { title, isFavorited: initialIsFavoritedState, tags, description, company, wrapperProps } = props;
+    const { title, isFavorited: initialIsFavoritedState, tags, description, company, wrapperClassName } = props;
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
 
@@ -34,7 +33,7 @@ export const InternshipCard: React.FC<InternshipCardProps> = (props) => {
 
     return (
         // FIXME: remove default bg style for card
-        <Card className={cn('w-full bg-green', wrapperProps?.className)}>
+        <div className={cn('group card w-full bg-green', wrapperClassName)}>
             <div className={'group flex flex-row w-full justify-between items-center'}>
                 <h3 className={'text-base'}>{title}</h3>
                 <Button buttonView={ButtonView.SMALL} className={'group/favorite group-hover:opacity-100 opacity-0 !px-1.5 hover:bg-text bg-mantle transition-all duration-400 w-6 h-6'} onClick={handleIsFavorited}>
@@ -43,7 +42,7 @@ export const InternshipCard: React.FC<InternshipCardProps> = (props) => {
             </div>
             <div className={'relative h-full w-full'}>
                 {/* FIXME: temp solution for display valid count of tags */}
-                <div className={'flex flex-wrap gap-1 max-h-[68px] overflow-hidden group-hover:opacity-0 opacity-100 transition-all duration-300'}>
+                <div className={'flex flex-wrap gap-1 max-h-card-tags overflow-hidden group-hover:opacity-0 opacity-100 transition-all duration-300'}>
                     {
                         tags.map(tag => (<Badge key={tag} placeholder={tag} className={'bg-base text-text h-5'} />))
                     }
@@ -60,6 +59,6 @@ export const InternshipCard: React.FC<InternshipCardProps> = (props) => {
                     <p className={'text-14 font-500 leading-6'}>{CONSTANTS.card.apply}</p>
                 </Button>
             </div>
-        </Card>
+        </div>
     )
 }

@@ -358,7 +358,7 @@ export default {
         popup: "var(--popup-max-height)",
         card: "var(--card-max-height)",
         "card-description": "var(--card-description-max-height)",
-        "event-card": "var(--event-card-max-height)",
+        "card-tags":"var(--card-tags-max-height),"
       },
       height: {
         page: "var(--page-height)",

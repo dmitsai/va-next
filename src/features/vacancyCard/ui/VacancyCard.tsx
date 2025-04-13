@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from "react"
-import Card, { type CardWrapperProps } from "~/entities/cardWrapper"
+import React, { useState } from "react";
 import { CONSTANTS } from "~/shared/lib/strings";
 import cn from 'classnames';
 import Button, { ButtonView } from "~/shared/ui/Button";
@@ -16,7 +15,7 @@ export interface Tags {
     color: string,
 }
 
-export interface InternshipCardProps {
+export interface VacancyCardProps {
     title: string,
     isFavorited: boolean,
     tags: Array<Tags>,
@@ -26,7 +25,7 @@ export interface InternshipCardProps {
         title: string,
     },
     salary: number,
-    wrapperProps?: CardWrapperProps
+    wrapperClassName?: string,
 }
 
 const parseSalary = (salary: number) => {
@@ -35,8 +34,8 @@ const parseSalary = (salary: number) => {
     return `${thousands}.${hundreds} ${CONSTANTS.card.currencyChar}`
 }
 
-export const VacancyCard: React.FC<InternshipCardProps> = (props) => {
-    const { title, isFavorited: initialIsFavoritedState, tags, description, company, salary: numberSalary, wrapperProps } = props;
+export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
+    const { title, isFavorited: initialIsFavoritedState, tags, description, company, salary: numberSalary, wrapperClassName } = props;
     const salary = parseSalary(numberSalary);
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
@@ -47,7 +46,7 @@ export const VacancyCard: React.FC<InternshipCardProps> = (props) => {
     }
 
     return (
-        <Card className={cn('w-full bg-mantle', wrapperProps?.className)}>
+        <div className={cn('group card w-full bg-mantle', wrapperClassName)}>
             <div className={'flex flex-col items-start w-full'}>
                 <div className={'group flex flex-row w-full justify-between items-center'}>
                     <p className={'text-text text-14 font-500 leading-6'}>{title}</p>
@@ -59,7 +58,7 @@ export const VacancyCard: React.FC<InternshipCardProps> = (props) => {
             </div>
             <div className={'relative h-full w-full'}>
                 {/* FIXME: temp solution for display valid count of tags */}
-                <div className={'flex flex-wrap gap-1 max-h-[68px] overflow-hidden group-hover:opacity-0 opacity-100 transition-all duration-300'}>
+                <div className={'flex flex-wrap gap-1 max-h-card-tags overflow-hidden group-hover:opacity-0 opacity-100 transition-all duration-300'}>
                     {
                         tags.map(tag => (<Badge key={tag.label.trim()} placeholder={tag.label} className={cn('text-base h-5', `${tag.color}`)} />))
                     }
@@ -76,6 +75,6 @@ export const VacancyCard: React.FC<InternshipCardProps> = (props) => {
                     <p className={'text-12 font-500 leading-6'}>{CONSTANTS.card.apply}</p>
                 </Button>
             </div>
-        </Card>
+        </div>
     )
 }
