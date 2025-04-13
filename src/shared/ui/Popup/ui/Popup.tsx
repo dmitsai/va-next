@@ -4,6 +4,7 @@ import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transiti
 import React, { Fragment } from 'react';
 import { ReactComponent as CloseIcon } from '~/shared/assets/icons/icon-x-mark.svg';
 import cn from 'classnames';
+
 export interface PopupProps extends React.PropsWithChildren {
     title: string;
     isOpen: boolean;
