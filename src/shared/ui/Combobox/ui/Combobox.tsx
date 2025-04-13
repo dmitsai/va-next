@@ -31,7 +31,8 @@ export const Combobox: React.FC<ComboboxProps> = (props) => {
 
     const handleSelection = (value: string) => {
         setSelected(value);
-        setIsDirty(true);
+        setQuery('');
+        setIsDirty(false);
     }
 
     const filteredState = doFilter(query);
@@ -46,6 +47,7 @@ export const Combobox: React.FC<ComboboxProps> = (props) => {
                         inputClassName
                     )}
                     onChange={handleInputChange}
+                    value={query}
                 />
                 {Label && <label
                     htmlFor={id}

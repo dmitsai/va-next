@@ -122,7 +122,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
 
     };
     return (
-        <Popup title={"Фильтры"} {...other}>
+        <Popup title={"Фильтры"} {...other} panelClassName={'!w-full'}>
             <form className={'flex flex-col gap-y-8 w-full items-end'} onSubmit={handleSubmit(onSubmit)}>
                 <div className={'flex flex-col gap-y-5 w-full'}>
                     <div className={'grid grid-cols-3 w-full gap-2'}>

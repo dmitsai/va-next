@@ -9,7 +9,7 @@ const isAuth = false;
 
 export default () => (
   <Suspense>
-    <main className="flex min-h-screen flex-col items-center justify-center bg-base px-20 py-10 gap-y-10">
+    <main className="flex flex-col items-center justify-center bg-base px-20 py-10 gap-y-10">
       <div className="flex flex-row w-full gap-x-16 h-full min-h-72" >
         {!isAuth && <TypingLabel />}
         <div className={'flex flex-col gap-y-8 w-full'}>

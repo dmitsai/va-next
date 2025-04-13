@@ -3,15 +3,16 @@
 import { CloseButton, Dialog, DialogBackdrop, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import { ReactComponent as CloseIcon } from '~/shared/assets/icons/icon-x-mark.svg';
-
+import cn from 'classnames';
 export interface PopupProps extends React.PropsWithChildren {
     title: string;
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    panelClassName?: string,
 }
 
 export const Popup: React.FC<PopupProps> = props => {
-    const { isOpen, setIsOpen, title, children } = props;
+    const { isOpen, setIsOpen, title, children, panelClassName } = props;
 
     return (
         <Transition show={isOpen} as={Fragment}>
@@ -43,7 +44,7 @@ export const Popup: React.FC<PopupProps> = props => {
                     leaveFrom={'opacity-100 scale-100'}
                     leaveTo={'opacity-0 scale-90'}
                 >
-                    <DialogPanel className='relative flex flex-col gap-y-6 w-fit max-w-popup rounded-16 pt-8 pb-4 px-8 bg-base'>
+                    <DialogPanel className={cn('relative flex flex-col gap-y-6 w-fit max-w-popup rounded-16 pt-8 pb-4 px-8 bg-base', panelClassName)}>
                         <CloseButton className={'absolute right-3 top-3'}>
                             <CloseIcon className={'2 w-4 h-4 fill-sub'} />
                         </CloseButton>
