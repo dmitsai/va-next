@@ -29,6 +29,12 @@ export default {
       900: "900",
     },
     extend: {
+      gridTemplateColumns: {
+          tags:  'repeat(auto-fill, minmax(3.125rem, auto))',
+      },
+      gridTemplateRows : {
+          tags: 'repeat(2,1.25rem)'
+      },
       fontFamily: {
         sans: ["var(--font-jbm)"],
       },
@@ -215,7 +221,8 @@ export default {
         popup: "var(--popup-max-width)",
         input: "var(--input-max-width)",
         select: "var(--select-max-width)",
-        preferens: "var(--preferens-max-width)"
+        preferens: "var(--preferens-max-width)",
+        card: "var(--card-max-width)",
       },
       minHeight: {
         "0": "0px",
@@ -352,6 +359,9 @@ export default {
         screen: "100dvh",
         page: "var(--page-height)",
         popup: "var(--popup-max-height)",
+        card: "var(--card-max-height)",
+        "card-description": "var(--card-description-max-height)",
+        "card-tags":"var(--card-tags-max-height),"
       },
       height: {
         page: "var(--page-height)",
