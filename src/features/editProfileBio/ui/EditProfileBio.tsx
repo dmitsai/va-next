@@ -51,13 +51,13 @@ export const EditProfileBio: React.FC<EditProfileBioProps> = (props) => {
     return (
         <Popup title="Редактирование персональной информации" {...props}>
             <form className={'flex flex-col gap-y-8 w-full items-end'} onSubmit={handleSubmit(onSubmit)}>
-                <div className={'grid grid-cols-2 gap-6'}>
+                <div className={'grid grid-cols-2 gap-6 w-full'}>
                     <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Имя"} name={'firstName'} />
                     <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Фамилия"} name={'lastName'} />
                     <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"Отчество (при наличии)"} name={'patronymic'} />
                 </div>
                 {/* TODO: fix after add parsing contacts */}
-                <div className={'grid grid-cols-2 gap-6'}>
+                <div className={'grid grid-cols-2 gap-6 w-full'}>
                     <TextInput control={(control as unknown) as Control<FieldValues>} placeholder={"@telegram"} name={"telegram"} />
                     <EmailInput control={(control as unknown) as Control<FieldValues>} name={"email"} />
                     <PhoneInput control={(control as unknown) as Control<FieldValues>} name={"phone"} />

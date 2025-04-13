@@ -43,7 +43,7 @@ export const Popup: React.FC<PopupProps> = props => {
                     leaveFrom={'opacity-100 scale-100'}
                     leaveTo={'opacity-0 scale-90'}
                 >
-                    <DialogPanel className='relative flex flex-col gap-y-6 w-full max-w-popup rounded-16 pt-8 pb-4 px-4 bg-base'>
+                    <DialogPanel className='relative flex flex-col gap-y-6 w-fit max-w-popup rounded-16 pt-8 pb-4 px-8 bg-base'>
                         <CloseButton className={'absolute right-3 top-3'}>
                             <CloseIcon className={'2 w-4 h-4 fill-sub'} />
                         </CloseButton>
