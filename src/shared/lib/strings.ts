@@ -13,6 +13,16 @@ export const CONSTANTS  = {
     auth: {
         signUp: 'Зарегистрироваться',
         logIn: 'Войти',
+        description: 'Вы можете создать или войти в свою учетную запись  и узнавать о новых вакансиях первыми'
+    },
+    home: {
+        vacancies: {
+            placeholder: {
+                unauthecated: 'Свежие вакансии',
+                authecated: 'Вакансии для вашего резюме:'
+            },
+            viewAll: 'Посмотреть все вакансии',
+        }
     },
     errors: {
         validation: {

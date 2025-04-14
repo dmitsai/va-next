@@ -28,7 +28,7 @@ export const EditProfileAboutMe: React.FC<EditProfileAboutMeProps> = (props) => 
     return (
         <Popup title="Редактирование информации о себе" {...props}>
             <form className={'flex flex-col  w-full justify-between items-end h-96'} onSubmit={handleSubmit(onSubmit)}>
-                <TextArea label={'Напишите о себе...'} name={'description'} control={(control as unknown) as Control<FieldValues>} textAreaClassName={'resize-y max-h-80 min-h-48'} />
+                <TextArea label={'Напишите о себе...'} name={'description'} control={(control as unknown) as Control<FieldValues>} textAreaClassName={'resize-y max-h-80 min-h-48 w-full'} />
                 <Button type={'submit'} buttonView={ButtonView.LARGE} className=" w-1/4 text-base bg-mauve hover:bg-text transition-colors">
                     {'Сохранить'}
                 </Button>

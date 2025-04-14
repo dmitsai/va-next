@@ -15,6 +15,7 @@ export default {
       28: "1.75rem",
       32: "2rem",
       36: "2.25rem",
+      48: "3rem",
     },
     fontWeight: {
       100: "100",
@@ -290,6 +291,7 @@ export default {
         screen: "100dvh",
         page: "var(--page-height)",
         popup: "var(--popup-min-height)",
+        card: "var(--card-min-height)",
       },
       maxHeight: {
         "0": "0px",

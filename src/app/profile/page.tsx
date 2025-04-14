@@ -33,7 +33,7 @@ const ProfilePage = () => {
     const userData = temp;
 
     return (
-        <main className={'flex w-full  flex-grow flex-col bg-base'}>
+        <main className={'flex w-full min-h-screen  flex-grow flex-col bg-base'}>
             <Divider view={dividerView.horizontal} />
             <div className={'flex flex-row gap-x-8 w-full h-full px-8'}>
                 <div className={'flex flex-col gap-y-2 w-2/5 h-full pt-4 pr-8 border-r-2 border-surface-tertiary'}>

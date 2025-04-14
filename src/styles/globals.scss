@@ -4,10 +4,6 @@
 @tailwind base;
 
 @layer base {
-  * {
-    font-family: "JetBrains Mono", sans-serif;
-  }
-
   html,
   html[data-theme="light"] {
     @include light;
@@ -83,9 +79,19 @@
   .font-jbm {
     @apply font-sans !important;
   }
-
   .card {
-    @apply relative flex flex-col max-w-card max-h-card w-full h-full rounded-10 items-start px-4 py-3 gap-y-3
+    @apply relative flex flex-col max-w-card max-h-card min-h-card w-full h-full rounded-10 items-start px-4 py-3 gap-y-3
+  }
+  
+  .typed-cursor {
+    @apply text-text font-bold;
+    opacity: 1;
+    animation: blink 0.7s infinite;
+  }
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
   }
 }
 
