@@ -3,20 +3,42 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
 import { httpClient } from '~/shared/api/client';
+import { Session } from 'next-auth';
+import { NextRequest } from 'next/server';
 import { getServerAuthSession } from '../auth';
 import { prisma } from '../db/db';
 
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+type CreateContextOptions = {
+    headers: Headers;
+    session: Session | null;
+};
+  
+
+export const createInnerTRPCContext = (opts: CreateContextOptions) => ({
+        prisma,
+      session: opts.session,
+      http: httpClient,
+      headers: opts.headers,
+    });
+
+export const createTRPCContext = async (opts: { req: NextRequest }) => {
     const session = await getServerAuthSession();
 
-    return {
-        prisma,
+    return createInnerTRPCContext({
+        headers: opts.req.headers,
         session,
-        http: httpClient,
-        ...opts,
-    };
+      });
 };
 
+export const createSSRContext = async (opts?: { headers?: Headers }) => {
+    const session = await getServerAuthSession();
+    
+    return createInnerTRPCContext({
+      headers: opts?.headers ?? new Headers(),
+      session,
+    });
+};
+  
 const t = initTRPC.context<typeof createTRPCContext>().create({
     transformer: superjson,
     errorFormatter({ shape, error }) {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Roles } from '@prisma/client';
 import { compare } from 'bcrypt'
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
@@ -53,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         return {
-          id: user.user_id + '',
+          id: `${user.user_id  }`,
           email: user.email,
           randomKey: 'Hey cool'
         }
