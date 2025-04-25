@@ -1,7 +1,9 @@
 import { type Config } from "tailwindcss";
 
 export default {
-  content: ["./src/**/*.tsx"],
+  content: ["./src/**/*.tsx",
+    "./app/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     fontSize: {
       10: "0.625rem",
@@ -15,6 +17,7 @@ export default {
       28: "1.75rem",
       32: "2rem",
       36: "2.25rem",
+      48: "3rem",
     },
     fontWeight: {
       100: "100",
@@ -28,6 +31,12 @@ export default {
       900: "900",
     },
     extend: {
+      gridTemplateColumns: {
+          tags:  'repeat(auto-fill, minmax(3.125rem, auto))',
+      },
+      gridTemplateRows : {
+          tags: 'repeat(2,1.25rem)'
+      },
       fontFamily: {
         sans: ["var(--font-jbm)"],
       },
@@ -36,8 +45,6 @@ export default {
         flamingo: "rgb(var(--flamingo) / <alpha-value>)",
         pink: "rgb(var(--pink) / <alpha-value>)",
         mauve: "rgb(var(--mauve) / <alpha-value>)",
-        mauveLight: "#8839EF",
-        mantleLight: "#E6E9EF",
         red: "rgb(var(--red) / <alpha-value>)",
         maroon: "rgb(var(--maroon) / <alpha-value>)",
         peach: "rgb(var(--peach) / <alpha-value>)",
@@ -82,6 +89,9 @@ export default {
         24: "1.5rem",
         30: "1.875rem",
         40: "2.5rem",
+      },
+      width:{
+        "88": "21.875rem"
       },
       minWidth: {
         "0": "0px",
@@ -148,6 +158,7 @@ export default {
         "10/12": "83.333333%",
         "11/12": "91.666667%",
         popup: "var(--popup-min-width)",
+        "popup-dragdrop": "var(--popup-dragdrop-min-width)",
       },
       maxWidth: {
         "0": "0px",
@@ -215,7 +226,9 @@ export default {
         "11/12": "91.666667%",
         popup: "var(--popup-max-width)",
         input: "var(--input-max-width)",
-        select: "var(--select-max-width)"
+        select: "var(--select-max-width)",
+        preferens: "var(--preferens-max-width)",
+        card: "var(--card-max-width)",
       },
       minHeight: {
         "0": "0px",
@@ -284,6 +297,7 @@ export default {
         screen: "100dvh",
         page: "var(--page-height)",
         popup: "var(--popup-min-height)",
+        card: "var(--card-min-height)",
       },
       maxHeight: {
         "0": "0px",
@@ -352,6 +366,9 @@ export default {
         screen: "100dvh",
         page: "var(--page-height)",
         popup: "var(--popup-max-height)",
+        card: "var(--card-max-height)",
+        "card-description": "var(--card-description-max-height)",
+        "card-tags":"var(--card-tags-max-height),"
       },
       height: {
         page: "var(--page-height)",

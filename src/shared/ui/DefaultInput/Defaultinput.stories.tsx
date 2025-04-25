@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useForm } from "react-hook-form";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import { type Meta, type StoryObj } from '@storybook/react';
 import EmailInput, { emailSchema } from '~/shared/ui/EmailInput';
 import PasswordInput, { passwordSchema } from '~/shared/ui/PasswordInput';
 import SearchInput, { searchSchema } from '~/shared/ui/SearchInput';
-import { DefaultInput } from './DefaultInput';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DefaultInput } from './DefaultInput';
 
 const meta: Meta<typeof EmailInput> = {
     component: DefaultInput,
@@ -38,7 +38,7 @@ const RenderEmailInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <EmailInput name={'email'} control={control} />
+            <EmailInput name={'email'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }
@@ -67,7 +67,7 @@ const RenderPasswordInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <PasswordInput name={'password'} control={control} />
+            <PasswordInput name={'password'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }
@@ -96,7 +96,7 @@ const RenderSearchInput = () => {
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <SearchInput name={'search'} control={control} />
+            <SearchInput name={'search'} control={(control as unknown) as Control<FieldValues>} />
         </form>
     )
 }

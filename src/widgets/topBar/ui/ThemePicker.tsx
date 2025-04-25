@@ -65,7 +65,7 @@ export const ThemePicker: React.FC = () => {
                 anchor='bottom end'
                 transition
                 className={cn(
-                    'flex flex-col gap-y-2 mt-3 !max-w-select w-full rounded-6 border-2 border-mauve bg-base py-3',
+                    'flex flex-col gap-y-2 mt-3 !max-w-select w-full rounded-6 border-2 border-mauve bg-base py-3 z-30',
                     '[--anchor-gap:var(--spacing-1)] focus:outline-none transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
                 )}
             >

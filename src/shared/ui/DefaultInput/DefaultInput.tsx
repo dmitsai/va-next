@@ -9,22 +9,23 @@ interface RenderInputProps extends React.DetailedHTMLProps<React.InputHTMLAttrib
     icon?: React.FC<React.SVGProps<SVGSVGElement>>,
     iconProps?: React.DetailedHTMLProps<React.SVGProps<SVGSVGElement>, SVGSVGElement>,
     labelClassName?: string,
+    wrapperClassName?: string,
 }
 
-//TODO: add custom styles for autocomplete
+// TODO: add custom styles for autocomplete
 const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({ placeholder, ...props }) => {
 
-    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName, error } = props;
-    const { className: iconClassName, ...otherIconProps } = iconProps || {};
+    const { invalid, isDirty, icon: Icon, className, iconProps, labelClassName, error, wrapperClassName } = props;
+    const { className: iconClassName, ...otherIconProps } = iconProps ?? {};
 
     return (
-        <div className={cn('group relative w-full max-w-input font-400 text-14 leading-5')}>
+        <div className={cn('group relative w-full max-w-input font-400 text-14 leading-5', wrapperClassName)}>
             <input
                 {...props}
                 className={cn(
-                    'peer w-full outline-none rounded-6 bg-mantle py-2 border-2 border-transparent focus:border-mauve caret-text text-text pr-4 max-w-input',
+                    'peer w-full outline-none rounded-6 bg-mantle py-2 border-2 focus:border-mauve caret-text text-text pr-4 max-w-input',
                     Icon ? 'pl-11' : 'pl-4',
-                    invalid && 'border-red',
+                    invalid ? 'border-red' : 'border-transparent',
                     className
                 )}
             />
@@ -38,7 +39,7 @@ const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({
             >
                 {placeholder}
             </label>
-            {invalid && <p className='absolute mt-2 left-0 font-400 text-14 leading-5 text-red whitespace-nowrap'>{error?.message}</p>}
+            {invalid && <p className='absolute mt-1 left-0 font-400 text-10 leading-5 text-red whitespace-nowrap'>{error?.message}</p>}
         </div>
     );
 }
