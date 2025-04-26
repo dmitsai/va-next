@@ -1,10 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Roles } from '@prisma/client';
-import { compare } from 'bcrypt'
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '~/server/db/db'
+import { authRouter } from '../api/routers/auth';
+import axios from 'axios';
+import { createSSRHelpers } from 'trpc/helpers';
+import { headers } from 'next/headers';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -35,29 +36,28 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user = await prisma.users.findUnique({
-          where: {
-            email: credentials.email
-          }
-        })
+        const ctx = {
+          session: null,
+          prisma,
+          headers: new Headers(),
+          http: axios.create(),
+        };
+        
+        const caller = authRouter.createCaller(ctx);
 
-        if (!user) {
-          return null
-        }
-
-        const isPasswordValid = await compare(
-          credentials.password,
-          user.password_hash
-        )
-
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: `${user.user_id  }`,
-          email: user.email,
-          randomKey: 'Hey cool'
+        try {
+          const user = await caller.signIn({
+            email: credentials.email,
+            password: credentials.password
+          });
+          return {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('Ошибка Аутентификации:', error);
+          return null;
         }
       }
     })
