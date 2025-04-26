@@ -1,9 +1,9 @@
 import { Roles } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import { compare } from 'bcrypt';
+import bcrypt, { compare } from 'bcrypt';
 import { z } from 'zod';
 import { prisma } from '~/server/db/db';
-import { publicProcedure, createTRPCRouter } from '../trpc';
+// eslint-disable-next-line import/no-cycle
+import { publicProcedure, createTRPCRouter} from '~/server/api/trpc';
 
 export const authRouter = createTRPCRouter({
   signUp: publicProcedure

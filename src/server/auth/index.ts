@@ -2,10 +2,9 @@ import { Roles } from '@prisma/client';
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '~/server/db/db'
-import { authRouter } from '../api/routers/auth';
 import axios from 'axios';
-import { createSSRHelpers } from 'trpc/helpers';
-import { headers } from 'next/headers';
+// eslint-disable-next-line import/no-cycle
+import { authRouter } from '../api/routers/auth';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -63,30 +62,22 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    session: ({ session, token }) => {
-      console.log('Session Callback', { session, token })
-      return {
+    session: ({ session, token }) => ({
         ...session,
         user: {
           ...session.user,
           id: token.id,
-          randomKey: token.randomKey
         }
-      }
-    },
+      }),
     jwt: ({ token, user }) => {
-      console.log('JWT Callback', { token, user })
       if (user) {
-        const u = user as unknown as any
         return {
           ...token,
-          id: u.id,
-          randomKey: u.randomKey
-
+          id: user.id,
         }
       }
       return token
     }
   }
-}
+} satisfies NextAuthOptions; 
 export const getServerAuthSession = () => getServerSession(authOptions);
