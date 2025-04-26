@@ -4,7 +4,6 @@ import { AuthBlock } from "~/features/authBlock";
 import { VacancyList } from "~/widgets/VacancyList/ui/VacancyList";
 import { Suspense } from "react";
 
-
 const isAuth = false;
 
 export default () => (
@@ -22,4 +21,5 @@ export default () => (
       </div>
     </main>
   </Suspense>
+
 );
