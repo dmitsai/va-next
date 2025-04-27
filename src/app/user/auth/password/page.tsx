@@ -5,39 +5,42 @@ import { useRouter } from "next/navigation";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { ButtonView } from "~/shared/ui/Button";
 import { Button } from "~/shared/ui/Button/Button";
-import TextInput, { textSchema } from "~/shared/ui/TextInput";
+import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { CONSTANTS } from "~/shared/lib/strings";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactComponent as BackIcon } from "~/shared/assets/icons/icon-back.svg";
 
 export interface LoginPasswordFormData {
-  firstName: string;
-  lastName: string;
+  password: string;
+  password2: string;
 }
 
 const formSchema = z.object({
-  firstName: textSchema,
-  lastName: textSchema,
+  password: passwordSchema,
+  password2: passwordSchema,
+}).refine((data) => data.password === data.password2, {
+  message: "Пароли не совпадают",
+  path: ["password2"],
 });
-
 
 const LoginPasswordPage = () => {
   const router = useRouter();
 
-  const { control, handleSubmit, trigger } = useForm<LoginPasswordFormData>({
+  const { control, handleSubmit, trigger, formState: { errors } } = useForm<LoginPasswordFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      password: "",
+      password2: "",
     },
     mode: "onSubmit",
   });
+
   const onSubmit = async () => {
     const isValid = await trigger();
 
     if (isValid) {
-      router.push("/");
+      router.push("/user/auth/resume");
     }
   };
 
@@ -49,7 +52,7 @@ const LoginPasswordPage = () => {
         </p>
       </div>
       <div className={`w-1/2 relative bg-base`}>
-          <Link className={`absolute right-10 top-8`} href="/login">
+          <Link className={`absolute right-10 top-8`} href="/user/login">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
@@ -58,7 +61,7 @@ const LoginPasswordPage = () => {
               {CONSTANTS.auth.logIn}
             </Button>
           </Link>
-          <Link className={`absolute left-10 top-8`} href="/auth/password">
+          <Link className={`absolute left-10 top-8`} href="/user/auth">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
@@ -70,15 +73,18 @@ const LoginPasswordPage = () => {
         <div className={`h-screen flex flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.signUp}</h1>
-            <p className={`text-16 text-text`}>{CONSTANTS.auth.resume}</p>
+            <p className={`text-16 text-text`}>{CONSTANTS.auth.enterPassword}</p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-y-6`} noValidate>
-                <TextInput
-                  control={control as unknown as Control<FieldValues>}
-                  name={"firstName"} placeholder={"Имя"}              />
-              <TextInput
-                  control={control as unknown as Control<FieldValues>}
-                  name={"lastName"} placeholder={"Фамилия"}              />
+              <PasswordInput
+                control={control as unknown as Control<FieldValues>}
+                name={"password"}
+              />
+              <PasswordInput
+                control={control as unknown as Control<FieldValues>}
+                name={"password2"}
+                aria-errormessage={errors.password2?.message}
+              />
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}

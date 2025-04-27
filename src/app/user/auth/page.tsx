@@ -5,28 +5,26 @@ import { useRouter } from "next/navigation";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { ButtonView } from "~/shared/ui/Button";
 import { Button } from "~/shared/ui/Button/Button";
-import TextInput, { codeSchema } from "~/shared/ui/TextInput";
+import EmailInput, { emailSchema } from "~/shared/ui/EmailInput";
 import { CONSTANTS } from "~/shared/lib/strings";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReactComponent as BackIcon } from "~/shared/assets/icons/icon-back.svg";
-import { ReactComponent as MailIcon } from "~/shared/assets/icons/icon-mail.svg"
-  
-export interface LoginPasswordFormData {
-  code: string;
+
+export interface LoginFormData {
+  email: string;
 }
 
 const formSchema = z.object({
-  code: codeSchema,
+  email: emailSchema,
 });
 
-const LoginPasswordPage = () => {
+const LoginPage = () => {
   const router = useRouter();
 
-  const { control, handleSubmit, trigger } = useForm<LoginPasswordFormData>({
+  const { control, handleSubmit, trigger, formState} = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: "",
+      email: "",
     },
     mode: "onSubmit",
   });
@@ -35,19 +33,19 @@ const LoginPasswordPage = () => {
     const isValid = await trigger();
 
     if (isValid) {
-      router.push("/auth/password");
+      router.push("/user/auth/password");
     }
   };
 
   return (
     <div className={`flex h-screen`}>
-      <div className={`w-1/2 bg-mauve relative`}>
-        <p className={`absolute left-10 top-8 text-base`}>
+      <div className={`w-1/2 bg-mauve`}>
+        <p className={`absolute left-10 top-10 text-base`}>
           {CONSTANTS.topBar.placeholder}
         </p>
       </div>
-      <div className={`w-1/2 relative bg-base`}>
-          <Link className={`absolute right-10 top-8`} href="/login">
+      <div className={`w-1/2 bg-base`}>
+          <Link className={`absolute right-10 top-10`} href="/user/login">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
@@ -56,39 +54,36 @@ const LoginPasswordPage = () => {
               {CONSTANTS.auth.logIn}
             </Button>
           </Link>
-          <Link className={`absolute left-10 top-8`} href="/auth">
-            <Button
-              type="button"
-              buttonView={ButtonView.LARGE}
-              className={`bg-mantle text-text hover:bg-text group`}
-            >
-              <BackIcon className={`fill-text group-hover:fill-base`} />
-            </Button>
-          </Link>
         <div className={`h-screen flex flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.signUp}</h1>
-            <p className={`text-16 text-text`}>{CONSTANTS.auth.lable.code}</p>
+            <p className={`text-16 text-text`}>{CONSTANTS.auth.enterEmail}</p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-y-6`} noValidate>
-              <TextInput
+              <EmailInput
                 control={control as unknown as Control<FieldValues>}
-                name={"code"} placeholder={"code"}/>
+                name={"email"}
+              />
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-mauve text-base hover:bg-text`}
+                className={`w-88 rounded-md bg-mauve text-base hover:bg-text disabled:opacity-50`} 
+                disabled={!!formState.errors.email}
               >
                 {CONSTANTS.auth.signUp}
               </Button>
-              <Button
-                type="submit"
-                buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-mantle text-text hover:bg-text hover:text-base group`}
-              >
-                <MailIcon className={`fill-text group-hover:fill-base`}/>
-                {CONSTANTS.auth.code}
-              </Button>
+              <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-gray-300 after:content-[''] after:flex-grow after:border-t after:border-gray-300">
+                <span className="mx-4">{CONSTANTS.auth.continue}</span>
+              </div>
+              <Link href="/company/login"> 
+                <Button
+                  type="submit"
+                  buttonView={ButtonView.LARGE}
+                  className={`w-88 rounded-md bg-mauve text-base hover:bg-text`} 
+                >
+                  {CONSTANTS.auth.company}
+                </Button>
+              </Link>
           </form>
         </div>
       </div>
@@ -96,4 +91,4 @@ const LoginPasswordPage = () => {
   );
 };
 
-export default LoginPasswordPage;
+export default LoginPage;

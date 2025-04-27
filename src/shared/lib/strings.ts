@@ -22,7 +22,10 @@ export const CONSTANTS  = {
         enterEmail: 'Введите свой адрес электронной почты ',
         enterPassword: 'Введите свой пароль',
         code: 'Отправить код еще раз',
-        resume: 'Введите своё имя и фамилию'
+        resume: 'Введите своё имя и фамилию',
+        continue: 'или войти как',
+        company: 'Компания',
+        user: 'Соискатель'
     },
     home: {
         vacancies: {

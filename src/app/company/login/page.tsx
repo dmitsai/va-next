@@ -21,7 +21,12 @@ const formSchema = z.object({
 const LoginPage = () => {
   const router = useRouter();
 
-  const { control, handleSubmit, trigger } = useForm<LoginFormData>({
+  const { 
+    control, 
+    handleSubmit, 
+    trigger, 
+    formState
+  } = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -33,13 +38,13 @@ const LoginPage = () => {
     const isValid = await trigger();
 
     if (isValid) {
-      router.push("/login/password");
+      router.push("/company/login/password");
     }
   };
 
   return (
     <div className={`flex h-screen`}>
-      <div className={`w-1/2 bg-mauve`}>
+      <div className={`w-1/2 bg-teal`}>
         <p className={`absolute left-10 top-10 text-base`}>
           {CONSTANTS.topBar.placeholder}
         </p>
@@ -67,10 +72,23 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-mauve text-base hover:bg-text`}
+                className={`w-88 rounded-md bg-teal text-base hover:bg-text disabled:opacity-50`} 
+                disabled={!!formState.errors.email} 
               >
                 {CONSTANTS.auth.logIn}
               </Button>
+              <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-gray-300 after:content-[''] after:flex-grow after:border-t after:border-gray-300">
+                <span className="mx-4">{CONSTANTS.auth.continue}</span>
+              </div>
+              <Link href="/login"> 
+                <Button
+                  type="submit"
+                  buttonView={ButtonView.LARGE}
+                  className={`w-88 rounded-md bg-teal text-base hover:bg-text`} 
+                >
+                  {CONSTANTS.auth.user}
+                </Button>
+              </Link>
           </form>
         </div>
       </div>

@@ -22,7 +22,7 @@ const formSchema = z.object({
 const LoginPasswordPage = () => {
   const router = useRouter();
 
-  const { control, handleSubmit, trigger } = useForm<LoginPasswordFormData>({
+  const { control, handleSubmit, trigger, formState } = useForm<LoginPasswordFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
@@ -46,7 +46,7 @@ const LoginPasswordPage = () => {
         </p>
       </div>
       <div className={`w-1/2 relative bg-base`}>
-          <Link className={`absolute right-10 top-8`} href="/auth">
+          <Link className={`absolute right-10 top-8`} href="/user/auth">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
@@ -55,7 +55,7 @@ const LoginPasswordPage = () => {
               {CONSTANTS.auth.signUp}
             </Button>
           </Link>
-          <Link className={`absolute left-10 top-8`} href="/login">
+          <Link className={`absolute left-10 top-8`} href="/user/login">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
@@ -77,7 +77,8 @@ const LoginPasswordPage = () => {
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-mauve text-base hover:bg-text`}
+                className={`w-88 rounded-md bg-mauve text-base hover:bg-text disabled:opacity-50`}
+                disabled={!!formState.errors.password} 
               >
                 {CONSTANTS.auth.logIn}
               </Button>
