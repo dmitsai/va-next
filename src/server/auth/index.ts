@@ -2,9 +2,7 @@ import { Roles } from '@prisma/client';
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '~/server/db/db'
-import axios from 'axios';
-// eslint-disable-next-line import/no-cycle
-import { authRouter } from '../api/routers/auth';
+import { compare, hash } from 'bcrypt';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -21,7 +19,6 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      name: 'Sign in',
       credentials: {
         email: {
           label: 'Email',
@@ -32,32 +29,45 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
-          return null
+          throw new Error("Пожалуйста, введите email и пароль");
         }
 
-        const ctx = {
-          session: null,
-          prisma,
-          headers: new Headers(),
-          http: axios.create(),
-        };
+        let user = await prisma.users.findUnique({
+          where: {
+            email: credentials.email
+          }
+        })
         
-        const caller = authRouter.createCaller(ctx);
-
-        try {
-          const user = await caller.signIn({
-            email: credentials.email,
-            password: credentials.password
-          });
-          return {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-          };
-        } catch (error) {
-          console.error('Ошибка Аутентификации:', error);
-          return null;
+        if (!user) {
+          try {
+            const hashedPassword = await hash(credentials.password, 12); 
+            
+            user = await prisma.users.create({
+              data: {
+                email: credentials.email,
+                password_hash: hashedPassword,
+                role: Roles.USER,
+              }
+            });
+          } catch (error) {
+            console.error('Ошибка создания пользователя:', error);
+            return null;
+          }
+        } else {
+          const isPasswordValid = await compare(
+            credentials.password,
+            user.password_hash
+          );
+      
+          if (!isPasswordValid) {
+            throw new Error("Неверный пароль");
+          }
         }
+        return {
+          id: `${user.user_id}`,
+          email: user.email,
+          role: user.role,
+        };
       }
     })
   ],

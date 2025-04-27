@@ -5,7 +5,6 @@ import { ZodError } from 'zod';
 import { httpClient } from '~/shared/api/client';
 import { Session } from 'next-auth';
 import { NextRequest } from 'next/server';
-// eslint-disable-next-line import/no-cycle
 import { getServerAuthSession } from '~/server/auth';
 import { prisma } from '../db/db';
 
