@@ -2,7 +2,7 @@ import { Roles } from '@prisma/client';
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '~/server/db/db'
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -19,6 +19,7 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
+      name: 'Sign in',
       credentials: {
         email: {
           label: 'Email',
@@ -32,42 +33,30 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Пожалуйста, введите email и пароль");
         }
 
-        let user = await prisma.users.findUnique({
+        const user = await prisma.users.findUnique({
           where: {
             email: credentials.email
           }
         })
-        
+
         if (!user) {
-          try {
-            const hashedPassword = await hash(credentials.password, 12); 
-            
-            user = await prisma.users.create({
-              data: {
-                email: credentials.email,
-                password_hash: hashedPassword,
-                role: Roles.USER,
-              }
-            });
-          } catch (error) {
-            console.error('Ошибка создания пользователя:', error);
-            return null;
-          }
-        } else {
-          const isPasswordValid = await compare(
-            credentials.password,
-            user.password_hash
-          );
-      
-          if (!isPasswordValid) {
-            throw new Error("Неверный пароль");
-          }
+          throw new Error("Такого пользователя не существует");
         }
+
+        const isPasswordValid = await compare(
+          credentials.password,
+          user.password_hash
+        )
+
+        if (!isPasswordValid) {
+          throw new Error("Неверный пароль");
+        }
+
         return {
-          id: `${user.user_id}`,
+          id: user.user_id,
           email: user.email,
           role: user.role,
-        };
+        }
       }
     })
   ],
