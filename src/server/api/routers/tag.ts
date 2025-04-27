@@ -10,6 +10,15 @@ export const tagRouter = createTRPCRouter({
     .input(inputAddTagSchema)
     .mutation(async ({ ctx, input }) => {
       try {
+        const companyUserId = ctx.session.user.id;
+
+        const companyProfile = await ctx.prisma.companyProfile.findUnique({
+          where: { user_id: companyUserId },
+        });
+
+        if (!companyProfile) {
+          throw new Error("Company profile not found");
+        }
         const addedTag = await ctx.prisma.tag.findUnique({
           where: { tag_id: input.tag_id },
         });
@@ -21,7 +30,7 @@ export const tagRouter = createTRPCRouter({
         await ctx.prisma.vacancy.update({
           where: {
             vacancy_id: input.vacancy_id,
-            company_id: ctx.session.user.id,
+            company_id: companyProfile.company_id,
           },
           data: { tags: { connect: { tag_id: addedTag.tag_id } } },
           include: { tags: true },
@@ -40,6 +49,15 @@ export const tagRouter = createTRPCRouter({
     .input(inputDeleteTagSchema)
     .mutation(async ({ ctx, input }) => {
       try {
+        const companyUserId = ctx.session.user.id;
+
+        const companyProfile = await ctx.prisma.companyProfile.findUnique({
+          where: { user_id: companyUserId },
+        });
+
+        if (!companyProfile) {
+          throw new Error("Company profile not found");
+        }
         const deletedTag = await ctx.prisma.tag.findUnique({
           where: { tag_id: input.tag_id },
         });
@@ -50,7 +68,7 @@ export const tagRouter = createTRPCRouter({
         await ctx.prisma.vacancy.update({
           where: {
             vacancy_id: input.vacancy_id,
-            company_id: ctx.session.user.id,
+            company_id: companyProfile.company_id,
           },
           data: {
             tags: {

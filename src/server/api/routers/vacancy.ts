@@ -12,11 +12,22 @@ export const vacancyRouter = createTRPCRouter({
   createVacancy: companyProcedure
     .input(inputCreateVacancyItemSchema)
     .mutation(async ({ ctx, input }) => {
-      const companyId = ctx.session.user.id;
+      const companyUserId = ctx.session.user.id;
+      const companyProfile = await ctx.prisma.companyProfile.findUnique({
+        where: { user_id: companyUserId },
+      });
+
+      if (!companyProfile) {
+        throw new Error("Company profile not found");
+      }
       const newVacancy = await ctx.prisma.vacancy.create({
         data: {
           title: input.title,
-          company_id: companyId,
+          company: {
+            connect: {
+              company_id: companyProfile.company_id,
+            },
+          },
           salaryFrom: input.salaryFrom,
           salaryTo: input.salaryTo,
           description: input.description,
@@ -29,6 +40,7 @@ export const vacancyRouter = createTRPCRouter({
         },
         include: {
           tags: true,
+          company: true,
         },
       });
 
@@ -37,12 +49,20 @@ export const vacancyRouter = createTRPCRouter({
   updateVacancy: companyProcedure
     .input(inputUpdateVacancyItemSchema)
     .mutation(async ({ ctx, input }) => {
-      const companyId = ctx.session.user.id;
+      const companyUserId = ctx.session.user.id;
+
+      const companyProfile = await ctx.prisma.companyProfile.findUnique({
+        where: { user_id: companyUserId },
+      });
+
+      if (!companyProfile) {
+        throw new Error("Company profile not found");
+      }
 
       const updatedVacancy = await ctx.prisma.vacancy.update({
         where: {
           vacancy_id: input.vacancy_id,
-          company_id: companyId,
+          company_id: companyProfile.company_id,
         },
         data: {
           title: input.title,
@@ -64,10 +84,19 @@ export const vacancyRouter = createTRPCRouter({
   deleteVacancy: companyProcedure
     .input(inputDeleteVacancyItemSchema)
     .mutation(async ({ ctx, input }) => {
+      const companyUserId = ctx.session.user.id;
+
+      const companyProfile = await ctx.prisma.companyProfile.findUnique({
+        where: { user_id: companyUserId },
+      });
+
+      if (!companyProfile) {
+        throw new Error("Company profile not found");
+      }
       const deletedVacancy = await ctx.prisma.vacancy.delete({
         where: {
           vacancy_id: input.vacancyId,
-          company_id: ctx.session.user.id,
+          company_id: companyProfile.company_id,
         },
       });
 

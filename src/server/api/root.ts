@@ -1,10 +1,10 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { testRouter } from "./routers/test";
 import { vacancyRouter } from "./routers/vacancy";
+import { tagRouter } from "./routers/tag";
 
 export const appRouter = createTRPCRouter({
-  test: testRouter,
   vacancy: vacancyRouter,
+  tag: tagRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -92,11 +92,12 @@ const enforceUserIsCompany = t.middleware(async ({ ctx, next, input }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  console.log("SESSION USER", ctx.session.user);
 
   if (ctx.session.user.role !== Roles.COMPANY) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
+
+  console.log("USER_ID", ctx.session.user.id);
 
   return next({
     ctx: {
