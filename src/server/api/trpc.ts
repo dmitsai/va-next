@@ -5,7 +5,7 @@ import { ZodError } from 'zod';
 import { httpClient } from '~/shared/api/client';
 import { Session } from 'next-auth';
 import { NextRequest } from 'next/server';
-import { getServerAuthSession } from '../auth';
+import { getServerAuthSession } from '~/server/auth';
 import { prisma } from '../db/db';
 
 type CreateContextOptions = {

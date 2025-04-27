@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Roles } from '@prisma/client';
-import { compare } from 'bcrypt'
 import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '~/server/db/db'
+import { compare, hash } from 'bcrypt';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -21,7 +19,6 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      name: 'Sign in',
       credentials: {
         email: {
           label: 'Email',
@@ -32,61 +29,65 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
-          return null
+          throw new Error("Пожалуйста, введите email и пароль");
         }
 
-        const user = await prisma.users.findUnique({
+        let user = await prisma.users.findUnique({
           where: {
             email: credentials.email
           }
         })
-
+        
         if (!user) {
-          return null
+          try {
+            const hashedPassword = await hash(credentials.password, 12); 
+            
+            user = await prisma.users.create({
+              data: {
+                email: credentials.email,
+                password_hash: hashedPassword,
+                role: Roles.USER,
+              }
+            });
+          } catch (error) {
+            console.error('Ошибка создания пользователя:', error);
+            return null;
+          }
+        } else {
+          const isPasswordValid = await compare(
+            credentials.password,
+            user.password_hash
+          );
+      
+          if (!isPasswordValid) {
+            throw new Error("Неверный пароль");
+          }
         }
-
-        const isPasswordValid = await compare(
-          credentials.password,
-          user.password_hash
-        )
-
-        if (!isPasswordValid) {
-          return null
-        }
-
         return {
-          id: `${user.user_id  }`,
+          id: `${user.user_id}`,
           email: user.email,
-          randomKey: 'Hey cool'
-        }
+          role: user.role,
+        };
       }
     })
   ],
   callbacks: {
-    session: ({ session, token }) => {
-      console.log('Session Callback', { session, token })
-      return {
+    session: ({ session, token }) => ({
         ...session,
         user: {
           ...session.user,
           id: token.id,
-          randomKey: token.randomKey
         }
-      }
-    },
+      }),
     jwt: ({ token, user }) => {
-      console.log('JWT Callback', { token, user })
       if (user) {
-        const u = user as unknown as any
         return {
           ...token,
-          id: u.id,
-          randomKey: u.randomKey
-
+          id: user.id,
         }
       }
       return token
     }
   }
-}
+} satisfies NextAuthOptions; 
 export const getServerAuthSession = () => getServerSession(authOptions);
