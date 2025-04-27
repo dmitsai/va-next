@@ -7,6 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Tag {
+  tag_id  String @id @default(uuid())
+  title String
+  localTitle String
+  Vacancy Vacancy[]
+}
+
+model Vacancy {
+  vacancy_id String @id @default(uuid())
+  title String
+  company_id String
+  company  CompanyProfile  @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
+  salaryFrom String?
+  salaryTo String?
+  description String
+  tags  Tag[]
+  lan String?
+  lng String?
+  imgUrl  String?
+}
+model CompanyProfile {
+    company_id String @id @default(uuid())
+    title String @unique
+    imgUrl String? 
+    pdfUrl String?
+    description String
+    phone String? @unique
+    email String? @unique
+    website String? @unique
+    vacancies Vacancy[]
+    user_id String @unique
+    user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
 model Users {
   user_id       String    @id @default(uuid())
   email         String    @unique
@@ -16,6 +50,7 @@ model Users {
   loginAttempts LoginAttempts[]
   accounts      Account[]
   sessions      Session[]
+  CompanyProfile CompanyProfile?
 }
 
 model LoginAttempts {
