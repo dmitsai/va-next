@@ -18,6 +18,7 @@ const config = {
     "prettier"
   ],
   "rules": {
+    "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/consistent-indexed-object-style": "off",
     "no-shadow": "off",
     "no-unused-vars": ["warn", { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],

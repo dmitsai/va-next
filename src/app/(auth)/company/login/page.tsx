@@ -38,27 +38,18 @@ const LoginPage = () => {
     const isValid = await trigger();
 
     if (isValid) {
-      router.push("/user/login/password");
+      router.push("/company/login/password");
     }
   };
 
   return (
     <div className={`flex h-screen`}>
-      <div className={`w-1/2 bg-mauve`}>
-        <p className={`absolute left-10 top-10 text-base`}>
+      <div className={`w-1/2 bg-teal`}>
+        <p className={`absolute left-10 top-8 text-base`}>
           {CONSTANTS.topBar.placeholder}
         </p>
       </div>
       <div className={`w-1/2 bg-base`}>
-          <Link className={`absolute right-10 top-10`} href="/user/auth">
-            <Button
-              type="button"
-              buttonView={ButtonView.LARGE}
-              className={`bg-mantle text-text hover:bg-text hover:text-base`}
-            >
-              {CONSTANTS.auth.signUp}
-            </Button>
-          </Link>
         <div className={`h-screen flex flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.logIn}</h1>
@@ -72,7 +63,7 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-mauve text-base hover:bg-text disabled:opacity-50`} 
+                className={`w-88 rounded-md bg-teal text-base hover:bg-text disabled:opacity-50`} 
                 disabled={!!formState.errors.email} 
               >
                 {CONSTANTS.auth.logIn}
@@ -80,13 +71,13 @@ const LoginPage = () => {
               <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-gray-300 after:content-[''] after:flex-grow after:border-t after:border-gray-300">
                 <span className="mx-4">{CONSTANTS.auth.continue}</span>
               </div>
-              <Link href="/company/login"> 
+              <Link href="/user/login"> 
                 <Button
                   type="submit"
                   buttonView={ButtonView.LARGE}
-                  className={`w-88 rounded-md bg-mauve text-base hover:bg-text`} 
+                  className={`w-88 rounded-md bg-mantle text-text hover:bg-text`} 
                 >
-                  {CONSTANTS.auth.company}
+                  {CONSTANTS.auth.user}
                 </Button>
               </Link>
           </form>

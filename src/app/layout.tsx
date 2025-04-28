@@ -5,7 +5,6 @@ import { type Metadata } from "next";
 import type React from "react";
 // eslint-disable-next-line camelcase
 import { JetBrains_Mono } from "next/font/google";
-import { TopBar } from "~/widgets/topBar";
 import AppProviders from "./lib/providers";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -26,9 +25,8 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
     className={`${jetBrainsMono.variable} !font-sans`}
   >
     <AppProviders>
-      <body className="min-h-screen h-screen flex flex-col">
-          {/* <TopBar isAuth /> */}
-        {children}
+      <body>
+          {children}
       </body>
     </AppProviders>
   </html>

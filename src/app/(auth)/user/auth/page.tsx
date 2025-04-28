@@ -79,7 +79,7 @@ const LoginPage = () => {
                 <Button
                   type="submit"
                   buttonView={ButtonView.LARGE}
-                  className={`w-88 rounded-md bg-mauve text-base hover:bg-text`} 
+                  className={`w-88 rounded-md bg-mantle text-text hover:bg-text`} 
                 >
                   {CONSTANTS.auth.company}
                 </Button>
