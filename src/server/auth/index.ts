@@ -1,32 +1,48 @@
-import { Roles } from '@prisma/client';
-import { DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from '~/server/db/db'
-import { compare } from 'bcrypt';
+import { Roles } from "@prisma/client";
+import {
+  DefaultSession,
+  DefaultUser,
+  getServerSession,
+  type NextAuthOptions,
+} from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "~/server/db/db";
+import { compare } from "bcrypt";
+import { JWT as DefaultJWT } from "next-auth/jwt";
 
-declare module 'next-auth' {
-    interface Session extends DefaultSession {
-        user: {
-            id: string;
-            role: Roles;
-        } & DefaultSession['user'];
-    }
+
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      role: Roles;
+    } & DefaultSession["user"];
+  }
+  interface User extends DefaultUser {
+    id: string;
+    role: Roles;
+  }
+
+  interface JWT extends DefaultJWT {
+    role: Roles;
+  }
 }
 
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
   providers: [
     CredentialsProvider({
       name: 'Sign in',
       credentials: {
         email: {
-          label: 'Email',
-          type: 'email',
-          placeholder: 'Enter email'
+          label: "Email",
+          type: "email",
+          placeholder: "Enter email",
         },
-        password: { label: 'Password', type: 'password' }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
@@ -62,21 +78,26 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     session: ({ session, token }) => ({
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-        }
-      }),
+      ...session,
+      user: {
+        ...session.user,
+        id: token.id,
+        role: token.role,
+      },
+    }),
     jwt: ({ token, user }) => {
       if (user) {
         return {
           ...token,
           id: user.id,
-        }
+          role: user.role,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
       }
-      return token
-    }
-  }
-} satisfies NextAuthOptions; 
+      return token;
+    },
+  },
+} satisfies NextAuthOptions;
 export const getServerAuthSession = () => getServerSession(authOptions);
