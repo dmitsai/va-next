@@ -5,7 +5,8 @@ import { type Metadata } from "next";
 import type React from "react";
 // eslint-disable-next-line camelcase
 import { JetBrains_Mono } from "next/font/google";
-import AppProviders from "./lib/providers";
+import AppProviders from "./providers/providers";
+import { AuthProvider } from "./(main)/authProvider";
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin", "cyrillic"],
@@ -25,8 +26,10 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
     className={`${jetBrainsMono.variable} !font-sans`}
   >
     <AppProviders>
-      <body>
+      <body>  
+        <AuthProvider>
           {children}
+        </AuthProvider>
       </body>
     </AppProviders>
   </html>

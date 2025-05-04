@@ -44,9 +44,9 @@ const LoginPasswordPage = () => {
   return (
     <div className={`flex h-screen`}>
       <div className={`w-1/2 bg-mauve relative`}>
-        <p className={`absolute left-10 top-8 text-base`}>
+      <Link className={`absolute left-10 text-16 top-10 text-base`} href="/">
           {CONSTANTS.topBar.placeholder}
-        </p>
+      </Link>
       </div>
       <div className={`w-1/2 relative bg-base`}>
           <Link className={`absolute right-10 top-8`} href="/user/login">
@@ -58,7 +58,7 @@ const LoginPasswordPage = () => {
               {CONSTANTS.auth.logIn}
             </Button>
           </Link>
-          <Link className={`absolute left-10 top-8`} href="/user/auth/password">
+          <Link className={`absolute left-10 top-8`} href="/user/auth">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}

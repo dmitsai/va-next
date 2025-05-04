@@ -47,12 +47,12 @@ const LoginPasswordPage = () => {
   return (
     <div className={`flex h-screen`}>
       <div className={`w-1/2 bg-mauve relative`}>
-        <p className={`absolute left-10 top-8 text-base`}>
+        <p className={`absolute left-10 top-10 text-base`}>
           {CONSTANTS.topBar.placeholder}
         </p>
       </div>
       <div className={`w-1/2 relative bg-base`}>
-          <Link className={`absolute right-10 top-8`} href="/user/login">
+          <Link className={`absolute right-10 top-10`} href="/user/login">
             <Button
               type="button"
               buttonView={ButtonView.LARGE}
