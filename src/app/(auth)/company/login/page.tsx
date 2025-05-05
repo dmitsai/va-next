@@ -13,6 +13,7 @@ import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
+import { Roles } from "@prisma/client";
 
 export interface LoginFormData {
   email: string;
@@ -24,7 +25,7 @@ const formSchema = z.object({
   password: passwordSchema,
 });
 
-const LoginPage = () => {
+const CompanyLoginPage = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -47,10 +48,17 @@ const LoginPage = () => {
       redirect: false,
       email: data.email,
       password: data.password,
+      role: Roles.COMPANY
     });
 
     if (result?.error) {
-      setError(result.error);
+      if (result.error === 'USER_ACCOUNT') {
+        setError('Это аккаунт пользователя');
+      } else {
+        setError(result.error === 'CredentialsSignin' 
+          ? 'Неверный email или пароль' 
+          : result.error);
+      }
     } else {
       router.push("/");
     }
@@ -59,20 +67,20 @@ const LoginPage = () => {
   return (
     <div className={`flex h-screen`}>
       <div className={`w-1/2 bg-teal`}>
-      <Link className={`absolute left-10 text-16 top-10 text-base`} href="/">
+        <Link className={`absolute left-10 text-16 top-10 text-base`} href="/">
           {CONSTANTS.topBar.placeholder}
-      </Link>
+        </Link>
       </div>
       <div className={`w-1/2 bg-base`}>
-          <Link className={`absolute right-10 top-10`} href="/user/auth">
-            <Button
-              type="button"
-              buttonView={ButtonView.LARGE}
-              className={`bg-mantle text-text hover:bg-text hover:text-base`}
-            >
-              {CONSTANTS.auth.signUp}
-            </Button>
-          </Link>
+        <Link className={`absolute right-10 top-10`} href="/company/auth">
+          <Button
+            type="button"
+            buttonView={ButtonView.LARGE}
+            className={`bg-mantle text-text hover:bg-text hover:text-base`}
+          >
+            {CONSTANTS.auth.signUp}
+          </Button>
+        </Link>
         <div className={`h-screen flex flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.logIn}</h1>
@@ -80,44 +88,44 @@ const LoginPage = () => {
           </div>
          
           <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-y-6`} noValidate>
-              <EmailInput
-                control={control as unknown as Control<FieldValues>}
-                name={"email"}
-              />
-              <PasswordInput
-                control={control as unknown as Control<FieldValues>}
-                name={"password"}
-              />
-               {error && (
-            <div className="text-red flex items-center justify-center text-16">
-              {error === "CredentialsSignin" ? "Invalid email or password" : error}
-            </div>
-          )}
-              <Button
-                type="submit"
-                buttonView={ButtonView.LARGE}
-                className={`w-88 rounded-md bg-teal text-base hover:bg-text disabled:opacity-50`} 
-                disabled={isSubmitting || !!errors.email || !!errors.password}
-              >
-                {isSubmitting ? 
+            <EmailInput
+              control={control as unknown as Control<FieldValues>}
+              name={"email"}
+            />
+            <PasswordInput
+              control={control as unknown as Control<FieldValues>}
+              name={"password"}
+            />
+            {error && (
+              <div className="text-red flex items-center justify-center text-16">
+                {error}
+              </div>
+            )}
+            <Button
+              type="submit"
+              buttonView={ButtonView.LARGE}
+              className={`w-88 rounded-md bg-teal text-base hover:bg-text disabled:opacity-50`} 
+              disabled={isSubmitting || !!errors.email || !!errors.password}
+            >
+              {isSubmitting ? 
                 <div className="flex gap-2">
                   <SpinIcon className="mt-1 animate-spin" />
                   {CONSTANTS.auth.logIn}
                 </div>
                 : CONSTANTS.auth.logIn}
+            </Button>
+            <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-text after:content-[''] after:flex-grow after:border-t after:border-text">
+              <span className="mx-4 text-text">{CONSTANTS.auth.continue}</span>
+            </div>
+            <Link href="/user/login"> 
+              <Button
+                type="button"
+                buttonView={ButtonView.LARGE}
+                className={`w-88 rounded-md bg-mantle text-text hover:bg-text hover:text-base`} 
+              >
+                {CONSTANTS.auth.user}
               </Button>
-              <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-gray-300 after:content-[''] after:flex-grow after:border-t after:border-gray-300">
-                <span className="mx-4">{CONSTANTS.auth.continue}</span>
-              </div>
-              <Link href="/user/login"> 
-                <Button
-                  type="button"
-                  buttonView={ButtonView.LARGE}
-                  className={`w-88 rounded-md bg-mantle text-text hover:bg-text hover:text-base`} 
-                >
-                  {CONSTANTS.auth.user}
-                </Button>
-              </Link>
+            </Link>
           </form>
         </div>
       </div>
@@ -125,4 +133,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default CompanyLoginPage;

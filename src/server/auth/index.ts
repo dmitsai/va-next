@@ -10,8 +10,6 @@ import { prisma } from "~/server/db/db";
 import { compare } from "bcrypt";
 import { JWT as DefaultJWT } from "next-auth/jwt";
 
-
-
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
@@ -33,6 +31,10 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: '/user/login', // Указываем страницу входа по умолчанию
+    error: '/user/login', // Страница для отображения ошибок
+  },
   providers: [
     CredentialsProvider({
       name: 'Sign in',
@@ -43,6 +45,7 @@ export const authOptions: NextAuthOptions = {
           placeholder: "Enter email",
         },
         password: { label: "Password", type: "password" },
+        role: { type: "text" }, // Добавляем поле для роли
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
@@ -66,6 +69,16 @@ export const authOptions: NextAuthOptions = {
 
         if (!isPasswordValid) {
           throw new Error("Неверный пароль");
+        }
+
+        // Проверяем соответствие роли (если роль указана в credentials)
+        if (credentials.role && user.role !== credentials.role) {
+          if (user.role === Roles.COMPANY && credentials.role === Roles.USER) {
+            throw new Error("COMPANY_ACCOUNT"); // Специальный код ошибки
+          }
+          if (user.role === Roles.USER && credentials.role === Roles.COMPANY) {
+            throw new Error("USER_ACCOUNT"); // Специальный код ошибки
+          }
         }
 
         return {
@@ -92,12 +105,11 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           role: user.role,
           email: user.email,
-          name: user.name,
-          image: user.image,
         };
       }
       return token;
     },
   },
 } satisfies NextAuthOptions;
+
 export const getServerAuthSession = () => getServerSession(authOptions);

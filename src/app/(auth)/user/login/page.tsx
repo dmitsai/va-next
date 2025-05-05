@@ -13,6 +13,7 @@ import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
+import { Roles } from "@prisma/client";
 
 export interface LoginFormData {
   email: string;
@@ -43,16 +44,27 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     setError(null);
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
-
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      router.push("/");
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        role: Roles.USER 
+      });
+  
+      if (result?.error) {
+        if (result.error === 'COMPANY_ACCOUNT') {
+          setError('Это аккаунт компании.');
+        } else {
+          setError(result.error === 'CredentialsSignin' 
+            ? 'Неверный email или пароль' 
+            : result.error);
+        }
+      } else {
+        router.push("/");
+      }
+    } catch (err) {
+      setError('Произошла ошибка при входе');
     }
   };
 
@@ -88,11 +100,11 @@ const LoginPage = () => {
                 control={control as unknown as Control<FieldValues>}
                 name={"password"}
               />
-               {error && (
-            <div className="text-red flex items-center justify-center text-16">
-              {error === "CredentialsSignin" ? "Invalid email or password" : error}
-            </div>
-          )}
+              {error && (
+                <div className="text-red flex items-center justify-center text-16">
+                  {error}
+                </div>
+              )}
               <Button
                 type="submit"
                 buttonView={ButtonView.LARGE}
@@ -106,8 +118,8 @@ const LoginPage = () => {
                 </div>
                 : CONSTANTS.auth.logIn}
               </Button>
-              <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-gray-300 after:content-[''] after:flex-grow after:border-t after:border-gray-300">
-                <span className="mx-4">{CONSTANTS.auth.continue}</span>
+              <div className="relative flex items-center before:content-[''] before:flex-grow before:border-t before:border-text after:content-[''] after:flex-grow after:border-t after:border-text">
+                <span className="mx-4 text-text">{CONSTANTS.auth.continue}</span>
               </div>
               <Link href="/company/login"> 
                 <Button

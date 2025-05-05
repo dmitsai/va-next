@@ -47,7 +47,7 @@ const CompanyProfilePage = () => {
         <div className={"flex w-full h-full flex-col overflow-hidden"}>
           <Tabs defaultValue="vacancy" className="flex h-full flex-col">
             <div className="flex justify-center mt-3">
-              <TabsList>
+              <TabsList className="bg-mantle">
                 <TabsTrigger value="vacancy" className="w-56">
                   Вакансии
                 </TabsTrigger>
