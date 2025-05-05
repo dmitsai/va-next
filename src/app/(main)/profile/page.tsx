@@ -3,22 +3,25 @@ import { employmentTypes, salaryCurrency, workSchedule } from "~/entities/prefer
 import { ProfileBio, ProfileBioProps } from "~/widgets/profileBio";
 import { ProfileFileUploader } from "~/widgets/profileFileUploader";
 import { ProfilePreferences, ProfilePreferencesProps } from "~/widgets/profilePreferences";
-import { ProfileAboutMe } from "~/widgets/profileAboutMe";
+import { ProfileAboutMe, ProfileAboutMeProps } from "~/widgets/profileAboutMe";
 
 
 // NOTE: temp data for profile page
 const temp: {
     bio: ProfileBioProps,
     preferences: ProfilePreferencesProps,
-    description: string,
+    description: ProfileAboutMeProps,
 } = {
     bio: {
-        firstName: 'Иван',
-        lastName: "Иванов",
-        patronymic: 'Иванович',
-        telegram: '@ivanIvan',
-        phoneNumber: '+79998887766',
-        email: 'ivan@gmail.com',
+        type : 'CLIENT',
+        data : {
+            firstName: 'Иван',
+            lastName: "Иванов",
+            patronymic: 'Иванович',
+            telegram: '@ivanIvan',
+            phoneNumber: '+79998887766',
+            email: 'ivan@gmail.com',
+        }
     },
     preferences: {
         employmentTypes: [employmentTypes.full, employmentTypes.partTime, employmentTypes.internship],
@@ -26,8 +29,12 @@ const temp: {
         salary: '100 000',
         salaryCurrency: salaryCurrency.ruble,
     },
-    description: "Стремлюсь к постоянному профессиональному развитию в *ваша сфера* и ищу возможности для реализации своих навыков в динамичной и инновационной компании. Обладаю высоким уровнем коммуникабельности, аналитическим мышлением и способностью эффективно работать в команде. В прошлом достиг заметных результатов, например *ваше достижение*. Готов к новым вызовам и нестандартным задачам.",
-}
+    description:{
+        type: 'CLIENT',
+        data: {
+            description: "Стремлюсь к постоянному профессиональному развитию в *ваша сфера* и ищу возможности для реализации своих навыков в динамичной и инновационной компании. Обладаю высоким уровнем коммуникабельности, аналитическим мышлением и способностью эффективно работать в команде. В прошлом достиг заметных результатов, например *ваше достижение*. Готов к новым вызовам и нестандартным задачам."
+        }
+    } }
 
 const ProfilePage = () => {
     const userData = temp;
@@ -39,7 +46,7 @@ const ProfilePage = () => {
                 <div className={'flex flex-col gap-y-2 w-2/5 h-full pt-4 pr-8 border-r-2 border-surface-tertiary'}>
                     <ProfileBio {...userData.bio} />
                     <Divider view={dividerView.horizontal} classname={'px-4 mb-1'} />
-                    <ProfileAboutMe description={userData.description} />
+                    <ProfileAboutMe {...userData.description} />
                     <Divider view={dividerView.horizontal} classname={'px-4 mb-1'} />
                     <ProfilePreferences {...userData.preferences} />
                 </div>
