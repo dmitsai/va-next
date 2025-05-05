@@ -5,118 +5,179 @@ import { clientApi } from 'trpc/client';
 import { VacancyCard } from '~/features/vacancyCard';
 import { Tags } from '~/features/vacancyCard/ui/VacancyCard';
 import cn from 'classnames';
+import { useParams, useSearchParams } from 'next/navigation';
+import { periods } from '~/widgets/Search/model/data';
+import {
+    education,
+    experience,
+    workSchedule,
+    employmentTypes,
+} from '~/shared/api/model/tags/data';
+import {
+    Education,
+    EducationKey,
+    EmploymentTypes,
+    EmploymentTypesKey,
+    Experience,
+    ExperienceKey,
+    WorkSchedule,
+    WorkScheduleKey,
+} from '~/shared/api/model/tags/type';
 import { useVirtualVacancies } from './helpers/useVirtualVacancies';
-import { useParams } from 'next/navigation';
 
 export default () => {
-  const params = useParams();
-  const selectedVacancyId = params.vacancyId as string;
-  const {
-    hasNextPage,
-    data,
-    fetchNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isSuccess,
-  } = clientApi.vacancy.infinityVacancy.useInfiniteQuery(
-    {
-      limit: 6,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
+    const params = useParams();
 
-  const vacancies = useMemo(() => {
-    if (!data) return [];
+    const searchParams = useSearchParams();
 
-    return data.pages.flatMap((page) => page.vacancyList ?? []);
-  }, [data]);
+    const workScheduleKeys = searchParams.getAll(
+        'workSchedule'
+    ) as WorkScheduleKey[];
+    const workScheduleValues = workScheduleKeys.map((key) => workSchedule[key]);
 
-  const { containerRef, rows, items, virtualizer, isLastVisible } =
-    useVirtualVacancies({
-      vacancies,
-      hasNextPage,
-    });
+    const employmentTypesKeys = searchParams.getAll(
+        'employmentTypes'
+    ) as EmploymentTypesKey[];
+    const employmentTypeValues = employmentTypesKeys.map(
+        (key) => employmentTypes[key]
+    );
 
-  useEffect(() => {
-    if (isLastVisible && hasNextPage && !isFetchingNextPage)
-      void fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, isLastVisible]);
+    const educationKeys = searchParams.getAll('education') as EducationKey[];
+    const educationValues = educationKeys.map((key) => education[key]);
 
-  return (
-    <div
-      className={
-        'no-scrollbar relative h-screen w-full max-w-card overflow-y-auto'
-      }
-      ref={containerRef}
-    >
-      {isLoading && <div>{'Загрузка'}</div>}
-      {isSuccess && (
+    const experienceKeys = searchParams.getAll('experience') as ExperienceKey[];
+    const experienceValues = experienceKeys.map((key) => experience[key]);
+
+    const tags = {
+        workSchedule: workScheduleValues,
+        employmentTypes: employmentTypeValues,
+        education: educationValues,
+        experience: experienceValues,
+    };
+
+    const search = searchParams.get('search');
+
+    useEffect(() => {
+        console.log('LIST PAGE SEARCH', search);
+    }, [search]);
+
+    const selectedVacancyId = params.vacancyId as string;
+    const {
+        hasNextPage,
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        isLoading,
+        isSuccess,
+    } = clientApi.vacancy.infinityVacancy.useInfiniteQuery(
+        {
+            search,
+            tags,
+            limit: 8,
+        },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+        }
+    );
+
+    const vacancies = useMemo(() => {
+        if (!data) return [];
+
+        return data.pages.flatMap((page) => page.vacancyList ?? []);
+    }, [data]);
+
+    const { containerRef, rows, items, virtualizer, isLastVisible } =
+        useVirtualVacancies({
+            vacancies,
+            hasNextPage,
+        });
+
+    useEffect(() => {
+        if (isLastVisible && hasNextPage && !isFetchingNextPage)
+            void fetchNextPage();
+    }, [hasNextPage, isFetchingNextPage, isLastVisible]);
+
+    return (
         <div
-          style={{
-            height: `${virtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          {items.map((virtualRow) => {
-            const isLoaderRow = virtualRow.index > rows - 1;
-            const rowVacancies = vacancies.slice(
-              virtualRow.index,
-              virtualRow.index + 1,
-            );
-
-            if (isLoaderRow)
-              return (
-                <div
-                  key={rowVacancies[virtualRow.index]?.vacancy_id}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  className={'w-full py-3'}
-                >
-                  <span
-                    className={'line-clamp-1 w-full text-center text-black'}
-                  >
-                    Загрузка
-                  </span>
-                </div>
-              );
-            if (hasNextPage) {
-              <p className={'text-text'}>Вакансий нет</p>;
+            className={
+                'no-scrollbar relative h-screen w-full max-w-card overflow-y-auto'
             }
+            ref={containerRef}
+        >
+            {isLoading && <div>{'Загрузка'}</div>}
+            {isSuccess && (
+                <div
+                    style={{
+                        height: `${virtualizer.getTotalSize()}px`,
+                        width: '100%',
+                        position: 'relative',
+                    }}
+                >
+                    {items.map((virtualRow) => {
+                        const isLoaderRow = virtualRow.index > rows - 1;
+                        const rowVacancies = vacancies.slice(
+                            virtualRow.index,
+                            virtualRow.index + 1
+                        );
 
-            return (
-              <div
-                key={vacancies[virtualRow.index]?.vacancy_id}
-                data-index={virtualRow.index}
-                className={cn('absolute left-0 top-0 w-full')}
-                style={{
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                {rowVacancies.map((vacancy) => (
-                  <VacancyCard
-                    wrapperClassName={cn(
-                      selectedVacancyId === vacancy.vacancy_id
-                        ? 'border-mauve'
-                        : 'border-mantle',
-                    )}
-                    key={`card-${vacancy.vacancy_id}`}
-                    vacancyId={vacancy.vacancy_id}
-                    title={'test'}
-                    isFavorited={false}
-                    tags={[]}
-                    description={'test'}
-                    company={{ imgUrl: null, title: 'Test' }}
-                    salary={65000}
-                  />
-                ))}
-              </div>
-            );
-          })}
+                        if (isLoaderRow)
+                            return (
+                                <div
+                                    key={
+                                        rowVacancies[virtualRow.index]
+                                            ?.vacancy_id
+                                    }
+                                    data-index={virtualRow.index}
+                                    ref={virtualizer.measureElement}
+                                    className={'w-full py-3'}
+                                >
+                                    <span
+                                        className={
+                                            'line-clamp-1 w-full text-center text-black'
+                                        }
+                                    >
+                                        Загрузка
+                                    </span>
+                                </div>
+                            );
+                        if (hasNextPage) {
+                            <p className={'text-text'}>Вакансий нет</p>;
+                        }
+                        return (
+                            <div
+                                ref={virtualizer.measureElement}
+                                key={vacancies[virtualRow.index]?.vacancy_id}
+                                data-index={virtualRow.index}
+                                className={cn(
+                                    'absolute left-0 top-0 w-full pb-3'
+                                )}
+                                style={{
+                                    transform: `translateY(${virtualRow.start + 12}px)`,
+                                }}
+                            >
+                                {rowVacancies.map((vacancy) => (
+                                    <VacancyCard
+                                        wrapperClassName={cn(
+                                            selectedVacancyId ===
+                                                vacancy.vacancy_id
+                                                ? '!border-mauve'
+                                                : 'border-base'
+                                        )}
+                                        key={`card-${vacancy.vacancy_id}`}
+                                        vacancyId={vacancy.vacancy_id}
+                                        title={vacancy.title}
+                                        isFavorited={false}
+                                        tags={[]}
+                                        description={vacancy.description}
+                                        company={vacancy.company}
+                                        salary={65000}
+                                    />
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };

@@ -7,13 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Tag {
-  tag_id  String @id @default(uuid())
-  title String
-  localTitle String
-  Vacancy Vacancy[]
-}
 
+model Currency {
+  currency_id String @id @default(uuid())
+  title String @unique
+  char String @unique
+
+  Vacancy Vacancy[]
+} 
 model Vacancy {
   vacancy_id String @id @default(uuid())
   title String
@@ -21,11 +22,16 @@ model Vacancy {
   company  CompanyProfile  @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
   salaryFrom String?
   salaryTo String?
+  currency_id String    
+  currency    Currency  @relation(fields: [currency_id], references: [currency_id])
   description String
-  tags  Tag[]
-  lan String?
-  lng String?
+  tags Json?
   imgUrl  String?
+  published_at DateTime @default(now()) 
+  favoritedBy ClientProfile[] @relation("FavoriteVacancies")
+
+  @@index([title], map: "title_search_idx")
+  @@index([description], map: "description_search_idx")
 }
 model CompanyProfile {
     company_id String @id @default(uuid())
@@ -41,6 +47,23 @@ model CompanyProfile {
     user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
+model ClientProfile {
+    client_profile_id String @id @default(uuid())
+    name String?
+    surname String?
+    patronymic String?
+    imgUrl String?  
+    telegram String? @unique
+    phone String? @unique
+    email String? @unique
+    about_me String? 
+    preferences Json?
+    resume String?
+    favoriteVacancies Vacancy[] @relation("FavoriteVacancies")
+    user_id String @unique
+    user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
 model Users {
   user_id       String    @id @default(uuid())
   email         String    @unique
@@ -51,6 +74,7 @@ model Users {
   accounts      Account[]
   sessions      Session[]
   CompanyProfile CompanyProfile?
+  ClientProfile ClientProfile?
 }
 
 model LoginAttempts {
