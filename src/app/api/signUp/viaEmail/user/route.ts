@@ -16,13 +16,26 @@ export const POST = async (request: NextRequest) => {
 
     const hashedPassword = await bcrypt.hash(input.data.password, 10);
 
-    await prisma.users.create({
-        data: {
-            email: input.data.email,
-            password_hash: hashedPassword,
-            role: Roles.USER
-        },
-    });
+    const result = await prisma.$transaction(async (prisma) => {
+        const user = await prisma.users.create({
+            data: {
+                email: input.data.email,
+                password_hash: hashedPassword,
+                role: Roles.USER
+            },
+        });
 
-    return new NextResponse(undefined, { status: 201 });
+        const clientProfile = await prisma.clientProfile.create({
+            data: {
+                user_id: user.user_id,
+                email: input.data.email,
+            },
+        });
+        return { user, clientProfile };
+    })
+
+    return new NextResponse(
+        JSON.stringify({ user_id: result.user.user_id }), 
+        { status: 201 }
+    );
 };
