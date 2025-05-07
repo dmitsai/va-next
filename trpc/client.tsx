@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider, HydrationBoundary  } from '@tanstack/react-query';
-import { createTRPCClient, httpBatchLink,loggerLink } from '@trpc/client';
+import { httpBatchLink,httpLink,isNonJsonSerializable,loggerLink, splitLink } from '@trpc/client';
 import React, { ReactNode, useState } from 'react';
 import { AppRouter } from '~/server/api/root';
 import { createTRPCContext } from '@trpc/tanstack-react-query';
@@ -35,10 +35,22 @@ export const ClientApiProvider: React.FC<ClientApiProviderProps> = ({children,de
   const [trpcClient] = useState(() =>
     clientApi.createClient({
       links: [
-        loggerLink(),
-        httpBatchLink({
-        transformer,
-          url: getUrl(),
+        loggerLink({
+          enabled: (op) => 
+            process.env.NODE_ENV === 'development' ||
+            op.direction === 'out' ||
+            op.type === 'mutation',
+        }),
+        splitLink({
+          condition: (op) => isNonJsonSerializable(op.input),
+          true: httpLink({
+            url: getUrl(),
+            transformer,
+          }),
+          false: httpBatchLink({
+            url: getUrl(),
+            transformer,
+          }),
         }),
       ],
     }),

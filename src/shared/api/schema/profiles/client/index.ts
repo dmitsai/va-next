@@ -1,15 +1,6 @@
 import { z } from "zod";
 import { employmentTypes, workSchedule } from "~/shared/api/model/preferances/data";
 
-
-export const inputGetClientProfileSchema = z.object({
-    user_id: z.string().uuid(),
-});
-
-export type InputGetClientProfileSchema = z.infer<
-    typeof inputGetClientProfileSchema
->;
-
 const preferencesSchema = z.object({
   workSchedule: z.array(z.nativeEnum(workSchedule)),
   employmentTypes: z.array(z.nativeEnum(employmentTypes)),

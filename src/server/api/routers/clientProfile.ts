@@ -1,19 +1,15 @@
 import {
   ClientProfileResponseSchema,
-  inputGetClientProfileSchema,
   inputUpdateClientProfileSchema,
 } from "~/shared/api/schema/profiles/client";
 import { clientProcedure, createTRPCRouter } from "../trpc";
 
 export const clientProfileRouter = createTRPCRouter({
   getProfile: clientProcedure
-    .input(inputGetClientProfileSchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ ctx }) => {
       const profile = await ctx.prisma.clientProfile.findUnique({
-          where: { user_id: input.user_id },
+          where: { user_id: ctx.session.user.id},  
       });
-
-      if(ctx.session.user.id !== profile?.user_id) throw new Error("Нельзя получить чужой профиль");
       return profile as ClientProfileResponseSchema;
   }),
   
@@ -21,10 +17,8 @@ export const clientProfileRouter = createTRPCRouter({
   .input(inputUpdateClientProfileSchema)
   .mutation(async ({ input, ctx }) => {
     const currentProfile = await ctx.prisma.clientProfile.findUnique({
-      where: { user_id: input.user_id },
+      where: { user_id: ctx.session.user.id },
     });
-
-    if(ctx.session.user.id !== currentProfile?.user_id) throw new Error("Нельзя получить чужой профиль");
     
     const currentPreferences = (currentProfile?.preferences ?? {}) as {
       workSchedule?: string[];
