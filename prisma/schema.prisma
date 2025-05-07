@@ -7,12 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Currency {
   currency_id String @id @default(uuid())
   title String @unique
   char String @unique
-
   Vacancy Vacancy[]
 } 
 model Vacancy {
@@ -27,12 +25,10 @@ model Vacancy {
   description String
   tags Json?
   imgUrl  String?
-  published_at DateTime @default(now()) 
+   published_at DateTime @default(now()) 
   favoritedBy ClientProfile[] @relation("FavoriteVacancies")
-
-  @@index([title], map: "title_search_idx")
-  @@index([description], map: "description_search_idx")
 }
+
 model CompanyProfile {
     company_id String @id @default(uuid())
     title String @unique

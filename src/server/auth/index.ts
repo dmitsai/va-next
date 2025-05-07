@@ -100,4 +100,4 @@ export const authOptions: NextAuthOptions = {
     },
   },
 } satisfies NextAuthOptions;
-export const getServerAuthSession = () => getServerSession(authOptions);
+export const getServerAuthSession = (p0?: unknown) => getServerSession(authOptions);
