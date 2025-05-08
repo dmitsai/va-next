@@ -148,8 +148,8 @@ const SignUpPage = () => {
                 </div>
                 : CONSTANTS.auth.signUp}
             </Button>
-            <div className="relative flex items-center before:flex-grow before:border-t before:border-gray-300 before:content-[''] after:flex-grow after:border-t after:border-gray-300 after:content-['']">
-              <span className="mx-4">{CONSTANTS.auth.continue}</span>
+            <div className="relative flex items-center before:flex-grow before:border-t before:border-text before:content-[''] after:flex-grow after:border-t after:border-text after:content-['']">
+              <span className="mx-4 text-text">{CONSTANTS.auth.continue}</span>
             </div>
             <Link href="/company/login">
               <Button

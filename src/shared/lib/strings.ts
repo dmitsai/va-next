@@ -1,15 +1,15 @@
-export const CONSTANTS  = {
-    topBar : {
-        placeholder: 'vakansiy.net',
-        vacancies: 'Вакансии',
-        internships : 'Стажировки',
-        events : 'События',
-        theme: {
-            light: 'Светлая',
-            dark: 'Темная',
-            system: 'Системная'
-        }
+export const CONSTANTS = {
+  topBar: {
+    placeholder: 'vakansiy.net',
+    vacancies: 'Вакансии',
+    internships: 'Стажировки',
+    events: 'События',
+    theme: {
+      light: 'Светлая',
+      dark: 'Темная',
+      system: 'Системная',
     },
+  },
     auth: {
         lable: {
             signUp: 'Создать учётную запись',
@@ -27,53 +27,74 @@ export const CONSTANTS  = {
         company: 'Компания',
         user: 'Соискатель'
     },
-    home: {
-        vacancies: {
-            placeholder: {
-                unauthecated: 'Свежие вакансии',
-                authecated: 'Вакансии для вашего резюме:'
-            },
-            viewAll: 'Посмотреть все вакансии',
-        }
+  home: {
+    vacancies: {
+      placeholder: {
+        unauthecated: 'Свежие вакансии',
+        authecated: 'Вакансии для вашего резюме:',
+      },
+      viewAll: 'Посмотреть все вакансии',
     },
-    errors: {
-        validation: {
-            email: {
-                invalid: 'Неверный формат почты',
-            },
-            password: {
-                min: 'Пароль должен быть не менее 8 символов.',
-                lower: 'Пароль должен содержать хотя бы одну строчную букву',
-                upper: 'Пароль должен содержать хотя бы одну прописную букву',
-                number: 'Пароль должен содержать хотя бы одну цифру',
-                specialCharacter: 'Пароль должен содержать хотя бы один спецсимвол',
+  },
+  errors: {
+    validation: {
+      email: {
+        invalid: 'Неверный формат почты',
+      },
+      password: {
+        min: 'Пароль должен быть не менее 8 символов.',
+        lower: 'Пароль должен содержать хотя бы одну строчную букву',
+        upper: 'Пароль должен содержать хотя бы одну прописную букву',
+        number: 'Пароль должен содержать хотя бы одну цифру',
+        specialCharacter: 'Пароль должен содержать хотя бы один спецсимвол',
+      },
+      phone: {
+        invalid: 'Неверный формат телефона',
+      },
+    },
+  },
+  card: {
+    apply: 'Откликтнуться',
+    currencyChar: '₽',
+    learnMore: 'Подробнее',
+  },
+  months: [
+    'Января',
+    'Февраля',
+    'Марта',
+    'Апреля',
+    'Мая',
+    'Июня',
+    'Июля',
+    'Августа',
+    'Сентября',
+    'Октября',
+    'Ноября',
+    'Декабря',
+  ],
+  detailedVacancy: {
+    salary: {
+      from: 'от',
+      to: 'до',
+      empty: 'По договоренности',
+    },
+    apply: {
+      add: 'Откликтнуться',
+      exist: 'Вы уже откликнулись',
+    },
+    favorite: {
+      add: 'Добавить в избранные',
+      remove: 'В избранных',
+    },
+  },
+  currency: {
+    euro: '€',
+    ruble: '₽',
+    dollar: '$',
+  },
+  showButton: {
+    more: 'Показать больше',
+    less: 'Показать меньше',
+  },
 
-            },
-            phone: {
-                invalid: 'Неверный формат телефона'
-            },
-            code: {
-                invalid: 'Неверный код'
-            }
-        }
-    },
-    card: {
-        apply: 'Откликтнуться',
-        currencyChar: '₽',
-        learnMore: 'Подробнее'
-    },
-    months :[
-        'Января',
-        'Февраля',
-        'Марта',
-        'Апреля',
-        'Мая',
-        'Июня',
-        'Июля',
-        'Августа',
-        'Сентября',
-        'Октября',
-        'Ноября',
-        'Декабря',
-    ]
 } as const;

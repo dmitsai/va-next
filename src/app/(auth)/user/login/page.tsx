@@ -11,7 +11,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
 import { Roles } from "@prisma/client";
 

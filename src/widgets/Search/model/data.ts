@@ -1,10 +1,43 @@
+import {
+    education,
+    employmentTypes,
+    experience,
+    workSchedule,
+} from '~/shared/api/model/tags/data';
 
-export const tempFilters = [
-    { name: 'speciality', localTitle: 'Специальность', value: [{ name: 'webDeveloper', localTitle: 'Web-разработчик' }, { name: 'backend', localTitle: 'Backend-разработчик' }] },
-    { name: 'workSchedule', localTitle: 'График работы', value: [{ name: 'fullDay', localTitle: 'Полный день' }, { name: 'flexible', localTitle: 'Гибкий график' }] },
-    { name: 'experience', localTitle: 'Опыт', value: [{ name: 'lowerOneYear', localTitle: 'менее 1 года' }, { name: '1-3Years', localTitle: '1-3 года' }] },
-    { name: 'education', localTitle: 'Образование', value: [{ name: 'higher', localTitle: 'Высшие образование' }, { name: 'noEducation', localTitle: 'Нет образования' }] },
-    { name: 'employmentType', localTitle: 'тип занятости', value: [{ name: 'full', localTitle: 'Полная занятость' }, { name: 'parttime', localTitle: 'Частичная занятость' }] },
+export const filters = [
+    {
+        name: 'employmentTypes',
+        localTitle: 'Тип занятости',
+        value: Object.entries(employmentTypes).map(([key, value]) => ({
+            name: key,
+            localTitle: value,
+        })),
+    },
+    {
+        name: 'workSchedule',
+        localTitle: 'График работы',
+        value: Object.entries(workSchedule).map(([key, value]) => ({
+            name: key,
+            localTitle: value,
+        })),
+    },
+    {
+        name: 'education',
+        localTitle: 'Образование',
+        value: Object.entries(education).map(([key, value]) => ({
+            name: key,
+            localTitle: value,
+        })),
+    },
+    {
+        name: 'experience',
+        localTitle: 'Опыт',
+        value: Object.entries(experience).map(([key, value]) => ({
+            name: key,
+            localTitle: value,
+        })),
+    },
 ];
 
 export const regions = [
