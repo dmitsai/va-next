@@ -30,11 +30,9 @@ export const clientProfileRouter = createTRPCRouter({
       name: input.name,
       surname: input.surname,
       patronymic: input.patronymic,
-      imgUrl: input.imgUrl,
       telegram: input.telegram,
       phone: input.phone,
       about_me: input.about_me,
-      resume: input.resume,
       ...(input.preferences && {
         preferences: {
           workSchedule: input.preferences.workSchedule ?? currentPreferences.workSchedule ?? [],
@@ -45,7 +43,7 @@ export const clientProfileRouter = createTRPCRouter({
     };
 
     const updatedProfile = await ctx.prisma.clientProfile.update({
-      where: { user_id: input.user_id },
+      where: { user_id: ctx.session.user.id },
       data: updateData,
       include: {
         favoriteVacancies: {

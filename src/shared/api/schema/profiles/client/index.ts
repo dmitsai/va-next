@@ -12,13 +12,11 @@ export const inputUpdateClientProfileSchema = z.object({
   name: z.string().optional(),
   surname: z.string().optional(),
   patronymic: z.string().nullable().optional(),
-  imgUrl: z.string().url().nullable().optional(),
   telegram: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().optional(),
   about_me: z.string().nullable().optional(),
   preferences: preferencesSchema.partial().optional(),
-  resume: z.string().nullable().optional(),
 });
 
 export type InputUpdateClientProfileSchema = z.infer<
