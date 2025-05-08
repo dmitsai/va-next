@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Currency {
   currency_id String @id @default(uuid())
   title String @unique
@@ -26,9 +25,10 @@ model Vacancy {
   description String
   tags Json?
   imgUrl  String?
-  published_at DateTime @default(now()) 
+   published_at DateTime @default(now()) 
   favoritedBy ClientProfile[] @relation("FavoriteVacancies")
 }
+
 model CompanyProfile {
     company_id String @id @default(uuid())
     title String @unique

@@ -1,20 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
-@import "theme.scss";
-@import "variables.scss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import 'theme.scss';
+@import 'variables.scss';
 @tailwind base;
 
 @layer base {
   html,
-  html[data-theme="light"] {
+  html[data-theme='light'] {
     @include light;
   }
 
-  html[data-theme="dark"] {
+  html[data-theme='dark'] {
     @include dark;
   }
   body {
-    @apply text-text bg-base
-}
+    @apply bg-base text-text;
+  }
   h1 {
     @apply text-[3rem] font-[800] leading-[3rem] tracking-[-1.2%];
   }
@@ -72,7 +72,7 @@
   }
 
   .muted {
-    @apply leading-[1.25rem] tracking-[0%] text-[0.75rem] font-[500];
+    @apply text-[0.75rem] font-[500] leading-[1.25rem] tracking-[0%];
   }
 
   /* FIXME: temp solution for lib components */
@@ -80,19 +80,37 @@
     @apply font-sans !important;
   }
   .card {
-    @apply relative flex flex-col max-w-card max-h-card min-h-card w-full h-full rounded-10 items-start px-4 py-3 gap-y-3
+    @apply relative flex h-full max-h-card min-h-card w-full max-w-card flex-col items-start gap-y-3 rounded-10 px-4 py-3;
   }
-  
+
   .typed-cursor {
-    @apply text-text font-bold;
+    @apply font-bold text-text;
     opacity: 1;
     animation: blink 0.7s infinite;
   }
   @keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 }
 
 @tailwind utilities;
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
