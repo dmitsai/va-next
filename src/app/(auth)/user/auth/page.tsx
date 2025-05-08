@@ -11,7 +11,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
 
 export interface SignUpFormData {
@@ -33,13 +32,12 @@ const formSchema = z
 
 const SignUpPage = () => {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError: setFormError,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,9 +49,6 @@ const SignUpPage = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    setError(null);
-    setIsSubmitting(true);
-
     try {
       const res = await fetch("/api/signUp/viaEmail/user", {
         method: "POST",
@@ -71,7 +66,11 @@ const SignUpPage = () => {
 
       if (!res.ok) {
         if (res.status === 409) {
-          throw new Error("Пользователь с такой почтой уже существует");
+          setFormError('root', {
+            type: 'manual',
+            message: 'Пользователь с такой почтой уже существует'
+          });
+          return;
         }
         throw new Error("Ошибка регистрации");
       }
@@ -88,18 +87,19 @@ const SignUpPage = () => {
 
       router.push("/user/auth/resume");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
-    } finally {
-      setIsSubmitting(false);
+      setFormError('root', {
+        type: 'manual',
+        message: err instanceof Error ? err.message : "Неизвестная ошибка"
+      });
     }
   };
 
   return (
     <div className={`flex h-screen`}>
       <div className={`w-1/2 bg-mauve`}>
-      <Link className={`absolute left-10 text-16 top-10 text-base`} href="/">
+        <Link className={`absolute left-10 text-16 top-10 text-base`} href="/">
           {CONSTANTS.topBar.placeholder}
-      </Link>
+        </Link>
       </div>
       <div className={`w-1/2 bg-base`}>
         <Link className={`absolute right-10 top-10`} href="/user/login">
@@ -111,18 +111,12 @@ const SignUpPage = () => {
             {CONSTANTS.auth.logIn}
           </Button>
         </Link>
-        <div
-          className={`flex h-screen flex-col items-center justify-center gap-y-5`}
-        >
+        <div className={`flex h-screen flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.signUp}</h1>
             <p className={`text-16 text-text`}>{CONSTANTS.auth.enterEmail}</p>
           </div>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className={`flex flex-col gap-y-6`}
-            noValidate
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-y-6`} noValidate>
             <EmailInput
               control={control as unknown as Control<FieldValues>}
               name={"email"}
@@ -132,14 +126,13 @@ const SignUpPage = () => {
               name={"password"}
             />
             <PasswordInput
-            placeholder="Сonfirm password"
+              placeholder="Confirm password"
               control={control as unknown as Control<FieldValues>}
               name={"password2"}
-              aria-errormessage={errors.password2?.message}
             />
-            {error && (
+            {errors.root && (
               <div className="text-red flex items-center justify-center text-16">
-                {error}
+                {errors.root.message}
               </div>
             )}
             <Button

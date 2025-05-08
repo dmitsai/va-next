@@ -48,10 +48,10 @@ const CompanyProfilePage = () => {
           <Tabs defaultValue="vacancy" className="flex h-full flex-col">
             <div className="flex justify-center mt-3">
               <TabsList className="bg-mantle">
-                <TabsTrigger value="vacancy" className="w-56">
+                <TabsTrigger value="vacancy" className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base">
                   Вакансии
                 </TabsTrigger>
-                <TabsTrigger value="description" className="w-56">
+                <TabsTrigger value="description" className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base">
                   О компании
                 </TabsTrigger>
               </TabsList>

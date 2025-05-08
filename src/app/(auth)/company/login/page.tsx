@@ -11,7 +11,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput, { passwordSchema } from "~/shared/ui/PasswordInput";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
 import { Roles } from "@prisma/client";
 
@@ -27,12 +26,12 @@ const formSchema = z.object({
 
 const CompanyLoginPage = () => {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-
+  
   const { 
     control, 
     handleSubmit, 
-    formState: { errors, isSubmitting } 
+    formState: { errors, isSubmitting },
+    setError: setFormError
   } = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,7 +42,6 @@ const CompanyLoginPage = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setError(null);
     const result = await signIn("credentials", {
       redirect: false,
       email: data.email,
@@ -53,11 +51,17 @@ const CompanyLoginPage = () => {
 
     if (result?.error) {
       if (result.error === 'USER_ACCOUNT') {
-        setError('Это аккаунт пользователя');
+        setFormError('root', { 
+          type: 'manual',
+          message: 'Это аккаунт пользователя'
+        });
       } else {
-        setError(result.error === 'CredentialsSignin' 
-          ? 'Неверный email или пароль' 
-          : result.error);
+        setFormError('root', {
+          type: 'manual',
+          message: result.error === 'CredentialsSignin' 
+            ? 'Неверный email или пароль' 
+            : result.error
+        });
       }
     } else {
       router.push("/");
@@ -96,9 +100,9 @@ const CompanyLoginPage = () => {
               control={control as unknown as Control<FieldValues>}
               name={"password"}
             />
-            {error && (
+            {errors.root && (
               <div className="text-red flex items-center justify-center text-16">
-                {error}
+                {errors.root.message}
               </div>
             )}
             <Button
