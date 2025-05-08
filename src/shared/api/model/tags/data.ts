@@ -1,3 +1,5 @@
+import { PeriodKey } from './type';
+
 export const employmentTypes = {
     full: 'Полная занятость',
     partTime: 'Частичная занятость',
@@ -24,3 +26,12 @@ export const experience = {
     FromThreeToSixYears: 'От 3 до 6 лет',
     MoreSixYears: 'Более 6 лет',
 } as const;
+
+export const periods = {
+    day: 'День',
+    month: 'Месяц',
+    threeMonths: '3 месяца',
+    all: 'Все время',
+} as const;
+
+export const periodsKeys = ['day', 'month', 'threeMonths', 'all'] as const;

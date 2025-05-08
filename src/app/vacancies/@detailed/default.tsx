@@ -5,6 +5,7 @@ import {
     EducationKey,
     EmploymentTypesKey,
     ExperienceKey,
+    PeriodKey,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
 import {
@@ -54,25 +55,29 @@ export default async ({
         experience: experienceValues,
     };
 
-    console.log('TAGS', tags);
+    const salaryFrom = searchParams.salaryFrom as string;
+
+    const period = searchParams.period as PeriodKey;
+
+    const currencyName = searchParams.currency as string;
 
     const search = searchParams.search as string;
-    console.log('SEARCH', search);
 
     const { vacancyList } = await helpers.vacancy.infinityVacancy.fetch({
         limit: 1,
         tags,
         search,
+        salaryFrom,
+        period,
+        currencyName,
     });
 
     if (!vacancyList?.[0]?.vacancy_id) {
         return <div className="p-8">Нет доступных вакансий</div>;
     }
 
-    // Создаем URLSearchParams из текущих searchParams
     const searchParamsString = new URLSearchParams();
 
-    // Добавляем параметры, исключая undefined значения
     Object.entries(searchParams).forEach(([key, value]) => {
         if (value !== undefined) {
             if (Array.isArray(value)) {
@@ -83,7 +88,6 @@ export default async ({
         }
     });
 
-    // Формируем URL с сохранением search params
     const redirectUrl = `/vacancies/${vacancyList[0].vacancy_id}${
         searchParamsString.toString() ? `?${searchParamsString.toString()}` : ''
     }`;

@@ -3,7 +3,6 @@
 import { useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
 import { VacancyCard } from '~/features/vacancyCard';
-import { Tags } from '~/features/vacancyCard/ui/VacancyCard';
 import cn from 'classnames';
 import { useParams, useSearchParams } from 'next/navigation';
 import { periods } from '~/widgets/Search/model/data';
@@ -20,6 +19,7 @@ import {
     EmploymentTypesKey,
     Experience,
     ExperienceKey,
+    PeriodKey,
     WorkSchedule,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
@@ -55,6 +55,12 @@ export default () => {
         experience: experienceValues,
     };
 
+    const salaryFrom = searchParams.get('salaryFrom') as string;
+
+    const period = searchParams.get('period') as PeriodKey;
+
+    const currencyName = searchParams.get('currency') as string;
+
     const search = searchParams.get('search');
 
     useEffect(() => {
@@ -71,6 +77,9 @@ export default () => {
         isSuccess,
     } = clientApi.vacancy.infinityVacancy.useInfiniteQuery(
         {
+            salaryFrom,
+            period,
+            currencyName,
             search,
             tags,
             limit: 8,
@@ -167,10 +176,12 @@ export default () => {
                                         vacancyId={vacancy.vacancy_id}
                                         title={vacancy.title}
                                         isFavorited={false}
-                                        tags={[]}
+                                        tags={vacancy.tags}
                                         description={vacancy.description}
                                         company={vacancy.company}
-                                        salary={65000}
+                                        salaryFrom={vacancy.salaryFrom}
+                                        salaryTo={vacancy.salaryTo}
+                                        currency={vacancy.currency}
                                     />
                                 ))}
                             </div>

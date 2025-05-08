@@ -1,4 +1,10 @@
-import { education, employmentTypes, experience, workSchedule } from './data';
+import {
+    education,
+    employmentTypes,
+    experience,
+    periods,
+    workSchedule,
+} from './data';
 
 export type EmploymentTypes =
     (typeof employmentTypes)[keyof typeof employmentTypes];
@@ -19,3 +25,6 @@ export type Tags = {
     education?: Education[];
     experience?: Experience[];
 };
+
+export type Period = (typeof periods)[keyof typeof periods];
+export type PeriodKey = keyof typeof periods;

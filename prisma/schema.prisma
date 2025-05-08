@@ -20,8 +20,8 @@ model Vacancy {
   title String
   company_id String
   company  CompanyProfile  @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
-  salaryFrom String?
-  salaryTo String?
+  salaryFrom Int?
+  salaryTo Int?
   currency_id String    
   currency    Currency  @relation(fields: [currency_id], references: [currency_id])
   description String
