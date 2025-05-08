@@ -158,7 +158,7 @@ export const ProfileFileUploader = () => {
                             </span>
                             <Document file={resumeUrl} onLoadSuccess={onDocumentLoadSuccess}>
                                 <Page
-                                    scale={0.90}
+                                    scale={0.85}  // 0.9  
                                     pageNumber={pageNumber}
                                     renderAnnotationLayer={false}
                                     renderTextLayer={false}

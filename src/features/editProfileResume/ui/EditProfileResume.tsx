@@ -29,7 +29,7 @@ const parseFileInfo = (fileInfo: FileInfo) => ({
 })
 export const EditProfileResume: React.FC<EditProfileResumeProps> = memo((props) => {
     const { fileInfo, handleRemoveFile, onDrop, setIsOpen } = props;
-    const { name, size, uploadedDate } = fileInfo ? parseFileInfo(fileInfo) : {};
+    const { name, size, uploadedDate } = fileInfo ? parseFileInfo(fileInfo) : {} as FileInfo;
     const { getRootProps, getInputProps, isDragActive, } = useDropzone({
         onDrop,
         accept: {

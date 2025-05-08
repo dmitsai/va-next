@@ -23,7 +23,7 @@ export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
   <html lang="en" className={`${jetBrainsMono.variable} !font-sans`}>
     <AppProviders>
       <body className="flex h-screen min-h-screen flex-col">
-        <TopBar isAuth />
+        {/* <TopBar isAuth /> */}
         {children}
       </body>
     </AppProviders>
