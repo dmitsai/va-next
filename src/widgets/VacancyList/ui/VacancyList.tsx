@@ -54,12 +54,14 @@ export const VacancyList: React.FC<VacancyListProps> = async (props) => {
                 {vacancies.map((vacancy) => (
                     <VacancyCard
                         title={vacancy.title}
-                        tags={[]}
+                        tags={vacancy.tags}
                         description={vacancy.description}
                         company={vacancy.company}
                         vacancyId={vacancy.vacancy_id}
                         isFavorited={false}
-                        salary={0}
+                        salaryFrom={vacancy.salaryFrom}
+                        salaryTo={vacancy.salaryTo}
+                        currency={vacancy.currency}
                         key={vacancy.vacancy_id}
                     />
                 ))}
