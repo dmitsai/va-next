@@ -1,5 +1,1 @@
-export {
-  VacancyCard,
-  type VacancyCardProps,
-  type Tags,
-} from './ui/VacancyCard';
+export { VacancyCard, type VacancyCardProps } from './ui/VacancyCard';

@@ -36,7 +36,7 @@ export const getTagArrayWithColors = (
         ...tagGroups.map((group) => group.items.length)
     );
 
-    for (let i = 0; i < maxLength; i++) {
+    for (let i = 0; i < maxLength; i += 1) {
         tagGroups.forEach((group) => {
             const item = group.items[i];
             if (item) {

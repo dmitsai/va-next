@@ -50,7 +50,7 @@ export interface QueryParams {
     vacanciesDate?: string;
 }
 
-export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
+const FilterMenuComponent: React.FC<FilterMenuProps> = (props) => {
     const router = useRouter();
     const pathname = usePathname();
 
@@ -72,7 +72,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
     const { control, handleSubmit, reset } = useForm<FilterMenyForm>({
         resolver: zodResolver(filterMenuSchema),
         defaultValues: {
-            salaryFrom: initialSalaryFrom ? initialSalaryFrom : '',
+            salaryFrom: initialSalaryFrom ?? '',
         },
     });
 
@@ -233,12 +233,12 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
                                         (currency) => currency.char === value
                                     );
 
-                                    return selected
-                                        ? selected
-                                        : {
-                                              title: 'RUB',
-                                              char: '₽',
-                                          };
+                                    return (
+                                        selected ?? {
+                                            title: 'RUB',
+                                            char: '₽',
+                                        }
+                                    );
                                 })
                             }
                         />
@@ -304,3 +304,9 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
         </Popup>
     );
 };
+
+export const FilterMenu: React.FC<FilterMenuProps> = (props) => (
+    <Suspense>
+        <FilterMenuComponent {...props} />
+    </Suspense>
+);

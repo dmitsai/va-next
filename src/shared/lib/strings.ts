@@ -101,10 +101,8 @@ export const getStringifySalary = (
     const { from, to } = CONSTANTS.detailedVacancy.salary;
     const currency = salaryCurrency ?? CONSTANTS.currency.ruble;
 
-    // Функция для форматирования числа с разделителем тысяч
-    const formatNumber = (num: number): string => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    };
+    const formatNumber = (num: number): string =>
+        num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
     if (salaryFrom && salaryTo) {
         return `${from} ${formatNumber(salaryFrom)} ${to} ${formatNumber(salaryTo)} ${currency}`;

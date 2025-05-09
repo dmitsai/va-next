@@ -1,5 +1,3 @@
-import { PeriodKey } from './type';
-
 export const employmentTypes = {
     full: 'Полная занятость',
     partTime: 'Частичная занятость',

@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
 import { VacancyCard } from '~/features/vacancyCard';
 import cn from 'classnames';
 import { useParams, useSearchParams } from 'next/navigation';
-import { periods } from '~/widgets/Search/model/data';
 import {
     education,
     experience,
@@ -13,19 +12,15 @@ import {
     employmentTypes,
 } from '~/shared/api/model/tags/data';
 import {
-    Education,
     EducationKey,
-    EmploymentTypes,
     EmploymentTypesKey,
-    Experience,
     ExperienceKey,
     PeriodKey,
-    WorkSchedule,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
 import { useVirtualVacancies } from './helpers/useVirtualVacancies';
 
-export default () => {
+const ListPage = () => {
     const params = useParams();
 
     const searchParams = useSearchParams();
@@ -55,11 +50,11 @@ export default () => {
         experience: experienceValues,
     };
 
-    const salaryFrom = searchParams.get('salaryFrom') as string;
+    const salaryFrom = searchParams.get('salaryFrom')!;
 
     const period = searchParams.get('period') as PeriodKey;
 
-    const currencyName = searchParams.get('currency') as string;
+    const currencyName = searchParams.get('currency')!;
 
     const search = searchParams.get('search');
 
@@ -192,3 +187,9 @@ export default () => {
         </div>
     );
 };
+
+export default () => (
+    <Suspense fallback={null}>
+        <ListPage />
+    </Suspense>
+);

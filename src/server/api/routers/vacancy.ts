@@ -31,9 +31,11 @@ export const vacancyRouter = createTRPCRouter({
                 throw new Error('Company profile not found');
             }
             const salaryFrom = input.salaryFrom
-                ? parseInt(input.salaryFrom)
+                ? parseInt(input.salaryFrom, 10)
                 : null;
-            const salaryTo = input.salaryTo ? parseInt(input.salaryTo) : null;
+            const salaryTo = input.salaryTo
+                ? parseInt(input.salaryTo, 10)
+                : null;
             const newVacancy = await ctx.prisma.vacancy.create({
                 data: {
                     title: input.title,
@@ -42,8 +44,8 @@ export const vacancyRouter = createTRPCRouter({
                             company_id: companyProfile.company_id,
                         },
                     },
-                    salaryFrom: salaryFrom,
-                    salaryTo: salaryTo,
+                    salaryFrom,
+                    salaryTo,
                     description: input.description,
                     imgUrl: input.imgUrl,
                     currency: {
@@ -75,9 +77,11 @@ export const vacancyRouter = createTRPCRouter({
             }
 
             const salaryFrom = input.salaryFrom
-                ? parseInt(input.salaryFrom)
+                ? parseInt(input.salaryFrom, 10)
                 : null;
-            const salaryTo = input.salaryTo ? parseInt(input.salaryTo) : null;
+            const salaryTo = input.salaryTo
+                ? parseInt(input.salaryTo, 10)
+                : null;
 
             const updatedVacancy = await ctx.prisma.vacancy.update({
                 where: {
@@ -86,8 +90,8 @@ export const vacancyRouter = createTRPCRouter({
                 },
                 data: {
                     title: input.title,
-                    salaryFrom: salaryFrom,
-                    salaryTo: salaryTo,
+                    salaryFrom,
+                    salaryTo,
                     description: input.description,
                     currency: input.currencyId
                         ? {
@@ -167,7 +171,7 @@ export const vacancyRouter = createTRPCRouter({
             }
 
             if (salaryFrom) {
-                const numberSalaryFrom = parseInt(salaryFrom);
+                const numberSalaryFrom = parseInt(salaryFrom, 10);
 
                 whereConditions.push({
                     salaryFrom: {
@@ -189,6 +193,8 @@ export const vacancyRouter = createTRPCRouter({
                         break;
                     case 'threeMonths':
                         startDate = new Date(now.setMonth(now.getMonth() - 3));
+                        break;
+                    default:
                         break;
                 }
 

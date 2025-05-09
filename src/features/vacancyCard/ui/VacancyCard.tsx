@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { CONSTANTS, getStringifySalary } from '~/shared/lib/strings';
 import cn from 'classnames';
 import Button, { ButtonView } from '~/shared/ui/Button';
@@ -8,11 +8,9 @@ import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg'
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
 import { Badge } from '~/shared/ui/Badge';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { type Tags } from '~/shared/api/model/tags/type';
 import { getTagArrayWithColors } from '../utils/tagsWithColors';
-
-// FIXME: temp solution for tags
 
 export interface VacancyCardProps {
     vacancyId: string;
@@ -34,13 +32,7 @@ export interface VacancyCardProps {
     };
 }
 
-const parseSalary = (salary: number) => {
-    const thousands = Math.floor(salary / 1000).toString();
-    const hundreds = (salary % 1000).toString().padStart(3, '0');
-    return `${thousands}.${hundreds} ${CONSTANTS.card.currencyChar}`;
-};
-
-export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
+export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
     const {
         vacancyId,
         title,
@@ -160,3 +152,9 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
         </Link>
     );
 };
+
+export const VacancyCard: React.FC<VacancyCardProps> = (props) => (
+    <Suspense>
+        <VacancyCardComponent {...props} />
+    </Suspense>
+);

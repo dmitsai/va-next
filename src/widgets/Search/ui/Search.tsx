@@ -20,7 +20,7 @@ export interface SearchForm {
     search: string;
 }
 
-export const Search: React.FC = () => {
+export const SearchComponent: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -137,3 +137,9 @@ export const Search: React.FC = () => {
         </Suspense>
     );
 };
+
+export const Search = () => (
+    <Suspense>
+        <SearchComponent />
+    </Suspense>
+);
