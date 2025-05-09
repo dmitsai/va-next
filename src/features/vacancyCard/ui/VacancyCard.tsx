@@ -1,80 +1,160 @@
 'use client';
 
-import React, { useState } from "react";
-import { CONSTANTS } from "~/shared/lib/strings";
+import React, { Suspense, useState } from 'react';
+import { CONSTANTS, getStringifySalary } from '~/shared/lib/strings';
 import cn from 'classnames';
-import Button, { ButtonView } from "~/shared/ui/Button";
+import Button, { ButtonView } from '~/shared/ui/Button';
 import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg';
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
-import { Badge } from "~/shared/ui/Badge";
-
-// FIXME: temp solution for tags
-
-export interface Tags {
-    label: string,
-    color: string,
-}
+import { Badge } from '~/shared/ui/Badge';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { type Tags } from '~/shared/api/model/tags/type';
+import { getTagArrayWithColors } from '../utils/tagsWithColors';
 
 export interface VacancyCardProps {
-    title: string,
-    isFavorited: boolean,
-    tags: Array<Tags>,
-    description: string,
+    vacancyId: string;
+    title: string;
+    isFavorited: boolean;
+    tags: Tags | null;
+    description: string;
     company: {
-        imgUrl?: string,
-        title: string,
-    },
-    salary: number,
-    wrapperClassName?: string,
+        imgUrl: string | null;
+        title: string;
+    };
+    salaryFrom: number | null;
+    salaryTo: number | null;
+    wrapperClassName?: string;
+    currency: {
+        title: string;
+        currency_id: string;
+        char: string;
+    };
 }
 
-const parseSalary = (salary: number) => {
-    const thousands = Math.floor(salary / 1000).toString();
-    const hundreds = (salary % 1000).toString().padStart(3, '0')
-    return `${thousands}.${hundreds} ${CONSTANTS.card.currencyChar}`
-}
+export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
+    const {
+        vacancyId,
+        title,
+        isFavorited: initialIsFavoritedState,
+        tags,
+        description,
+        company,
+        salaryFrom,
+        salaryTo,
+        currency,
+        wrapperClassName,
+    } = props;
 
-export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
-    const { title, isFavorited: initialIsFavoritedState, tags, description, company, salary: numberSalary, wrapperClassName } = props;
-    const salary = parseSalary(numberSalary);
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
 
     const handleIsFavorited = () => {
         // FIXME: add internship to favorited later
         setIsFavorited(!isFavorited);
-    }
+    };
+
+    const tagArrayWithColors = getTagArrayWithColors(tags);
 
     return (
-        <div className={cn('group card w-full bg-mantle', wrapperClassName)}>
-            <div className={'flex flex-col items-start w-full'}>
-                <div className={'group flex flex-row w-full justify-between items-center'}>
-                    <p className={'text-text text-14 font-500 leading-6'}>{title}</p>
-                    <Button buttonView={ButtonView.SMALL} className={'group/favorite group-hover:opacity-100  opacity-0 hover:bg-mantle !px-1.5 duration-300 w-6 h-6'} onClick={handleIsFavorited}>
-                        <IconStar className={cn('absolute', isFavorited ? 'fill-yellow stroke-none' : 'fill-none stroke-text group-hover/favorite:stroke-base')} />
+        <Link
+            href={`/vacancies/${vacancyId}?${params}`}
+            className={cn(
+                'card group w-full border-2 border-base bg-mantle transition-colors',
+                wrapperClassName
+            )}
+        >
+            <div className={'flex w-full flex-col items-start'}>
+                <div
+                    className={
+                        'group flex w-full flex-row items-center justify-between'
+                    }
+                >
+                    <p className={'text-14 font-500 leading-6 text-text'}>
+                        {title}
+                    </p>
+                    <Button
+                        buttonView={ButtonView.SMALL}
+                        className={
+                            'group/favorite h-6 w-6 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
+                        }
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleIsFavorited();
+                        }}
+                    >
+                        <IconStar
+                            className={cn(
+                                'absolute',
+                                isFavorited
+                                    ? 'fill-yellow stroke-none'
+                                    : 'fill-none stroke-text group-hover/favorite:stroke-yellow'
+                            )}
+                        />
                     </Button>
                 </div>
-                <p className={'text-text fot-400 text-14 leading-5'}>{salary}</p>
+                <p className={'fot-400 text-14 leading-5 text-text'}>
+                    {getStringifySalary(salaryFrom, salaryTo, currency.char)}
+                </p>
             </div>
             <div className={'relative h-full w-full'}>
                 {/* FIXME: temp solution for display valid count of tags */}
-                <div className={'flex flex-wrap gap-1 max-h-card-tags overflow-hidden group-hover:opacity-0 opacity-100 transition-all duration-300'}>
-                    {
-                        tags.map(tag => (<Badge key={tag.label.trim()} placeholder={tag.label} className={cn('text-base h-5', `${tag.color}`)} />))
+                <div
+                    className={
+                        'flex h-12 max-h-card-tags flex-wrap gap-1 overflow-hidden opacity-100 transition-all duration-300 group-hover:opacity-0'
                     }
+                >
+                    {tagArrayWithColors.map((tag) => (
+                        <Badge
+                            key={tag.name.trim()}
+                            placeholder={tag.name}
+                            className={cn('h-5 text-base', `bg-${tag.color}`)}
+                        />
+                    ))}
                 </div>
-                <p className={'absolute inset-0 group-hover:opacity-100 opacity-0 line-clamp-2  font-400 text-14 leading-5 text-text max-h-fit transition-all duration-300 w-full'}>
+                <p
+                    className={
+                        'absolute inset-0 line-clamp-2 max-h-fit w-full text-14 font-400 leading-5 text-text opacity-0 transition-all duration-300 group-hover:opacity-100'
+                    }
+                >
                     {description}
                 </p>
             </div>
-            <div className={'absolute bottom-3 left-0 right-0 flex flex-row justify-between items-end w-full pl-1 pr-4'}>
+            <div
+                className={
+                    'absolute bottom-3 left-0 right-0 flex w-full flex-row items-end justify-between pl-1 pr-4'
+                }
+            >
                 {/* Add Avatar of company later */}
-                <Badge className={'font-500 text-14 leading-5 text-sub py-1.5 rounded-16 flex flex-wrap max-w-36 max-h-6'} placeholder={company.title} />
-                <Button buttonView={ButtonView.SMALL} className={'text-base bg-mauve hover:bg-text group-hover:opacity-100 opacity-0 transition-all duration-300'}>
+                <Badge
+                    className={
+                        'flex max-h-6 max-w-36 flex-wrap rounded-16 py-1.5 text-14 font-500 leading-5 text-sub'
+                    }
+                    placeholder={company.title}
+                />
+                <Button
+                    onClick={(e) => {
+                        e.preventDefault();
+                    }}
+                    buttonView={ButtonView.SMALL}
+                    className={
+                        'bg-mauve text-base opacity-0 transition-all duration-300 hover:bg-text group-hover:opacity-100'
+                    }
+                >
                     <IconArrow className={'fill-base'} />
-                    <p className={'text-12 font-500 leading-6'}>{CONSTANTS.card.apply}</p>
+                    <p className={'text-12 font-500 leading-6'}>
+                        {CONSTANTS.card.apply}
+                    </p>
                 </Button>
             </div>
-        </div>
-    )
-}
+        </Link>
+    );
+};
+
+export const VacancyCard: React.FC<VacancyCardProps> = (props) => (
+    <Suspense>
+        <VacancyCardComponent {...props} />
+    </Suspense>
+);

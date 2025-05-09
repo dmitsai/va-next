@@ -1,38 +1,80 @@
-import React from "react";
-import { VacancyCard } from "~/features/vacancyCard";
-import { CONSTANTS } from "~/shared/lib/strings";
-import { Badge } from "~/shared/ui/Badge";
-import Button, { ButtonView } from "~/shared/ui/Button";
-import { vacancies } from "../model/data";
-
+import React from 'react';
+import { VacancyCard } from '~/features/vacancyCard';
+import { CONSTANTS } from '~/shared/lib/strings';
+import { Badge } from '~/shared/ui/Badge';
+import Button, { ButtonView } from '~/shared/ui/Button';
+import { createSSRHelpers } from 'trpc/helpers';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { LinkButton, LinkView } from '~/shared/ui/Button/LinkButton';
+// import { vacancies } from '../model/data';
 
 interface VacancyListProps {
-    resumeLabel?: string,
+    resumeLabel?: string;
 }
 
+export const VacancyList: React.FC<VacancyListProps> = async (props) => {
+    const helpers = await createSSRHelpers(headers());
 
-export const VacancyList: React.FC<VacancyListProps> = (props) => {
+    const vacancies = (
+        await helpers.vacancy.infinityVacancy.fetch({ limit: 12 })
+    ).vacancyList;
+
     const { resumeLabel } = props;
     return (
-        <div className={'flex flex-col h-full items-center justify-center'}>
-            <div className={'grid grid-cols-3 xl:grid-cols-4 gap-5 h-full w-fit'}>
-                {resumeLabel ?
-                    <span className={'mb-5 col-span-3 xl:col-span-4 text-text text-18 w-full  flex flex-row items-center gap-x-4'}>
+        <div className={'flex h-full flex-col items-center justify-center'}>
+            <div
+                className={
+                    'grid h-full w-full grid-cols-3 gap-5 xl:grid-cols-4'
+                }
+            >
+                {resumeLabel ? (
+                    <span
+                        className={
+                            'col-span-3 mb-5 flex w-full flex-row items-center gap-x-4 text-18 text-text xl:col-span-4'
+                        }
+                    >
                         {CONSTANTS.home.vacancies.placeholder.authecated}
-                        <Badge className={'bg-mantle text-text text-14 !rounded-6 px-4 py-2 !font-500'} placeholder={resumeLabel} />
+                        <Badge
+                            className={
+                                '!rounded-6 bg-mantle px-4 py-2 text-14 !font-500 text-text'
+                            }
+                            placeholder={resumeLabel}
+                        />
                     </span>
-                    :
-                    <span className={'mb-5 col-span-3 xl:col-span-4 text-text text-18 w-full'}>
+                ) : (
+                    <span
+                        className={
+                            'col-span-3 mb-5 w-full text-18 text-text xl:col-span-4'
+                        }
+                    >
                         {CONSTANTS.home.vacancies.placeholder.unauthecated}
                     </span>
-                }
-                {
-                    vacancies.map(vacancy => (
-                        <VacancyCard key={vacancy.id} {...vacancy} />
-                    ))
-                }
-                <Button buttonView={ButtonView.LARGE} className={'col-span-3 xl:col-span-4 mt-5 w-full bg-mantle text-text hover:bg-text hover:text-base text-14'}>{CONSTANTS.home.vacancies.viewAll}</Button>
+                )}
+                {vacancies.map((vacancy) => (
+                    <VacancyCard
+                        title={vacancy.title}
+                        tags={vacancy.tags}
+                        description={vacancy.description}
+                        company={vacancy.company}
+                        vacancyId={vacancy.vacancy_id}
+                        isFavorited={false}
+                        salaryFrom={vacancy.salaryFrom}
+                        salaryTo={vacancy.salaryTo}
+                        currency={vacancy.currency}
+                        key={vacancy.vacancy_id}
+                    />
+                ))}
+                <LinkButton
+                    href={'/vacancies'}
+                    linkView={LinkView.LARGE}
+                    className={
+                        'col-span-3 mt-5 w-full bg-mantle text-14 text-text hover:bg-text hover:text-base xl:col-span-4'
+                    }
+                >
+                    {CONSTANTS.home.vacancies.viewAll}
+                </LinkButton>
             </div>
         </div>
-    )
-}
+    );
+};

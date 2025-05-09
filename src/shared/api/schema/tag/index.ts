@@ -1,20 +1,16 @@
-import { z } from "zod";
+import { z } from 'zod';
+import {
+    education,
+    employmentTypes,
+    experience,
+    workSchedule,
+} from '../../model/tags/data';
 
-export const inputBaseTagSchema = z.object({
-  vacancy_id: z.string().uuid(),
-  tag_id: z.string().uuid(),
+export const tagsShema = z.object({
+    workSchedule: z.array(z.nativeEnum(workSchedule)).optional(),
+    employmentTypes: z.array(z.nativeEnum(employmentTypes)).optional(),
+    experience: z.array(z.nativeEnum(experience)).optional(),
+    education: z.array(z.nativeEnum(education)).optional(),
 });
-export type InputBaseTagSchema = z.infer<typeof inputBaseTagSchema>;
 
-export const inputAddTagSchema = inputBaseTagSchema;
-export type InputAddTagSchema = z.infer<typeof inputAddTagSchema>;
-
-export const inputDeleteTagSchema = inputBaseTagSchema;
-export type InputDeleteTagSchema = z.infer<typeof inputDeleteTagSchema>;
-
-export const tagResponseSchema = z.object({
-  tag_id: z.string(),
-  title: z.string(),
-  localTitle: z.string(),
-});
-export type TagResponseSchema = z.infer<typeof tagResponseSchema>;
+export type TagsSchema = z.infer<typeof tagsShema>;

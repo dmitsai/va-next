@@ -1,28 +1,31 @@
-export const CONSTANTS  = {
-    topBar : {
+import { number } from 'zod';
+
+export const CONSTANTS = {
+    topBar: {
         placeholder: 'vakansiy.net',
         vacancies: 'Вакансии',
-        internships : 'Стажировки',
-        events : 'События',
+        internships: 'Стажировки',
+        events: 'События',
         theme: {
             light: 'Светлая',
             dark: 'Темная',
-            system: 'Системная'
-        }
+            system: 'Системная',
+        },
     },
     auth: {
         signUp: 'Зарегистрироваться',
         logIn: 'Войти',
-        description: 'Вы можете создать или войти в свою учетную запись  и узнавать о новых вакансиях первыми'
+        description:
+            'Вы можете создать или войти в свою учетную запись  и узнавать о новых вакансиях первыми',
     },
     home: {
         vacancies: {
             placeholder: {
                 unauthecated: 'Свежие вакансии',
-                authecated: 'Вакансии для вашего резюме:'
+                authecated: 'Вакансии для вашего резюме:',
             },
             viewAll: 'Посмотреть все вакансии',
-        }
+        },
     },
     errors: {
         validation: {
@@ -34,20 +37,23 @@ export const CONSTANTS  = {
                 lower: 'Пароль должен содержать хотя бы одну строчную букву',
                 upper: 'Пароль должен содержать хотя бы одну прописную букву',
                 number: 'Пароль должен содержать хотя бы одну цифру',
-                specialCharacter: 'Пароль должен содержать хотя бы один спецсимвол',
-
+                specialCharacter:
+                    'Пароль должен содержать хотя бы один спецсимвол',
             },
             phone: {
-                invalid: 'Неверный формат телефона'
-            }
-        }
+                invalid: 'Неверный формат телефона',
+            },
+            salary: {
+                number: 'Уровень дохода должен быть числом',
+            },
+        },
     },
     card: {
         apply: 'Откликтнуться',
         currencyChar: '₽',
-        learnMore: 'Подробнее'
+        learnMore: 'Подробнее',
     },
-    months :[
+    months: [
         'Января',
         'Февраля',
         'Марта',
@@ -60,5 +66,49 @@ export const CONSTANTS  = {
         'Октября',
         'Ноября',
         'Декабря',
-    ]
+    ],
+    detailedVacancy: {
+        salary: {
+            from: 'от',
+            to: 'до',
+            empty: 'По договоренности',
+        },
+        apply: {
+            add: 'Откликтнуться',
+            exist: 'Вы уже откликнулись',
+        },
+        favorite: {
+            add: 'Добавить в избранные',
+            remove: 'В избранных',
+        },
+    },
+    currency: {
+        euro: '€',
+        ruble: '₽',
+        dollar: '$',
+    },
+    showButton: {
+        more: 'Показать больше',
+        less: 'Показать меньше',
+    },
 } as const;
+
+export const getStringifySalary = (
+    salaryFrom: number | null,
+    salaryTo: number | null,
+    salaryCurrency: string | null
+) => {
+    const { from, to } = CONSTANTS.detailedVacancy.salary;
+    const currency = salaryCurrency ?? CONSTANTS.currency.ruble;
+
+    const formatNumber = (num: number): string =>
+        num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    if (salaryFrom && salaryTo) {
+        return `${from} ${formatNumber(salaryFrom)} ${to} ${formatNumber(salaryTo)} ${currency}`;
+    }
+    if (salaryFrom) {
+        return `${from} ${formatNumber(salaryFrom)} ${currency}`;
+    }
+    return CONSTANTS.detailedVacancy.salary.empty;
+};

@@ -1,59 +1,145 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Control, FieldValues, useForm } from 'react-hook-form';
 import cn from 'classnames';
 
-import Button, { ButtonView } from "~/shared/ui/Button";
-import SearchInput from "~/shared/ui/SearchInput";
-import Select from "~/shared/ui/Select";
+import Button, { ButtonView } from '~/shared/ui/Button';
+import SearchInput from '~/shared/ui/SearchInput';
+import Select from '~/shared/ui/Select';
 
-import { ReactComponent as IconSettings } from "~/shared/assets/icons/settings-icon.svg";
+import { ReactComponent as IconSettings } from '~/shared/assets/icons/settings-icon.svg';
 import { ReactComponent as SearchIcon } from '~/shared/assets/icons/search-icon.svg';
 import { FilterMenu } from '~/features/filterMenu';
-import { periods, regions, state, tempFilters } from '../model/data';
+import { parseAsString, useQueryState, useQueryStates } from 'nuqs';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useVacancyFilter } from '~/entities/vacancies/model/hook';
+import { periods, regions, state, filters } from '../model/data';
 
 export interface SearchForm {
-    search: string,
+    search: string;
 }
 
-export const Search: React.FC = () => {
+export const SearchComponent: React.FC = () => {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const { setSearch, getSearch } = useVacancyFilter();
+
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [selected, setSelected] = useState(state[0]);
 
-    const { control, handleSubmit, formState: { dirtyFields } } = useForm<SearchForm>({
+    const {
+        control,
+        handleSubmit,
+        formState: { dirtyFields },
+    } = useForm<SearchForm>({
         defaultValues: {
-            search: ''
+            search: '',
         },
     });
 
     const { search: isSearchDirty } = dirtyFields;
 
+    const relevantParamNames = [
+        ...filters.map((f) => f.name),
+        ...regions.map((r) => r.name),
+        ...periods.map((p) => p.name),
+    ];
+    const hasNonSearchParams = Array.from(searchParams.keys()).some(
+        (param) => param !== 'search' && relevantParamNames.includes(param)
+    );
+    const isFiltered =
+        hasNonSearchParams ||
+        (searchParams.has('search') && searchParams.size > 1);
+
     const onSubmit = (data: SearchForm) => {
-        console.info('search:', JSON.stringify(data));
+        if (pathname === '/') {
+            const updatedParams = new URLSearchParams(searchParams.toString());
+            updatedParams.set('search', data.search);
+            router.replace(`/vacancies?${updatedParams.toString()}`);
+        } else {
+            setSearch(data.search);
+        }
     };
 
     return (
-        <>
-            <FilterMenu filters={tempFilters} regions={regions} periods={periods} isOpen={isFilterMenuOpen} setIsOpen={setIsFilterMenuOpen} />
-            <form className={'flex flex-row gap-x-2 w-full'} onSubmit={handleSubmit(onSubmit)}>
-                <Select selected={selected} setSelected={setSelected} state={state} />
-                <div className={cn('relative flex flex-row w-full')}>
+        <Suspense>
+            <FilterMenu
+                filters={filters}
+                regions={regions}
+                periods={periods}
+                isOpen={isFilterMenuOpen}
+                setIsOpen={setIsFilterMenuOpen}
+            />
+            <form
+                className={'flex w-full flex-row gap-x-2'}
+                onSubmit={handleSubmit(onSubmit)}
+            >
+                <Select
+                    selected={selected}
+                    setSelected={setSelected}
+                    state={state}
+                />
+                <div className={cn('relative flex w-full flex-row')}>
                     <SearchInput
                         name={'search'}
-                        control={(control as unknown) as Control<FieldValues>}
-                        iconProps={{ className: cn(isSearchDirty ? '!left-0 opacity-0' : 'opacity-1', 'transition-all fill-sub') }}
-                        wrapperClassName={cn(isSearchDirty && 'pr-2', '!max-w-full')}
-                        className={cn(isSearchDirty && '!pl-4', '!max-w-full transition-all')}
+                        control={control as unknown as Control<FieldValues>}
+                        iconProps={{
+                            className: cn(
+                                isSearchDirty
+                                    ? '!left-0 opacity-0'
+                                    : 'opacity-1',
+                                'transition-all fill-sub'
+                            ),
+                        }}
+                        wrapperClassName={cn(
+                            isSearchDirty && 'pr-2',
+                            '!max-w-full'
+                        )}
+                        className={cn(
+                            isSearchDirty && '!pl-4',
+                            '!max-w-full transition-all'
+                        )}
                     />
-                    <Button type={'submit'} className={cn(isSearchDirty ? 'opacity-1 w-10 !p-3 right-0' : 'opacity-0 w-0 !p-0 -right-12', 'aboslute overflow-hidden group  bg-mauve text-text hover:bg-text h-10 !transition-all duration-1000')} buttonView={ButtonView.LARGE}>
+                    <Button
+                        type={'submit'}
+                        className={cn(
+                            isSearchDirty
+                                ? 'opacity-1 right-0 w-10 !p-3'
+                                : '-right-12 w-0 !p-0 opacity-0',
+                            'aboslute group h-10 overflow-hidden bg-mauve text-text !transition-all duration-1000 hover:bg-text'
+                        )}
+                        buttonView={ButtonView.LARGE}
+                    >
                         <SearchIcon className={'absolute fill-base'} />
                     </Button>
                 </div>
-                <Button className={'group !p-3 bg-mantle hover:bg-text w-full max-w-10  transition-colors'} buttonView={ButtonView.LARGE} onClick={() => { setIsFilterMenuOpen(true) }}>
-                    <IconSettings className={'absolute fill-text group-hover:fill-base'} />
+                <Button
+                    className={cn(
+                        isFiltered ? 'bg-mauve' : 'bg-mantle',
+                        'group w-full max-w-10 !p-3 transition-colors hover:bg-text'
+                    )}
+                    buttonView={ButtonView.LARGE}
+                    onClick={() => {
+                        setIsFilterMenuOpen(true);
+                    }}
+                >
+                    <IconSettings
+                        className={cn(
+                            isFiltered ? 'fill-base' : 'fill-text',
+                            'absolute group-hover:fill-base'
+                        )}
+                    />
                 </Button>
             </form>
-        </>
-    )
-}
+        </Suspense>
+    );
+};
+
+export const Search = () => (
+    <Suspense>
+        <SearchComponent />
+    </Suspense>
+);

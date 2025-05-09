@@ -1,1 +1,1 @@
-export { VacancyCard } from './ui/VacancyCard';
+export { VacancyCard, type VacancyCardProps } from './ui/VacancyCard';
