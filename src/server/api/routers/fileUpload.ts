@@ -1,6 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db/db";
+import { Roles } from "@prisma/client";
 
 const uploadThing = createUploadthing();
 
@@ -12,7 +13,10 @@ const handleAuth = async (req: Request) => {
       throw new Error("Не авторизован");
     }
   }
-  return { userId: session?.user.id, userRole: session?.user.role };
+  return { 
+    userId: session?.user.id, 
+    userRole: session?.user.role 
+  };
 };
 
 export const fileUploadRouter = {
@@ -26,22 +30,43 @@ export const fileUploadRouter = {
       const authData = await handleAuth(req);
       return authData;
     })
+    // eslint-disable-next-line consistent-return
     .onUploadComplete(async ({ metadata, file }) => {
-      try {
-        await prisma.clientProfile.update({
-          where: { user_id: metadata.userId },
-          data: { imgUrl: file.ufsUrl },
-        });
-
-        console.log("Изображение сохранено user:", metadata.userId);
-        return { 
-          uploadedBy: metadata.userId,
-          fileType: "image",
-          fileUrl: file.ufsUrl
-        };
-      } catch (error) {
-        console.error("Не удалось сохранить изображение в базу данных:", error);
-        throw new Error("Ошибка сохранения URL");
+      if(metadata.userRole === Roles.USER){
+        try {
+          await prisma.clientProfile.update({
+            where: { user_id: metadata.userId },
+            data: { imgUrl: file.ufsUrl },
+          });
+  
+          console.log("Изображение сохранено user:", metadata.userId);
+          return { 
+            uploadedBy: metadata.userId,
+            fileType: "image",
+            fileUrl: file.ufsUrl
+          };
+        } catch (error) {
+          console.error("Не удалось сохранить изображение в базу данных:", error);
+          throw new Error("Ошибка сохранения URL");
+        }
+      }
+      else if(metadata.userRole === Roles.COMPANY){
+        try {
+          await prisma.companyProfile.update({
+            where: { user_id: metadata.userId },
+            data: { imgUrl: file.ufsUrl },
+          });
+  
+          console.log("Изображение сохранено user:", metadata.userId);
+          return { 
+            uploadedBy: metadata.userId,
+            fileType: "image",
+            fileUrl: file.ufsUrl
+          };
+        } catch (error) {
+          console.error("Не удалось сохранить изображение в базу данных:", error);
+          throw new Error("Ошибка сохранения URL");
+        }
       }
     }),
 
@@ -55,22 +80,43 @@ export const fileUploadRouter = {
       const authData = await handleAuth(req);
       return authData;
     })
+    // eslint-disable-next-line consistent-return
     .onUploadComplete(async ({ metadata, file }) => {
-      try {
-        await prisma.clientProfile.update({
-          where: { user_id: metadata.userId },
-          data: { resume: file.ufsUrl },
-        });
-
-        console.log("Файл сохранен user:", metadata.userId);
-        return { 
-          uploadedBy: metadata.userId,
-          fileType: "pdf",
-          fileUrl: file.ufsUrl 
-        };
-      } catch (error) {
-        console.error("Не удалось сохранить файл в базу данных:", error);
-        throw new Error("Ошибка сохранения URL");
+      if(metadata.userRole === Roles.USER){
+        try {
+          await prisma.clientProfile.update({
+            where: { user_id: metadata.userId },
+            data: { pdfUrl: file.ufsUrl },
+          });
+  
+          console.log("Файл сохранен user:", metadata.userId);
+          return { 
+            uploadedBy: metadata.userId,
+            fileType: "pdf",
+            fileUrl: file.ufsUrl 
+          };
+        } catch (error) {
+          console.error("Не удалось сохранить файл в базу данных:", error);
+          throw new Error("Ошибка сохранения URL");
+        }
+      }
+      else if(metadata.userRole === Roles.COMPANY){
+        try {
+          await prisma.companyProfile.update({
+            where: { user_id: metadata.userId },
+            data: { pdfUrl: file.ufsUrl },
+          });
+  
+          console.log("Файл сохранен user:", metadata.userId);
+          return { 
+            uploadedBy: metadata.userId,
+            fileType: "pdf",
+            fileUrl: file.ufsUrl 
+          };
+        } catch (error) {
+          console.error("Не удалось сохранить файл в базу данных:", error);
+          throw new Error("Ошибка сохранения URL");
+        }
       }
     }),
 

@@ -58,7 +58,7 @@ model ClientProfile {
     email String? @unique
     about_me String? 
     preferences Json?
-    resume String?
+    pdfUrl String?
     favoriteVacancies Vacancy[] @relation("FavoriteVacancies")
     user_id String @unique
     user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)

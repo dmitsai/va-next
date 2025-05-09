@@ -3,11 +3,11 @@ import bcrypt from 'bcrypt';
 import { prisma } from './db';
 
 const seed = async () => {
-    const hashedPassword = await bcrypt.hash('password', 10);
+    const hashedPassword = await bcrypt.hash('Password!1', 10);
 
     const testUser = await prisma.users.create({
         data: {
-            email: 'company@gmail.com',
+            email: 'T-bank@gmail.com',
             password_hash: hashedPassword,
             role: Roles.COMPANY,
         },
