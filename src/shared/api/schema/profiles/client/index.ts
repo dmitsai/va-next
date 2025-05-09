@@ -8,7 +8,6 @@ const preferencesSchema = z.object({
 })
 
 export const inputUpdateClientProfileSchema = z.object({
-  user_id: z.string().uuid(),
   name: z.string().optional(),
   surname: z.string().optional(),
   patronymic: z.string().nullable().optional(),
@@ -35,7 +34,7 @@ export const clientProfileResponseSchema = z.object({
     email: z.string(),
     about_me: z.string().nullable(),
     preferences: preferencesSchema.nullable(),
-    resume: z.string().nullable(),
+    pdfUrl: z.string().nullable(),
     favoriteVacancies: z.array(
       z.object({
         vacancy_id: z.string(),

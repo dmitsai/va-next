@@ -24,7 +24,7 @@ export const POST = async (request: NextRequest) => {
                 role: Roles.USER
             },
         });
-
+        
         const clientProfile = await prisma.clientProfile.create({
             data: {
                 user_id: user.user_id,
