@@ -1,43 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
-import { CONSTANTS } from '~/shared/lib/strings';
+import React, { Suspense, useState } from 'react';
+import { CONSTANTS, getStringifySalary } from '~/shared/lib/strings';
 import cn from 'classnames';
 import Button, { ButtonView } from '~/shared/ui/Button';
 import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg';
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
 import { Badge } from '~/shared/ui/Badge';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-// FIXME: temp solution for tags
-
-export interface Tags {
-    label: string;
-    color: string;
-}
+import { useSearchParams } from 'next/navigation';
+import { type Tags } from '~/shared/api/model/tags/type';
+import { getTagArrayWithColors } from '../utils/tagsWithColors';
 
 export interface VacancyCardProps {
     vacancyId: string;
     title: string;
     isFavorited: boolean;
-    tags: Array<Tags>;
+    tags: Tags | null;
     description: string;
     company: {
         imgUrl: string | null;
         title: string;
     };
-    salary: number;
+    salaryFrom: number | null;
+    salaryTo: number | null;
     wrapperClassName?: string;
+    currency: {
+        title: string;
+        currency_id: string;
+        char: string;
+    };
 }
 
-const parseSalary = (salary: number) => {
-    const thousands = Math.floor(salary / 1000).toString();
-    const hundreds = (salary % 1000).toString().padStart(3, '0');
-    return `${thousands}.${hundreds} ${CONSTANTS.card.currencyChar}`;
-};
-
-export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
+export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
     const {
         vacancyId,
         title,
@@ -45,14 +40,14 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
         tags,
         description,
         company,
-        salary: numberSalary,
+        salaryFrom,
+        salaryTo,
+        currency,
         wrapperClassName,
     } = props;
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
-
-    const salary = parseSalary(numberSalary);
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
 
@@ -60,6 +55,8 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
         // FIXME: add internship to favorited later
         setIsFavorited(!isFavorited);
     };
+
+    const tagArrayWithColors = getTagArrayWithColors(tags);
 
     return (
         <Link
@@ -83,34 +80,37 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
                         className={
                             'group/favorite h-6 w-6 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
                         }
-                        onClick={handleIsFavorited}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleIsFavorited();
+                        }}
                     >
                         <IconStar
                             className={cn(
                                 'absolute',
                                 isFavorited
                                     ? 'fill-yellow stroke-none'
-                                    : 'fill-none stroke-text group-hover/favorite:stroke-base'
+                                    : 'fill-none stroke-text group-hover/favorite:stroke-yellow'
                             )}
                         />
                     </Button>
                 </div>
                 <p className={'fot-400 text-14 leading-5 text-text'}>
-                    {salary}
+                    {getStringifySalary(salaryFrom, salaryTo, currency.char)}
                 </p>
             </div>
             <div className={'relative h-full w-full'}>
                 {/* FIXME: temp solution for display valid count of tags */}
                 <div
                     className={
-                        'flex max-h-card-tags flex-wrap gap-1 overflow-hidden opacity-100 transition-all duration-300 group-hover:opacity-0'
+                        'flex h-12 max-h-card-tags flex-wrap gap-1 overflow-hidden opacity-100 transition-all duration-300 group-hover:opacity-0'
                     }
                 >
-                    {tags.map((tag) => (
+                    {tagArrayWithColors.map((tag) => (
                         <Badge
-                            key={tag.label.trim()}
-                            placeholder={tag.label}
-                            className={cn('h-5 text-base', `${tag.color}`)}
+                            key={tag.name.trim()}
+                            placeholder={tag.name}
+                            className={cn('h-5 text-base', `bg-${tag.color}`)}
                         />
                     ))}
                 </div>
@@ -135,6 +135,9 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
                     placeholder={company.title}
                 />
                 <Button
+                    onClick={(e) => {
+                        e.preventDefault();
+                    }}
                     buttonView={ButtonView.SMALL}
                     className={
                         'bg-mauve text-base opacity-0 transition-all duration-300 hover:bg-text group-hover:opacity-100'
@@ -149,3 +152,9 @@ export const VacancyCard: React.FC<VacancyCardProps> = (props) => {
         </Link>
     );
 };
+
+export const VacancyCard: React.FC<VacancyCardProps> = (props) => (
+    <Suspense>
+        <VacancyCardComponent {...props} />
+    </Suspense>
+);

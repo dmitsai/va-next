@@ -1,12 +1,10 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
 import { VacancyCard } from '~/features/vacancyCard';
-import { Tags } from '~/features/vacancyCard/ui/VacancyCard';
 import cn from 'classnames';
 import { useParams, useSearchParams } from 'next/navigation';
-import { periods } from '~/widgets/Search/model/data';
 import {
     education,
     experience,
@@ -14,18 +12,15 @@ import {
     employmentTypes,
 } from '~/shared/api/model/tags/data';
 import {
-    Education,
     EducationKey,
-    EmploymentTypes,
     EmploymentTypesKey,
-    Experience,
     ExperienceKey,
-    WorkSchedule,
+    PeriodKey,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
 import { useVirtualVacancies } from './helpers/useVirtualVacancies';
 
-export default () => {
+const ListPage = () => {
     const params = useParams();
 
     const searchParams = useSearchParams();
@@ -55,6 +50,12 @@ export default () => {
         experience: experienceValues,
     };
 
+    const salaryFrom = searchParams.get('salaryFrom')!;
+
+    const period = searchParams.get('period') as PeriodKey;
+
+    const currencyName = searchParams.get('currency')!;
+
     const search = searchParams.get('search');
 
     useEffect(() => {
@@ -71,6 +72,9 @@ export default () => {
         isSuccess,
     } = clientApi.vacancy.infinityVacancy.useInfiniteQuery(
         {
+            salaryFrom,
+            period,
+            currencyName,
             search,
             tags,
             limit: 8,
@@ -167,10 +171,12 @@ export default () => {
                                         vacancyId={vacancy.vacancy_id}
                                         title={vacancy.title}
                                         isFavorited={false}
-                                        tags={[]}
+                                        tags={vacancy.tags}
                                         description={vacancy.description}
                                         company={vacancy.company}
-                                        salary={65000}
+                                        salaryFrom={vacancy.salaryFrom}
+                                        salaryTo={vacancy.salaryTo}
+                                        currency={vacancy.currency}
                                     />
                                 ))}
                             </div>
@@ -181,3 +187,9 @@ export default () => {
         </div>
     );
 };
+
+export default () => (
+    <Suspense fallback={null}>
+        <ListPage />
+    </Suspense>
+);

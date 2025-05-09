@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Popup, PopupProps } from '~/shared/ui/Popup';
 import cn from 'classnames';
 import { Control, FieldValues, useForm } from 'react-hook-form';
@@ -13,12 +13,14 @@ import {
 } from '~/entities/preferences';
 import Select from '~/shared/ui/Select';
 import Button, { ButtonView } from '~/shared/ui/Button';
-import { useQueryStates, parseAsString } from 'nuqs';
+import { useQueryStates, parseAsString, parseAsArrayOf } from 'nuqs';
 import { ReactComponent as ClearIcon } from '~/shared/assets/icons/icon-clear.svg';
 import { ReactComponent as SearchIcon } from '~/shared/assets/icons/search-icon.svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { clientApi } from 'trpc/client';
 import { experience } from '~/shared/api/model/tags/data';
+import { useVacancyFilter } from '~/entities/vacancies/model/hook';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { RegionInput } from './RegionInput';
 import { Filter } from './Filter';
 import {
@@ -28,9 +30,10 @@ import {
     RegionItem,
     Regions,
 } from '../model/types';
+import { filterMenuSchema } from '../model/schema';
 
 export interface FilterMenyForm {
-    salary: string;
+    salaryFrom: string;
 }
 
 export interface FilterMenuProps
@@ -47,40 +50,61 @@ export interface QueryParams {
     vacanciesDate?: string;
 }
 
-export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
+const FilterMenuComponent: React.FC<FilterMenuProps> = (props) => {
     const router = useRouter();
     const pathname = usePathname();
 
     const { filters, regions, periods, setIsOpen, ...other } = props;
+    const {
+        removeAllFilters,
+        getFilters,
+        getSalary,
+        getCurrencyName,
+        getPeriod,
+        updateAllFilters,
+    } = useVacancyFilter();
+
+    const initialFilters = getFilters();
+    const { salaryFrom: initialSalaryFrom } = getSalary();
+    const { period: initialPeriod } = getPeriod();
+    const { currencyName: initialCurrencyName } = getCurrencyName();
 
     const { control, handleSubmit, reset } = useForm<FilterMenyForm>({
+        resolver: zodResolver(filterMenuSchema),
         defaultValues: {
-            salary: '',
+            salaryFrom: initialSalaryFrom ?? '',
         },
     });
 
-    const initialFiltres = Object.fromEntries(
-        filters.map((filter) => [
-            filter.name,
-            { name: filter.name, localTitle: filter.localTitle },
-        ])
-    );
-
-    const [selectedFilters, setSelectedFilters] = useState(initialFiltres);
+    const [selectedFilters, setSelectedFilters] = useState(initialFilters);
 
     const { data: currencies } = clientApi.currency.getAllCurrencies.useQuery();
-    // NOTE: TEMP SOLUTION
-    const initialCurrency =
-        currencies && currencies?.length !== 0
-            ? currencies[0]
-            : {
-                  title: 'RUB',
-                  currency_id: undefined,
-                  char: '₽',
-              };
-    const [selectedCurrency, setSelectedCurrency] = useState(initialCurrency);
 
-    const handleFilterChange = (filter: string, value: FilterItemValue) => {
+    const [selectedCurrency, setSelectedCurrency] = useState<{
+        title: string;
+        currency_id?: string;
+        char: string;
+    }>({
+        title: 'RUB',
+        char: '₽',
+    });
+
+    useEffect(() => {
+        if (currencies) {
+            const currencyToSet = initialCurrencyName
+                ? (currencies.find((c) => c.title === initialCurrencyName) ?? {
+                      title: 'RUB',
+                      char: '₽',
+                  })
+                : {
+                      title: 'RUB',
+                      char: '₽',
+                  };
+            setSelectedCurrency(currencyToSet);
+        }
+    }, [currencies, initialCurrencyName]);
+
+    const handleFilterChange = (filter: string, value: FilterItemValue[]) => {
         setSelectedFilters({
             ...selectedFilters,
             [filter]: value,
@@ -102,71 +126,61 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
     };
 
     const [selectedVacanciesDate, setSelectedVacanciesDate] = useState(
-        periods.at(-1)
+        periods.find((p) => p.name === initialPeriod?.name) ?? periods.at(-1)
     );
 
     const handleResetFilters = () => {
-        setSelectedFilters(initialFiltres);
-        setSelectedCurrency(initialCurrency);
+        const filtersToRemove: Record<string, string[]> = {};
+
+        Object.entries(selectedFilters).forEach(([key, value]) => {
+            filtersToRemove[key] = value.map((el) => el.name);
+        });
+        setSelectedFilters(
+            Object.fromEntries(
+                filters.map((filter) => [filter.name, [] as FilterItemValue[]])
+            )
+        );
+        setSelectedCurrency({
+            title: 'RUB',
+            char: '₽',
+        });
         reset();
         setSelectedRegions([]);
         setSelectedVacanciesDate(periods.at(-1));
 
-        // eslint-disable-next-line no-use-before-define
-        void setQueryParams(null);
+        removeAllFilters();
     };
 
-    const [queryParams, setQueryParams] = useQueryStates({
-        // NOTE: TEMP SOLUTION
-        workSchedule: parseAsString.withDefault(''),
-        employmentTypes: parseAsString.withDefault(''),
-        education: parseAsString.withDefault(''),
-        experience: parseAsString.withDefault(''),
-        currency: parseAsString.withDefault(''),
-        salary: parseAsString.withDefault(''),
-        region: parseAsString.withDefault(''),
-        period: parseAsString.withDefault(''),
-    });
-
-    // NOTE: fix later, add parsing query params after add vacancies
-    const onSubmit = async (data: FilterMenyForm) => {
-        const queryParams: Record<string, string> = {};
+    const onSubmit = (data: FilterMenyForm) => {
+        const filtersToSet: Record<string, string[]> = {};
 
         Object.entries(selectedFilters).forEach(([key, value]) => {
-            if (value.name && value.name !== initialFiltres[key]?.name) {
-                queryParams[key] = `${value.name}`;
-            }
+            filtersToSet[key] = value.map((el) => el.name);
         });
 
-        if (selectedRegions.length > 0) {
-            queryParams.regions = selectedRegions.some(
-                (region) => region.name === 'all'
-            )
-                ? 'all'
-                : `[${selectedRegions.map((region) => region.name).join(',')}]`;
-        }
+        const salary = data.salaryFrom
+            .split('')
+            .filter((e) => e.trim().length)
+            .join('');
 
-        if (data.salary.trim()) {
-            queryParams.salary = data.salary.trim();
-        }
+        const regionsToSet =
+            selectedRegions.length > 0
+                ? selectedRegions.filter((region) =>
+                      selectedRegions.some((r) => r.name === 'all')
+                          ? region.name === 'all'
+                          : true
+                  )
+                : [];
+        const currencyName = selectedCurrency?.title;
+        updateAllFilters({
+            filters: filtersToSet,
+            salary,
+            regions: regionsToSet,
+            period: selectedVacanciesDate,
+            currencyName,
+        });
 
-        queryParams.currency = selectedCurrency?.title ?? 'RUB';
-
-        if (selectedVacanciesDate?.name) {
-            queryParams.period = selectedVacanciesDate.name;
-        }
-
-        // Формируем строку запроса
-        const queryString = new URLSearchParams(queryParams).toString();
-
-        if (pathname === '/') {
-            await setQueryParams(queryParams);
-            setIsOpen(false);
-            router.push(`/vacancies?${queryString}`);
-        } else {
-            await setQueryParams(queryParams);
-            setIsOpen(false);
-        }
+        setIsOpen(false);
     };
     return (
         <Popup
@@ -179,12 +193,12 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
                 className={'flex w-full flex-col items-end gap-y-8'}
                 onSubmit={handleSubmit(onSubmit)}
             >
-                <div className={'flex w-full flex-col gap-y-5'}>
-                    <div className={'grid w-full grid-cols-3 gap-2'}>
+                <div className={'flex w-full flex-col gap-y-6'}>
+                    <div className={'grid w-full grid-cols-3 gap-4'}>
                         {filters.map((filter) => {
                             const selected =
                                 selectedFilters[filter.name] ??
-                                ({} as FilterItemValue);
+                                ([] as FilterItemValue[]);
                             return (
                                 <Filter
                                     key={filter.name}
@@ -199,7 +213,7 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
                         <TextInput
                             control={control as unknown as Control<FieldValues>}
                             placeholder={'Уровень дохода от..'}
-                            name={'salary'}
+                            name={'salaryFrom'}
                             wrapperClassName={'!max-w-full'}
                             className={'!max-w-full'}
                         />
@@ -214,11 +228,18 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
                             }
                             selected={selectedCurrency?.char}
                             setSelected={(value) =>
-                                setSelectedCurrency(
-                                    currencies?.find(
+                                setSelectedCurrency((prev) => {
+                                    const selected = currencies?.find(
                                         (currency) => currency.char === value
-                                    )
-                                )
+                                    );
+
+                                    return (
+                                        selected ?? {
+                                            title: 'RUB',
+                                            char: '₽',
+                                        }
+                                    );
+                                })
                             }
                         />
                     </div>
@@ -283,3 +304,9 @@ export const FilterMenu: React.FC<FilterMenuProps> = (props) => {
         </Popup>
     );
 };
+
+export const FilterMenu: React.FC<FilterMenuProps> = (props) => (
+    <Suspense>
+        <FilterMenuComponent {...props} />
+    </Suspense>
+);

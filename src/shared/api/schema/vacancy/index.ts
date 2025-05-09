@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { tagsShema } from '../tag';
 import { currencySchema } from '../currency';
+import { periods, periodsKeys } from '../../model/tags/data';
 
 export const inputGetVacancyItemSchema = z.object({
     vacancyId: z.string().uuid(),
@@ -15,6 +16,9 @@ export const inputGetVacancyListSchema = z.object({
     cursor: z.string().nullish(),
     tags: tagsShema.optional(),
     search: z.string().optional().nullish(),
+    salaryFrom: z.string().optional().nullable(),
+    period: z.enum(periodsKeys).optional().nullable(),
+    currencyName: z.string().optional().nullable(),
 });
 
 export type InputGetVacancyListSchema = z.infer<
@@ -56,8 +60,8 @@ export const vacancyResponseSchema = z.object({
     title: z.string(),
     company_id: z.string(),
     description: z.string(),
-    salaryFrom: z.string().nullable(),
-    salaryTo: z.string().nullable(),
+    salaryFrom: z.number().nullable(),
+    salaryTo: z.number().nullable(),
     currency: currencySchema,
     imgUrl: z.string().nullable(),
     tags: tagsShema.nullable(),

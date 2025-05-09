@@ -30,7 +30,12 @@ export const vacancyRouter = createTRPCRouter({
             if (!companyProfile) {
                 throw new Error('Company profile not found');
             }
-
+            const salaryFrom = input.salaryFrom
+                ? parseInt(input.salaryFrom, 10)
+                : null;
+            const salaryTo = input.salaryTo
+                ? parseInt(input.salaryTo, 10)
+                : null;
             const newVacancy = await ctx.prisma.vacancy.create({
                 data: {
                     title: input.title,
@@ -39,8 +44,8 @@ export const vacancyRouter = createTRPCRouter({
                             company_id: companyProfile.company_id,
                         },
                     },
-                    salaryFrom: input.salaryFrom,
-                    salaryTo: input.salaryTo,
+                    salaryFrom,
+                    salaryTo,
                     description: input.description,
                     imgUrl: input.imgUrl,
                     currency: {
@@ -71,6 +76,13 @@ export const vacancyRouter = createTRPCRouter({
                 throw new Error('Company profile not found');
             }
 
+            const salaryFrom = input.salaryFrom
+                ? parseInt(input.salaryFrom, 10)
+                : null;
+            const salaryTo = input.salaryTo
+                ? parseInt(input.salaryTo, 10)
+                : null;
+
             const updatedVacancy = await ctx.prisma.vacancy.update({
                 where: {
                     vacancy_id: input.vacancy_id,
@@ -78,8 +90,8 @@ export const vacancyRouter = createTRPCRouter({
                 },
                 data: {
                     title: input.title,
-                    salaryFrom: input.salaryFrom,
-                    salaryTo: input.salaryTo,
+                    salaryFrom,
+                    salaryTo,
                     description: input.description,
                     currency: input.currencyId
                         ? {
@@ -140,12 +152,59 @@ export const vacancyRouter = createTRPCRouter({
         .input(inputGetVacancyListSchema)
         .query(async ({ ctx, input }) => {
             const limit = input.limit ?? 50;
-            const { cursor, tags } = input;
+            const { cursor, tags, period, salaryFrom, currencyName } = input;
 
-            // Явно указываем тип для условий WHERE
             const whereConditions: Prisma.VacancyWhereInput[] = [];
 
-            // Поиск по тексту
+            if (currencyName) {
+                const currency = await ctx.prisma.currency.findFirst({
+                    where: {
+                        title: currencyName,
+                    },
+                });
+
+                if (currency) {
+                    whereConditions.push({
+                        currency_id: currency.currency_id,
+                    });
+                }
+            }
+
+            if (salaryFrom) {
+                const numberSalaryFrom = parseInt(salaryFrom, 10);
+
+                whereConditions.push({
+                    salaryFrom: {
+                        gte: numberSalaryFrom,
+                    },
+                });
+            }
+
+            if (period && period !== 'all') {
+                const now = new Date();
+                let startDate: Date = now;
+
+                switch (period) {
+                    case 'day':
+                        startDate = new Date(now.setDate(now.getDate() - 1));
+                        break;
+                    case 'month':
+                        startDate = new Date(now.setMonth(now.getMonth() - 1));
+                        break;
+                    case 'threeMonths':
+                        startDate = new Date(now.setMonth(now.getMonth() - 3));
+                        break;
+                    default:
+                        break;
+                }
+
+                whereConditions.push({
+                    published_at: {
+                        gte: startDate,
+                    },
+                });
+            }
+
             if (input.search) {
                 const terms = prepareQuery(input.search);
 
@@ -171,7 +230,6 @@ export const vacancyRouter = createTRPCRouter({
                 }
             }
 
-            // Фильтрация по тегам
             if (tags?.workSchedule) {
                 whereConditions.push({
                     tags: {
@@ -205,7 +263,6 @@ export const vacancyRouter = createTRPCRouter({
                 });
             }
 
-            // Собираем финальное условие WHERE
             const where: Prisma.VacancyWhereInput =
                 whereConditions.length > 0 ? { AND: whereConditions } : {};
 

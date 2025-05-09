@@ -13,16 +13,19 @@ import { ReactComponent as SearchIcon } from '~/shared/assets/icons/search-icon.
 import { FilterMenu } from '~/features/filterMenu';
 import { parseAsString, useQueryState, useQueryStates } from 'nuqs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useVacancyFilter } from '~/entities/vacancies/model/hook';
 import { periods, regions, state, filters } from '../model/data';
 
 export interface SearchForm {
     search: string;
 }
 
-export const Search: React.FC = () => {
+export const SearchComponent: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+
+    const { setSearch, getSearch } = useVacancyFilter();
 
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [selected, setSelected] = useState(state[0]);
@@ -38,7 +41,6 @@ export const Search: React.FC = () => {
     });
 
     const { search: isSearchDirty } = dirtyFields;
-    const [search, setSearch] = useQueryState('search');
 
     const relevantParamNames = [
         ...filters.map((f) => f.name),
@@ -48,17 +50,17 @@ export const Search: React.FC = () => {
     const hasNonSearchParams = Array.from(searchParams.keys()).some(
         (param) => param !== 'search' && relevantParamNames.includes(param)
     );
-
     const isFiltered =
         hasNonSearchParams ||
         (searchParams.has('search') && searchParams.size > 1);
 
-    const onSubmit = async (data: SearchForm) => {
+    const onSubmit = (data: SearchForm) => {
         if (pathname === '/') {
-            await setSearch(data.search);
-            router.push(`/vacancies?search=${data.search}`);
+            const updatedParams = new URLSearchParams(searchParams.toString());
+            updatedParams.set('search', data.search);
+            router.replace(`/vacancies?${updatedParams.toString()}`);
         } else {
-            await setSearch(data.search);
+            setSearch(data.search);
         }
     };
 
@@ -135,3 +137,9 @@ export const Search: React.FC = () => {
         </Suspense>
     );
 };
+
+export const Search = () => (
+    <Suspense>
+        <SearchComponent />
+    </Suspense>
+);

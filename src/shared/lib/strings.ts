@@ -1,3 +1,5 @@
+import { number } from 'zod';
+
 export const CONSTANTS = {
   topBar: {
     placeholder: 'vakansiy.net',
@@ -10,23 +12,23 @@ export const CONSTANTS = {
       system: 'Системная',
     },
   },
-    auth: {
-        lable: {
-            signUp: 'Создать учётную запись',
-            logIn: 'Войти в учётную запись',
-            code: 'Введите код отправленный на вашу почту'
-        },
-        signUp: 'Регистрация',
-        logIn: 'Вход',
-        description: 'Вы можете создать или войти в свою учетную запись  и узнавать о новых вакансиях первыми',
-        enterEmail: 'Введите свой адрес электронной почты ',
-        enterPassword: 'Введите свой пароль',
-        code: 'Отправить код еще раз',
-        resume: 'Введите своё имя и фамилию',
-        continue: 'или войти как',
-        company: 'Компания',
-        user: 'Соискатель'
+  auth: {
+    lable: {
+        signUp: 'Создать учётную запись',
+        logIn: 'Войти в учётную запись',
+        code: 'Введите код отправленный на вашу почту'
     },
+    signUp: 'Регистрация',
+    logIn: 'Вход',
+    description: 'Вы можете создать или войти в свою учетную запись  и узнавать о новых вакансиях первыми',
+    enterEmail: 'Введите свой адрес электронной почты ',
+    enterPassword: 'Введите свой пароль',
+    code: 'Отправить код еще раз',
+    resume: 'Введите своё имя и фамилию',
+    continue: 'или войти как',
+    company: 'Компания',
+    user: 'Соискатель'
+},
   home: {
     vacancies: {
       placeholder: {
@@ -51,6 +53,9 @@ export const CONSTANTS = {
       phone: {
         invalid: 'Неверный формат телефона',
       },
+      salary: {
+        number: 'Уровень дохода должен быть числом',
+    },
     },
   },
   card: {
@@ -96,5 +101,24 @@ export const CONSTANTS = {
     more: 'Показать больше',
     less: 'Показать меньше',
   },
-
 } as const;
+
+export const getStringifySalary = (
+    salaryFrom: number | null,
+    salaryTo: number | null,
+    salaryCurrency: string | null
+) => {
+    const { from, to } = CONSTANTS.detailedVacancy.salary;
+    const currency = salaryCurrency ?? CONSTANTS.currency.ruble;
+
+    const formatNumber = (num: number): string =>
+        num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    if (salaryFrom && salaryTo) {
+        return `${from} ${formatNumber(salaryFrom)} ${to} ${formatNumber(salaryTo)} ${currency}`;
+    }
+    if (salaryFrom) {
+        return `${from} ${formatNumber(salaryFrom)} ${currency}`;
+    }
+    return CONSTANTS.detailedVacancy.salary.empty;
+};

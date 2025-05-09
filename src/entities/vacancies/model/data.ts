@@ -5,7 +5,7 @@ import {
     workSchedule,
 } from '~/shared/api/model/tags/data';
 
-export const filters = [
+export const availableFilters = [
     {
         name: 'employmentTypes',
         localTitle: 'Тип занятости',
@@ -40,18 +40,17 @@ export const filters = [
     },
 ];
 
-export const regions = [
-    { name: 'moscow', localTitle: 'Москва' },
-    { name: 'omsk', localTitle: 'Омск' },
-    { name: 'samara', localTitle: 'Самара' },
-    { name: 'all', localTitle: 'Все регионы' },
-];
-
-export const periods = [
+export const availablePeriods = [
     { name: 'day', localTitle: 'День' },
     { name: 'month', localTitle: 'Месяц' },
     { name: 'threeMonths', localTitle: '3 месяца' },
     { name: 'all', localTitle: 'Все время' },
 ];
 
-export const state = ['Вакансии', 'Стажировки'];
+// NOTE: TEMP SOLUTION
+export const availableRegions = [
+    { name: 'moscow', localTitle: 'Москва' },
+    { name: 'omsk', localTitle: 'Омск' },
+    { name: 'samara', localTitle: 'Самара' },
+    { name: 'all', localTitle: 'Все регионы' },
+];
