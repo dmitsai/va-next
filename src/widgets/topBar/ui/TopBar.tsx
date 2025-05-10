@@ -6,16 +6,16 @@ import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg'
 import { ReactComponent as IconBell } from '~/shared/assets/icons/icon-bell.svg';
 import { ReactComponent as IconUser } from '~/shared/assets/icons/icon-user.svg';
 import { type Icon } from '~/shared/lib/types';
+import { useSession } from 'next-auth/react';
+import { getServerSession } from '~/shared/lib/auth';
+import { LinkButton, LinkView } from '~/shared/ui/Button/LinkButtton';
 import { ThemePicker } from './ThemePicker';
 import { HomeLink } from './HomeLink';
 
 // FIXME: temp solution, fix after add autharization
 
-export interface TopBarProps {
-    isAuth: boolean;
-}
-
 export interface ButtonContent {
+    href: string;
     icon: Icon;
     key: string;
 }
@@ -25,7 +25,7 @@ export interface LinkItem {
     label: string;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
+export const TopBar: React.FC = async () => {
     const links: Array<LinkItem> = [
         {
             href: './vacancies',
@@ -43,18 +43,19 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
 
     const buttons: Array<ButtonContent> = [
         {
+            href: './favourite',
             icon: IconStar,
             key: 'link-favourite',
         },
         {
-            icon: IconBell,
-            key: 'link-notification',
-        },
-        {
+            href: './profile',
             icon: IconUser,
             key: 'link-profile',
         },
     ];
+    const session = await getServerSession();
+
+    const isAuth = !!session;
 
     return (
         <header
@@ -105,9 +106,10 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
                         }
                     >
                         {buttons.map((button) => (
-                            <Button
+                            <LinkButton
+                                href={button.href}
                                 key={button.key}
-                                buttonView={ButtonView.SMALL}
+                                linkView={LinkView.SMALL}
                                 className={
                                     'bg-mantle !px-1.5 transition-colors hover:bg-text'
                                 }
@@ -117,7 +119,7 @@ export const TopBar: React.FC<TopBarProps> = ({ isAuth }) => {
                                         'fill-text group-hover:fill-base group-disabled:fill-sub-secondary/70'
                                     }
                                 />
-                            </Button>
+                            </LinkButton>
                         ))}
                     </div>
                 )}

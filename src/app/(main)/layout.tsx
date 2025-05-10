@@ -1,10 +1,9 @@
-import { TopBar } from "~/widgets/topBar"
-import React from "react";
+import { TopBar } from '~/widgets/topBar';
+import React from 'react';
 
 export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
-<div className="min-h-screen h-screen flex flex-col">
-    <TopBar  isAuth/>
-   {children}
-</div>
-  
-  );
+    <div className="flex h-screen min-h-screen flex-col">
+        <TopBar />
+        {children}
+    </div>
+);
