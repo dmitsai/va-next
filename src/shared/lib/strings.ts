@@ -58,6 +58,13 @@ export const CONSTANTS = {
             salary: {
                 number: 'Уровень дохода должен быть числом',
             },
+            vacancy: {
+                title: 'Название обязательно',
+                description: {
+                    required: 'Описание обязательно',
+                    min: 'Слишком короткое описание',
+                }
+            }
         },
     },
     card: {
@@ -117,6 +124,13 @@ export const CONSTANTS = {
             from: 'от',
             to: 'до',
         },
+        btn: {
+            save: {
+                edit: 'Сохранить изменения',
+                create: 'Создать'
+            },
+            cancel: 'Отмена',
+        }
     },
 } as const;
 

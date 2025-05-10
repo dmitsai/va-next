@@ -10,16 +10,40 @@ import { clientApi } from 'trpc/client';
 import { Salary, SalaryForm } from '~/features/salaryForm';
 import { Currency } from '~/features/salaryForm/ui/SalaryForm';
 import { TagsForm } from '~/features/tagsForm';
+import { availableFilters as tags } from '~/entities/vacancies/model/data';
+import Button, { ButtonView } from '~/shared/ui/Button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { vacancyFormSchema } from '../model/schema';
 
 export interface VacancyFormProps {}
 
+
+type FormValues = {
+
+    title: string;
+    description: string;
+    salaryFrom: string;
+    salaryTo: string;
+
+    [key: string]: string | boolean; // NOTE: TEMP SOLUTION
+  };
+
 export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
-    const { control } = useForm({
+
+
+    const { control, handleSubmit} = useForm({
+        resolver: zodResolver(vacancyFormSchema),
         defaultValues: {
             title: '',
             description: '',
             salaryFrom: '',
             salaryTo: '',
+            ...tags.reduce((acc, tagGroup) => {
+                tagGroup.value.forEach((tag) => {
+                  acc[tag.name] = false; 
+                });
+                return acc;
+              }, {} as Record<string, boolean>),
         },
     });
 
@@ -39,6 +63,25 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
         char: '₽',
     });
 
+    const onSubmit = (data: FormValues) => {
+        const selectedTags = tags.reduce((acc, tagGroup) => {
+          const selectedValues = tagGroup.value
+            .filter((tag) => data[tag.name] === true)
+            .map((tag) => tag.name);
+          
+          if (selectedValues.length > 0) {
+            acc[tagGroup.name] = selectedValues;
+          }
+          return acc;
+        }, {} as Record<string, string[]>);
+    
+        console.log("Данные формы:", {
+          ...data,
+          tags: selectedTags, 
+        });
+    
+      };
+
     useEffect(() => {
         if (currencies) {
             const currencyToSet = currencies.find((c) => c.title === 'RUB') ?? {
@@ -51,14 +94,14 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
     }, [currencies]);
 
     return (
-        <form className={'max-h- flex w-full flex-col gap-y-8'}>
-            <div className={'flex w-full flex-col gap-y-4'}>
+        <form className={'max-h- flex w-full flex-col gap-y-12'} onSubmit={handleSubmit(onSubmit)}>
+            <div className={'flex w-full flex-col gap-y-8'}>
                 <p className={'text-18 text-text'}>
                     {CONSTANTS.vacancy.blocks.main}
                 </p>
                 <TextInput
-                    wrapperClassName={'max-w-full'}
-                    className={'max-w-full'}
+                    wrapperClassName={'!max-w-full'}
+                    className={'!max-w-full'}
                     placeholder={'Название вакансии...'}
                     name={'title'}
                     control={control as unknown as Control<FieldValues>}
@@ -68,7 +111,7 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
                     name={'description'}
                     control={control as unknown as Control<FieldValues>}
                     textAreaClassName={
-                        'resize-y max-h-88 min-h-52 w-full max-w-full'
+                        'resize-y max-h-88 min-h-52 w-full !max-w-full'
                     }
                 />
             </div>
@@ -83,6 +126,10 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
                 currencies={currencies}
             />
             <TagsForm control={control as unknown as Control<FieldValues>} />
+                <div className={'flex flex-row w-full justify-end gap-x-2'}>               
+                    <Button className={'bg-mauve text-base hover:bg-text'} type={'submit'} buttonView={ButtonView.LARGE}>{CONSTANTS.vacancy.btn.save.create}</Button>
+                    <Button className={'bg-red text-base hover:bg-text'} buttonView={ButtonView.LARGE}>{CONSTANTS.vacancy.btn.cancel}</Button>
+                </div>
         </form>
     );
 };

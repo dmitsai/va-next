@@ -11,11 +11,11 @@ export interface TagItemProps {
 export const TagItem: React.FC<TagItemProps> = ({ tag, control }) => {
     const { localTitle, value } = tag;
     return (
-        <div className={'flex w-full flex-row text-text'}>
+        <div className={'flex w-full flex-row items-start  text-text'}>
             <span className={'w-full max-w-select text-16 font-600'}>
                 {localTitle}
             </span>
-            <div className={'flex w-full flex-row gap-x-8'}>
+            <div className={'grid w-full max-w-[31.25rem] grid-cols-2 gap-6'}>
                 {value.map((value) => (
                     <Checkbox
                         wrapperClassName={'!w-fit'}
