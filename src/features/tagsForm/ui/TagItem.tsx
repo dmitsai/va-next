@@ -11,7 +11,7 @@ export interface TagItemProps {
 export const TagItem: React.FC<TagItemProps> = ({ tag, control }) => {
     const { localTitle, value } = tag;
     return (
-        <div className={'flex w-full flex-row items-start  text-text'}>
+        <div className={'flex w-full flex-row items-start text-text'}>
             <span className={'w-full max-w-select text-16 font-600'}>
                 {localTitle}
             </span>
@@ -23,6 +23,9 @@ export const TagItem: React.FC<TagItemProps> = ({ tag, control }) => {
                         key={value.name}
                         name={value.name}
                         label={value.localTitle}
+                        // NOTE: TEMP SOLUTION
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-underscore-dangle
+                        checked={control._formValues[value.name]}
                     />
                 ))}
             </div>

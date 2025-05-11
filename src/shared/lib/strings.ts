@@ -63,8 +63,8 @@ export const CONSTANTS = {
                 description: {
                     required: 'Описание обязательно',
                     min: 'Слишком короткое описание',
-                }
-            }
+                },
+            },
         },
     },
     card: {
@@ -125,12 +125,10 @@ export const CONSTANTS = {
             to: 'до',
         },
         btn: {
-            save: {
-                edit: 'Сохранить изменения',
-                create: 'Создать'
-            },
+            save: (mode: 'create' | 'edit') =>
+                mode === 'create' ? 'Создать' : 'Сохранить изменения',
             cancel: 'Отмена',
-        }
+        },
     },
 } as const;
 
@@ -152,4 +150,15 @@ export const getStringifySalary = (
         return `${from} ${formatNumber(salaryFrom)} ${currency}`;
     }
     return CONSTANTS.detailedVacancy.salary.empty;
+};
+
+export const getStringifySalaryForInput = (value: number | null): string => {
+    if (value === null) {
+        return '';
+    }
+
+    return value
+        .toString()
+        .replace(/\D/g, '')
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 };

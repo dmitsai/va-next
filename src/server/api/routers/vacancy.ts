@@ -30,6 +30,14 @@ export const vacancyRouter = createTRPCRouter({
             if (!companyProfile) {
                 throw new Error('Company profile not found');
             }
+
+            const currency = await ctx.prisma.currency.findFirst({
+                where: input.currencyName ? { title: input.currencyName } : {},
+            });
+
+            if (!currency) {
+                throw new Error('Currency not found');
+            }
             const salaryFrom = input.salaryFrom
                 ? parseInt(input.salaryFrom, 10)
                 : null;
@@ -50,7 +58,7 @@ export const vacancyRouter = createTRPCRouter({
                     imgUrl: input.imgUrl,
                     currency: {
                         connect: {
-                            currency_id: input.currencyId,
+                            currency_id: currency.currency_id,
                         },
                     },
                     tags: input.tags,
@@ -75,6 +83,13 @@ export const vacancyRouter = createTRPCRouter({
             if (!companyProfile) {
                 throw new Error('Company profile not found');
             }
+            const currency = await ctx.prisma.currency.findFirst({
+                where: input.currencyName ? { title: input.currencyName } : {},
+            });
+
+            if (!currency) {
+                throw new Error('Currency not found');
+            }
 
             const salaryFrom = input.salaryFrom
                 ? parseInt(input.salaryFrom, 10)
@@ -93,9 +108,9 @@ export const vacancyRouter = createTRPCRouter({
                     salaryFrom,
                     salaryTo,
                     description: input.description,
-                    currency: input.currencyId
+                    currency: currency.currency_id
                         ? {
-                              connect: { currency_id: input.currencyId },
+                              connect: { currency_id: currency.currency_id },
                           }
                         : undefined,
                     imgUrl: input.imgUrl,
@@ -152,10 +167,22 @@ export const vacancyRouter = createTRPCRouter({
         .input(inputGetVacancyListSchema)
         .query(async ({ ctx, input }) => {
             const limit = input.limit ?? 50;
-            const { cursor, tags, period, salaryFrom, currencyName } = input;
+            const {
+                cursor,
+                tags,
+                period,
+                salaryFrom,
+                currencyName,
+                companyId,
+            } = input;
 
             const whereConditions: Prisma.VacancyWhereInput[] = [];
 
+            if (companyId) {
+                whereConditions.push({
+                    company_id: companyId,
+                });
+            }
             if (currencyName) {
                 const currency = await ctx.prisma.currency.findFirst({
                     where: {

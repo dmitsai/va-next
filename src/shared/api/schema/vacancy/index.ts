@@ -19,6 +19,7 @@ export const inputGetVacancyListSchema = z.object({
     salaryFrom: z.string().optional().nullable(),
     period: z.enum(periodsKeys).optional().nullable(),
     currencyName: z.string().optional().nullable(),
+    companyId: z.string().optional().nullable(),
 });
 
 export type InputGetVacancyListSchema = z.infer<
@@ -31,7 +32,7 @@ export const inputCreateVacancyItemSchema = z.object({
     salaryFrom: z.string().optional().nullable(),
     salaryTo: z.string().optional().nullable(),
     imgUrl: z.string().url().optional().nullable(),
-    currencyId: z.string().uuid(),
+    currencyName: z.string().optional().nullable(),
     tags: tagsShema.optional(),
 });
 

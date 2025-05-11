@@ -8,12 +8,17 @@ export const VacancyLabel: React.FC<{
 }> = ({ mode, vacancyTitle }) => {
     const { create, edit } = CONSTANTS.vacancy.label;
     return (
-        <div className={'flex w-fit flex-row gap-x-2 text-text'}>
+        <div className={'flex w-fit flex-row items-center gap-x-8 text-text'}>
             <p className={'text-32 font-500'}>
                 {mode === 'create' ? create : edit}
             </p>
             {mode === 'edit' && !!vacancyTitle && (
-                <Badge className={'bg-mantle'} placeholder={vacancyTitle} />
+                <Badge
+                    className={
+                        'items-center justify-center bg-mantle py-6 text-24'
+                    }
+                    placeholder={vacancyTitle}
+                />
             )}
         </div>
     );

@@ -1,7 +1,7 @@
 'use client';
 
 import { Controller, type ControllerFieldState } from 'react-hook-form';
-import React from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
 import { ReactComponent as IconCheck } from '~/shared/assets/icons/check-icon.svg';
 
@@ -19,8 +19,14 @@ interface RenderCheckboxProps
 const RenderDefaultCheckbox: React.FC<
     RenderCheckboxProps & ControllerFieldState
 > = ({ label, ...props }) => {
-    const { invalid, className, labelClassName, key, wrapperClassName } = props;
-
+    const {
+        invalid,
+        className,
+        labelClassName,
+        key,
+        wrapperClassName,
+        checked,
+    } = props;
     return (
         <div
             className={cn(
@@ -39,6 +45,7 @@ const RenderDefaultCheckbox: React.FC<
                 <input
                     {...props}
                     type="checkbox"
+                    checked={!!checked}
                     id={key}
                     className={cn(
                         'peer h-5 w-5 cursor-pointer appearance-none rounded-sm border-2 border-sub bg-transparent transition-all checked:border-mauve checked:bg-mauve',

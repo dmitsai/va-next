@@ -28,27 +28,27 @@ export interface LinkItem {
 export const TopBar: React.FC = async () => {
     const links: Array<LinkItem> = [
         {
-            href: './vacancies',
+            href: '/vacancies',
             label: CONSTANTS.topBar.vacancies,
         },
         {
-            href: './internships',
+            href: '/internships',
             label: CONSTANTS.topBar.internships,
         },
         {
-            href: './events',
+            href: '/events',
             label: CONSTANTS.topBar.events,
         },
     ];
 
     const buttons: Array<ButtonContent> = [
         {
-            href: './favourite',
+            href: '/favourite',
             icon: IconStar,
             key: 'link-favourite',
         },
         {
-            href: './profile',
+            href: '/profile',
             icon: IconUser,
             key: 'link-profile',
         },
