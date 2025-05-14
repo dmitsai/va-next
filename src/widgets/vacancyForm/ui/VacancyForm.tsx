@@ -174,7 +174,7 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
 
     return (
         <form
-            className={'max-h- flex w-full flex-col gap-y-12'}
+            className={'flex w-full flex-col gap-y-12'}
             onSubmit={handleSubmit(onSubmit)}
         >
             <div className={'flex w-full flex-col gap-y-8'}>
