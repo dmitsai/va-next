@@ -3,7 +3,7 @@ import { ProfileBio, ProfileBioProps } from '~/widgets/profileBio';
 import { ProfileFileUploader } from '~/widgets/profileFileUploader';
 import { ProfileAboutMe, ProfileAboutMeProps } from '~/widgets/profileAboutMe';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { VacancyList } from '~/widgets/VacancyList/ui/VacancyList';
+import { VacancyList } from '~/widgets/VacancyList';
 import { CompanyVacancyList } from '~/widgets/companyVacancyList';
 import { getServerSession } from '~/shared/lib/auth';
 import { createSSRHelpers } from 'trpc/helpers';

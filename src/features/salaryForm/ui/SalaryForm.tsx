@@ -1,18 +1,16 @@
 'use client';
 
 import cn from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Select from '~/shared/ui/Select';
 import { Control, FieldValues } from 'react-hook-form';
 import { CONSTANTS } from '~/shared/lib/strings';
 import TextInput from '~/shared/ui/TextInput';
-import { clientApi } from 'trpc/client';
 import {
     displaySalariesState,
     salaries,
     Salary,
     salaryType,
-    SalaryType,
 } from '../model/state';
 
 export interface Currency {

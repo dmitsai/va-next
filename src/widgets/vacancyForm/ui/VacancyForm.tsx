@@ -1,14 +1,12 @@
 'use client';
 
-import Select from '~/shared/ui/Select';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Control, FieldValues, useForm } from 'react-hook-form';
 import { CONSTANTS } from '~/shared/lib/strings';
 import { TextArea } from '~/shared/ui/textArea';
 import TextInput from '~/shared/ui/TextInput';
 import { clientApi } from 'trpc/client';
 import { Salary, SalaryForm } from '~/features/salaryForm';
-import { Currency } from '~/features/salaryForm/ui/SalaryForm';
 import { TagsForm } from '~/features/tagsForm';
 import { availableFilters as tags } from '~/entities/vacancies/model/data';
 import Button, { ButtonView } from '~/shared/ui/Button';
@@ -17,6 +15,7 @@ import { Tags } from '~/shared/api/model/tags/type';
 import { ReactComponent as LoadingSpin } from '~/shared/assets/icons/spin.svg';
 import cn from 'classnames';
 import { vacancyFormSchema } from '../model/schema';
+import { parseSalary } from '../model/utils';
 
 export interface VacancyFormProps {
     title?: string;
@@ -37,12 +36,6 @@ type FormValues = {
 
     [key: string]: string | boolean; // NOTE: TEMP SOLUTION
 };
-
-const parseSalary = (salary: string) =>
-    salary
-        .split('')
-        .filter((e) => e.trim().length)
-        .join('');
 
 export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
     const {

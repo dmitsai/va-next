@@ -141,19 +141,9 @@ export const CompanyVacancyList: React.FC<CompanyVacancyListProps> = ({
                                                     vacancyId={
                                                         vacancy.vacancy_id
                                                     }
-                                                    title={vacancy.title}
-                                                    isFavorited={false}
-                                                    tags={vacancy.tags}
-                                                    description={
-                                                        vacancy.description
-                                                    }
-                                                    company={vacancy.company}
-                                                    salaryFrom={
-                                                        vacancy.salaryFrom
-                                                    }
-                                                    salaryTo={vacancy.salaryTo}
-                                                    currency={vacancy.currency}
                                                     view="company"
+                                                    isFavorited={false}
+                                                    {...vacancy}
                                                 />
                                             );
                                         })}
