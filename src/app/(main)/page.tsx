@@ -2,7 +2,6 @@ import { Search } from '~/widgets/Search';
 import { TypingLabel } from '~/features/typingLabel';
 import { AuthBlock } from '~/features/authBlock';
 import { VacancyList } from '~/widgets/VacancyList/ui/VacancyList';
-import { Suspense } from 'react';
 import { getServerSession } from '~/shared/lib/auth';
 
 export default async () => {

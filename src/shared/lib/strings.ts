@@ -162,3 +162,16 @@ export const getStringifySalaryForInput = (value: number | null): string => {
         .replace(/\D/g, '')
         .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 };
+
+export const getDayWMonth = (date: Date) => {
+    const dateObj = new Date(date);
+    const currentDate = new Date();
+
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = String(dateObj.getFullYear()).slice(-2);
+
+    const isCurrentYear = dateObj.getFullYear() === currentDate.getFullYear();
+
+    return isCurrentYear ? `${day}.${month}` : `${day}.${month}.${year}`;
+};

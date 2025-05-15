@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Application {
+  application_id String @id @default(uuid())
+  vacancy_id     String
+  vacancy        Vacancy @relation(fields: [vacancy_id], references: [vacancy_id], onDelete: Cascade)
+  user_id        String
+  user           Users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  created_at     DateTime @default(now())
+
+  @@unique([vacancy_id, user_id], name: "user_vacancy_unique")
+  @@index([vacancy_id])
+  @@index([user_id])
+}
 
 model Currency {
   currency_id String @id @default(uuid())
@@ -29,9 +41,12 @@ model Vacancy {
   imgUrl  String?
   published_at DateTime @default(now()) 
   favoritedBy ClientProfile[] @relation("FavoriteVacancies")
+  Application Application[]
+
 
   @@index([title], map: "title_search_idx")
   @@index([description], map: "description_search_idx")
+ 
 }
 model CompanyProfile {
     company_id String @id @default(uuid())
@@ -75,6 +90,8 @@ model Users {
   sessions      Session[]
   CompanyProfile CompanyProfile?
   ClientProfile ClientProfile?
+
+  Application Application[]
 }
 
 model LoginAttempts {

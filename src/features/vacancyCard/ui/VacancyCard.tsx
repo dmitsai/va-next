@@ -11,6 +11,7 @@ import { Badge } from '~/shared/ui/Badge';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type Tags } from '~/shared/api/model/tags/type';
+import { clientApi } from 'trpc/client';
 import { getTagArrayWithColors } from '../utils/tagsWithColors';
 
 export interface VacancyCardProps {
@@ -58,6 +59,12 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
 
+    const { mutate: apply } = clientApi.application.createApply.useMutation({});
+
+    const handleApply = () => {
+        apply({ vacancyId });
+    };
+
     const handleIsFavorited = () => {
         // FIXME: add internship to favorited later
         setIsFavorited(!isFavorited);
@@ -71,7 +78,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                 view === 'client'
                     ? `/vacancies/${vacancyId}?${params}`
                     : // FIXME: rewrite after add flow for applies
-                      `/vacancy/edit/${vacancyId}?${params}`
+                      `/vacancy/candidates/${vacancyId}?${params}`
             }
             className={cn(
                 'card group w-full border-2 border-base bg-mantle transition-colors',
@@ -174,6 +181,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                 <Button
                     onClick={(e) => {
                         e.preventDefault();
+                        handleApply();
                     }}
                     buttonView={ButtonView.SMALL}
                     className={
