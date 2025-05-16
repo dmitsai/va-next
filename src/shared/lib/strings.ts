@@ -130,10 +130,16 @@ export const CONSTANTS = {
             cancel: 'Отмена',
         },
     },
+    candidate: {
+        tabs: {
+            aboutMe: 'О кандидате',
+            resume: 'Резюме кандидата',
+        },
+    },
 } as const;
 
 export const getStringifySalary = (
-    salaryFrom: number | null,
+    salaryFrom: number | null | undefined,
     salaryTo: number | null,
     salaryCurrency: string | null
 ) => {
@@ -161,4 +167,42 @@ export const getStringifySalaryForInput = (value: number | null): string => {
         .toString()
         .replace(/\D/g, '')
         .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+};
+
+export const getDayWMonth = (date: Date) => {
+    const dateObj = new Date(date);
+    const currentDate = new Date();
+
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = String(dateObj.getFullYear()).slice(-2);
+
+    const isCurrentYear = dateObj.getFullYear() === currentDate.getFullYear();
+
+    return isCurrentYear ? `${day}.${month}` : `${day}.${month}.${year}`;
+};
+
+type GetFullName = ({
+    firstName,
+    lastName,
+    patronymic,
+}: {
+    firstName?: string | null;
+    lastName?: string | null;
+    patronymic?: string | null;
+}) => string;
+
+export const getFullName: GetFullName = ({
+    firstName,
+    lastName,
+    patronymic,
+}) => {
+    if (firstName && lastName) {
+        if (patronymic) {
+            return `${lastName} ${firstName}  ${patronymic}`;
+        }
+        return `${lastName} ${firstName}`;
+    }
+
+    return 'Не указано';
 };

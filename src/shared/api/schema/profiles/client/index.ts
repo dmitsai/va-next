@@ -1,21 +1,27 @@
-import { z } from "zod";
-import { employmentTypes, workSchedule } from "~/shared/api/model/preferances/data";
+import { z } from 'zod';
+import {
+    employmentTypes,
+    workSchedule,
+} from '~/shared/api/model/preferances/data';
+import { currencySchema } from '../../currency';
 
 const preferencesSchema = z.object({
-  workSchedule: z.array(z.nativeEnum(workSchedule)),
-  employmentTypes: z.array(z.nativeEnum(employmentTypes)),
-  salary: z.number().nullable(),
-})
+    workSchedule: z.array(z.nativeEnum(workSchedule)),
+    employmentTypes: z.array(z.nativeEnum(employmentTypes)),
+    salary: z.number().nullable(),
+});
 
 export const inputUpdateClientProfileSchema = z.object({
-  name: z.string().optional(),
-  surname: z.string().optional(),
-  patronymic: z.string().nullable().optional(),
-  telegram: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().optional(),
-  about_me: z.string().nullable().optional(),
-  preferences: preferencesSchema.partial().optional(),
+    name: z.string().optional(),
+    surname: z.string().optional(),
+    patronymic: z.string().nullable().optional(),
+    telegram: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    about_me: z.string().nullable().optional(),
+    preferences: preferencesSchema.partial().optional(),
+    salaryFrom: z.string().optional().nullable(),
+    currencyName: z.string().optional().nullable(),
 });
 
 export type InputUpdateClientProfileSchema = z.infer<
@@ -35,14 +41,18 @@ export const clientProfileResponseSchema = z.object({
     about_me: z.string().nullable(),
     preferences: preferencesSchema.nullable(),
     pdfUrl: z.string().nullable(),
-    favoriteVacancies: z.array(
-      z.object({
-        vacancy_id: z.string(),
-        title: z.string(),
-      })
-    ).nullable(),
-  });
-  
-  export type ClientProfileResponseSchema = z.infer<
+    favoriteVacancies: z
+        .array(
+            z.object({
+                vacancy_id: z.string(),
+                title: z.string(),
+            })
+        )
+        .nullable(),
+    salaryFrom: z.number(),
+    currency: currencySchema,
+});
+
+export type ClientProfileResponseSchema = z.infer<
     typeof clientProfileResponseSchema
 >;

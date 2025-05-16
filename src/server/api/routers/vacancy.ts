@@ -257,7 +257,7 @@ export const vacancyRouter = createTRPCRouter({
                 }
             }
 
-            if (tags?.workSchedule) {
+            if (tags?.workSchedule && tags?.workSchedule.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['workSchedule'],
@@ -265,7 +265,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.employmentTypes) {
+            if (tags?.employmentTypes && tags?.employmentTypes.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['employmentTypes'],
@@ -273,7 +273,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.experience) {
+            if (tags?.experience && tags?.experience.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['experience'],
@@ -281,7 +281,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.education) {
+            if (tags?.education && tags?.education.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['education'],
@@ -289,7 +289,6 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-
             const where: Prisma.VacancyWhereInput =
                 whereConditions.length > 0 ? { AND: whereConditions } : {};
 
