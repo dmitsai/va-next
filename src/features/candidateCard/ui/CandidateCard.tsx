@@ -58,9 +58,11 @@ export const CandidateCard: React.FC<CandidateCardProps> = (props) => {
                 wrapperClassName
             )}
         >
-            <Avatar id={candidateId} />
-            <div className={'flex w-fit flex-col'}>
-                <div className={'flex flex-row gap-x-8'}>
+            <div className={'w-1/4'}>
+                <Avatar id={candidateId} />
+            </div>
+            <div className={'flex w-full flex-col'}>
+                <div className={'flex w-full flex-row justify-between'}>
                     <p className={'text-14 font-600 text-text'}>
                         {stringifyFullname}
                     </p>

@@ -130,6 +130,12 @@ export const CONSTANTS = {
             cancel: 'Отмена',
         },
     },
+    candidate: {
+        tabs: {
+            aboutMe: 'О кандидате',
+            resume: 'Резюме кандидата',
+        },
+    },
 } as const;
 
 export const getStringifySalary = (

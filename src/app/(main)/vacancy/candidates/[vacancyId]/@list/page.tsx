@@ -102,7 +102,7 @@ const ListPage = () => {
                                 {rowVacancies.map((candidate) => (
                                     <CandidateCard
                                         wrapperClassName={cn(
-                                            'rounded-4 pl-4 border-l-4',
+                                            'rounded-4 pl-4  pr-10 border-l-4',
                                             selectedCandidate ===
                                                 candidate.userId
                                                 ? 'border-mauve'
