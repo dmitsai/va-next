@@ -26,6 +26,8 @@ model Currency {
   char String @unique
 
   Vacancy Vacancy[]
+
+  ClientProfile ClientProfile[]
 } 
 model Vacancy {
   vacancy_id String @id @default(uuid())
@@ -77,6 +79,10 @@ model ClientProfile {
     favoriteVacancies Vacancy[] @relation("FavoriteVacancies")
     user_id String @unique
     user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+    salaryFrom Int?
+    currency_id String    
+    currency    Currency  @relation(fields: [currency_id], references: [currency_id])
 }
 
 model Users {

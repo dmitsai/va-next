@@ -1,14 +1,18 @@
 import React from 'react';
-import { getDayWMonth, getStringifySalary } from '~/shared/lib/strings';
+import {
+    getDayWMonth,
+    getFullName,
+    getStringifySalary,
+} from '~/shared/lib/strings';
 import cn from 'classnames';
 import Link from 'next/link';
 
 export interface CandidateCardProps {
     candidateId: string;
-    firstName: string;
-    lastName: string;
+    firstName: string | null | undefined;
+    lastName: string | null | undefined;
     applyDate: Date;
-    salaryFrom: number | null;
+    salaryFrom: number | null | undefined;
     currencyChar: string | null;
     vacancyId: string;
 
@@ -17,12 +21,16 @@ export interface CandidateCardProps {
 
 // TODO: replace after add avatar component
 
-export const Avatar: React.FC<{ id: string }> = ({ id }) => (
+export const Avatar: React.FC<{ id: string; className?: string }> = ({
+    id,
+    className,
+}) => (
     <div
         key={id}
-        className={
-            'flex h-14 w-14 flex-col items-center justify-center rounded-full bg-peach'
-        }
+        className={cn(
+            'flex h-14 w-14 flex-col items-center justify-center rounded-full bg-peach',
+            className
+        )}
     >
         {'AVA'}
     </div>
@@ -40,7 +48,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = (props) => {
     } = props;
 
     const stringifyApplyDate = getDayWMonth(applyDate);
-    const stringifyFullname = `${lastName} ${firstName}`;
+    const stringifyFullname = getFullName({ firstName, lastName });
     const stringifySalary = getStringifySalary(salaryFrom, null, currencyChar);
     return (
         <Link

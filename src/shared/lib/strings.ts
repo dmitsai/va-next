@@ -133,7 +133,7 @@ export const CONSTANTS = {
 } as const;
 
 export const getStringifySalary = (
-    salaryFrom: number | null,
+    salaryFrom: number | null | undefined,
     salaryTo: number | null,
     salaryCurrency: string | null
 ) => {
@@ -174,4 +174,29 @@ export const getDayWMonth = (date: Date) => {
     const isCurrentYear = dateObj.getFullYear() === currentDate.getFullYear();
 
     return isCurrentYear ? `${day}.${month}` : `${day}.${month}.${year}`;
+};
+
+type GetFullName = ({
+    firstName,
+    lastName,
+    patronymic,
+}: {
+    firstName?: string | null;
+    lastName?: string | null;
+    patronymic?: string | null;
+}) => string;
+
+export const getFullName: GetFullName = ({
+    firstName,
+    lastName,
+    patronymic,
+}) => {
+    if (firstName && lastName) {
+        if (patronymic) {
+            return `${lastName} ${firstName}  ${patronymic}`;
+        }
+        return `${lastName} ${firstName}`;
+    }
+
+    return 'Не указано';
 };

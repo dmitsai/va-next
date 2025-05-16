@@ -18,7 +18,7 @@ export default async ({
     });
 
     return (
-        <main className={'relative flex w-full flex-col gap-y-10'}>
+        <main className={'relative flex max-h-page w-full flex-col gap-y-10'}>
             <p
                 className={
                     'flex flex-row items-center gap-x-4 text-32 font-500'

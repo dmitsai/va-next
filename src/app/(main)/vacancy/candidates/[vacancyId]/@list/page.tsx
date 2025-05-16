@@ -39,11 +39,10 @@ const ListPage = () => {
 
     const { containerRef, rows, items, virtualizer, isLastVisible } =
         useVirtualCandidates({ candidates, hasNextPage });
-
     return (
         <div
             className={
-                'no-scrollbar relative h-screen w-full max-w-card overflow-y-auto'
+                'no-scrollbar relative h-page w-full max-w-card overflow-y-auto'
             }
             ref={containerRef}
         >
@@ -112,16 +111,14 @@ const ListPage = () => {
                                         key={`card-${candidate.userId}`}
                                         vacancyId={params.vacancyId as string}
                                         candidateId={candidate.userId}
-                                        firstName={
-                                            candidate.userProfile
-                                                ?.name as string
-                                        }
+                                        firstName={candidate.userProfile?.name}
                                         lastName={
-                                            candidate.userProfile
-                                                ?.surname as string
+                                            candidate.userProfile?.surname
                                         }
                                         applyDate={candidate.appliedAt}
-                                        salaryFrom={null}
+                                        salaryFrom={
+                                            candidate.userProfile?.salaryFrom
+                                        }
                                         currencyChar={null}
                                     />
                                 ))}

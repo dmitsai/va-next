@@ -13,7 +13,7 @@ export default async ({
     if (!session || session.user.role !== 'COMPANY') redirect(referer ?? '/');
 
     return (
-        <div className={'relative flex w-full flex-col px-20 py-10'}>
+        <div className={'relative flex max-h-page w-full flex-col px-20 py-10'}>
             {children}
         </div>
     );
