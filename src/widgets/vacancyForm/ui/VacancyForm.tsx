@@ -75,7 +75,7 @@ export const VacancyForm: React.FC<VacancyFormProps> = (props) => {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-expect-error
                         tag.localTitle
-                    ),
+                    ) ?? false,
                 ])
             )
         ),

@@ -19,19 +19,15 @@ export default async ({
 
     return (
         <main className={'relative flex max-h-page w-full flex-col gap-y-10'}>
-            <p
-                className={
-                    'flex flex-row items-center gap-x-4 text-32 font-500'
-                }
-            >
-                {`Отклики на вакансию:`}
+            <div className={'flex w-full flex-row items-center gap-x-4'}>
+                <p className={'text-32 font-500'}> {`Отклики на вакансию:`}</p>
                 <Badge
                     placeholder={vacancy.title}
                     className={
                         'items-center justify-center bg-mantle py-6 text-24'
                     }
                 />
-            </p>
+            </div>
             <div className={'flex w-full flex-row gap-x-10'}>
                 {list}
                 {detailed}
