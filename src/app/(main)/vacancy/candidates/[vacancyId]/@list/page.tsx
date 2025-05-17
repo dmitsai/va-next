@@ -5,6 +5,7 @@ import { Suspense, useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
 import { CandidateCard } from '~/features/candidateCard';
 import cn from 'classnames';
+import { SkeletonCandidate } from '~/entities/candidate';
 import { useVirtualCandidates } from './helpers/useVirtualCandidates';
 
 const ListPage = () => {
@@ -46,7 +47,17 @@ const ListPage = () => {
             }
             ref={containerRef}
         >
-            {isLoading && <div>{'Загрузка'}</div>}
+            {isLoading && (
+                <div className={'grid h-screen grid-rows-8 gap-y-10'}>
+                    {Array.from({ length: 8 }).map((_val, index) => (
+                        <SkeletonCandidate
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={`skeleton-candidate-${index}`}
+                            className={'w-full'}
+                        />
+                    ))}
+                </div>
+            )}
             {isSuccess && (
                 <div
                     style={{
@@ -62,26 +73,22 @@ const ListPage = () => {
                             virtualRow.index + 1
                         );
 
-                        if (isLoaderRow)
-                            return (
-                                <div
-                                    key={
-                                        rowVacancies[virtualRow.index]
-                                            ?.applicationId
-                                    }
-                                    data-index={virtualRow.index}
-                                    ref={virtualizer.measureElement}
-                                    className={'w-full py-3'}
-                                >
-                                    <span
-                                        className={
-                                            'line-clamp-1 w-full text-center text-black'
-                                        }
+                        if (isLoaderRow) {
+                            if (isFetchingNextPage) {
+                                return (
+                                    <div
+                                        key={`loader-${virtualRow.index}`}
+                                        data-index={virtualRow.index}
+                                        ref={virtualizer.measureElement}
                                     >
-                                        Загрузка
-                                    </span>
-                                </div>
-                            );
+                                        <SkeletonCandidate
+                                            className={'w-full'}
+                                        />
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }
                         if (hasNextPage) {
                             <p className={'text-text'}>Вакансий нет</p>;
                         }

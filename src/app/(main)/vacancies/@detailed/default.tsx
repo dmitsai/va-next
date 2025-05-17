@@ -73,7 +73,11 @@ export default async ({
     });
 
     if (!vacancyList?.[0]?.vacancy_id) {
-        return <div className="p-8">Нет доступных вакансий</div>;
+        return (
+            <div className="flex w-full flex-col items-center">
+                {'Нет подходящей вакансии'}
+            </div>
+        );
     }
 
     const searchParamsString = new URLSearchParams();

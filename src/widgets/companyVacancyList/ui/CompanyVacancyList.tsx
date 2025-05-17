@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
 import { VacancyCard } from '~/features/vacancyCard';
 import Link from 'next/link';
+import { SkeletonVancy } from '~/entities/vacancies';
 import { useHorizontalVirtualVacancies } from '../lib/hook';
 import { Vacancy } from '../lib/types';
 import { VacancyCreator } from './VacancyCreator';
@@ -66,7 +67,17 @@ export const CompanyVacancyList: React.FC<CompanyVacancyListProps> = ({
                 ref={containerRef}
                 className="h-full w-full overflow-x-auto py-4"
             >
-                {isLoading && <div className="p-4">Загрузка...</div>}
+                {isLoading && (
+                    <div className="grid h-full grid-cols-3 gap-4">
+                        {Array.from({ length: 6 }).map((_val, index) => (
+                            <SkeletonVancy
+                                className={'w-full'}
+                                // eslint-disable-next-line react/no-array-index-key
+                                key={`company-skeleton-${index}`}
+                            />
+                        ))}
+                    </div>
+                )}
                 {isSuccess && (
                     <div
                         style={{
@@ -98,13 +109,11 @@ export const CompanyVacancyList: React.FC<CompanyVacancyListProps> = ({
                                         <div className="grid h-full grid-cols-2 grid-rows-2 gap-4">
                                             {Array.from({ length: 4 }).map(
                                                 (_, i) => (
-                                                    <div
+                                                    <SkeletonVancy
+                                                        className={'w-full'}
                                                         // eslint-disable-next-line react/no-array-index-key
-                                                        key={`loader-${i}`}
-                                                        className="rounded-lg bg-gray-100 p-4"
-                                                    >
-                                                        Загрузка...
-                                                    </div>
+                                                        key={`company-skeleton-loading${i}`}
+                                                    />
                                                 )
                                             )}
                                         </div>

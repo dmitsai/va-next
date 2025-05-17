@@ -18,7 +18,9 @@ import {
     PeriodKey,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
+import { SkeletonVancy } from '~/entities/vacancies';
 import { useVirtualVacancies } from './helpers/useVirtualVacancies';
+import Loading from './loading';
 
 const ListPage = () => {
     const params = useParams();
@@ -108,7 +110,7 @@ const ListPage = () => {
             }
             ref={containerRef}
         >
-            {isLoading && <div>{'Загрузка'}</div>}
+            {isLoading && <Loading />}
             {isSuccess && (
                 <div
                     style={{
@@ -126,7 +128,7 @@ const ListPage = () => {
 
                         if (isLoaderRow)
                             return (
-                                <div
+                                <SkeletonVancy
                                     key={
                                         rowVacancies[virtualRow.index]
                                             ?.vacancy_id
@@ -134,15 +136,7 @@ const ListPage = () => {
                                     data-index={virtualRow.index}
                                     ref={virtualizer.measureElement}
                                     className={'w-full py-3'}
-                                >
-                                    <span
-                                        className={
-                                            'line-clamp-1 w-full text-center text-black'
-                                        }
-                                    >
-                                        Загрузка
-                                    </span>
-                                </div>
+                                />
                             );
                         if (hasNextPage) {
                             <p className={'text-text'}>Вакансий нет</p>;
@@ -182,6 +176,22 @@ const ListPage = () => {
                             </div>
                         );
                     })}
+                </div>
+            )}
+            {items.length === 0 && (
+                <div className={'flex flex-col items-start gap-y-3'}>
+                    <p className={'text-14 text-text'}>
+                        <span>{'По  запросу "'}</span>
+                        <span className={'font-600 text-mauve'}>
+                            {search ?? ''}
+                        </span>
+                        <span>{'" ничего не найдено'}</span>
+                    </p>
+                    <p className={'text-12 text-sub'}>
+                        {
+                            'Попробуйте другие варианты запроса или уберите фильтры'
+                        }
+                    </p>
                 </div>
             )}
         </div>
