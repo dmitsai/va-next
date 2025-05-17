@@ -8,40 +8,14 @@ import { ReactComponent as IconPhone } from '~/shared/assets/icons/icon-phone.sv
 import { ReactComponent as IconEmail } from '~/shared/assets/icons/icon-email.svg';
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { EditProfileBio } from "~/features/editProfileBio";
-
-export interface CompanyBio {
-    title: string,
-    email: string,
-    phoneNumber: string,
-    website: string
-}
-
-export interface ClientBio {
-    firstName: string,
-    lastName: string,
-    patronymic: string | undefined,
-    
-    telegram: string | undefined,
-    phoneNumber: string | undefined,
-    email: string | undefined,
-}
-
-export type ProfileBioProps =
-    | {
-          type: 'CLIENT';
-          data: ClientBio;
-      }
-    | {
-          type: 'COMPANY';
-          data: CompanyBio;
-      };
+import { ProfileBioProps } from "~/entities/profileBio/model/type";
 
 export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
     const { data, type } = props;
     const [isEditMode, setIsEditMode] = useState(false);
     return (
         <>
-            <EditProfileBio isOpen={isEditMode} setIsOpen={setIsEditMode} type={type}/>
+            <EditProfileBio isOpen={isEditMode} setIsOpen={setIsEditMode} bio={props} />
             <div className={'relative flex flex-col p-2 gap-y-2 w-full'}>
                 <IconEdit className={'absolute right-0 top-0 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />
                 <div className={'flex flex-row w-full gap-x-4'}>

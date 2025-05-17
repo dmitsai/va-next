@@ -8,17 +8,23 @@ export const clientProfileRouter = createTRPCRouter({
     getProfile: clientProcedure.query(async ({ ctx }) => {
         const profile = await ctx.prisma.clientProfile.findUnique({
             where: { user_id: ctx.session.user.id },
+            include: {
+                currency: true,
+                favoriteVacancies: true,
+            },
         });
-        return profile;
+        return profile as ClientProfileResponseSchema;
     }),
 
     updateProfile: clientProcedure
         .input(inputUpdateClientProfileSchema)
         .mutation(async ({ input, ctx }) => {
+            console.log('input', input.salaryFrom)
             const salaryFrom = input.salaryFrom
                 ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                   parseInt(input.salaryFrom, 10)
                 : null;
+                console.log('parse', salaryFrom)
             const currency = await ctx.prisma.currency.findFirst({
                 where: input.currencyName ? { title: input.currencyName } : {},
             });
@@ -81,6 +87,6 @@ export const clientProfileRouter = createTRPCRouter({
                     currency: true,
                 },
             });
-            return updatedProfile;
+            return updatedProfile as ClientProfileResponseSchema;
         }),
 });

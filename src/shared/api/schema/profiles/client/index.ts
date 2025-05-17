@@ -8,7 +8,6 @@ import { currencySchema } from '../../currency';
 const preferencesSchema = z.object({
     workSchedule: z.array(z.nativeEnum(workSchedule)),
     employmentTypes: z.array(z.nativeEnum(employmentTypes)),
-    salary: z.number().nullable(),
 });
 
 export const inputUpdateClientProfileSchema = z.object({
