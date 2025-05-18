@@ -8,22 +8,32 @@
  */
 // Injected content via Sentry wizard below
 
-await import("./src/env.js");
+await import('./src/env.js');
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'kawu84oh09.ufs.sh',
+                port: '',
+                pathname: '/f/**',
+                search: '',
+            },
+        ],
+    },
+    optimizeFonts: false,
 
-  optimizeFonts: false,
-  
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack', 'url-loader'],
-    });
-    config.resolve.alias.canvas = false;
+    webpack: (config) => {
+        config.module.rules.push({
+            test: /\.svg$/,
+            use: ['@svgr/webpack', 'url-loader'],
+        });
+        config.resolve.alias.canvas = false;
 
-    return config;
-  },
+        return config;
+    },
 };
 
 export default nextConfig;
