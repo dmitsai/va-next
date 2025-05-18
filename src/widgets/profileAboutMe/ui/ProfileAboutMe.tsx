@@ -5,34 +5,16 @@ import { EditProfileAboutMe } from "~/features/editProfileAboutMe";
 import Button, { ButtonView } from "~/shared/ui/Button";
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import cn from 'classnames';
-
-export interface CompanyAbout {
-    description: string;
-}
-
-export interface ClientAbout {
-    description: string;
-}
+import { AboutMeProps } from "~/entities/aboutMe";
 
 
-
-export type ProfileAboutMeProps =
-    | {
-          type: 'CLIENT';
-          data: ClientAbout;
-      }
-    | {
-          type: 'COMPANY';
-          data: CompanyAbout;
-      };
-
-
-export const ProfileAboutMe: React.FC<ProfileAboutMeProps> = ({ data, type }) => {
+export const ProfileAboutMe: React.FC<AboutMeProps> = (props) => {
+    const { data, type } = props;
     const [isEditMode, setIsEditMode] = useState(false);
     const [isShowMore, setIsShowMore] = useState(false);
     return (
         <>
-            <EditProfileAboutMe isOpen={isEditMode} setIsOpen={setIsEditMode} type={type}/>
+            <EditProfileAboutMe isOpen={isEditMode} setIsOpen={setIsEditMode} description={props}/>
             <div className={'relative w-full flex flex-col gap-y-2 p-2'}>
                 <IconEdit className={'absolute right-0 top-0 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />
                     {type === 'CLIENT' ? (

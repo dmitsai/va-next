@@ -1,0 +1,1 @@
+export {type CompanyBio, type ClientBio, type ProfileBioProps} from './model/type'

@@ -1,1 +1,1 @@
-export { ProfileBio, type ProfileBioProps } from './ui/ProfileBio';
+export { ProfileBio } from './ui/ProfileBio';

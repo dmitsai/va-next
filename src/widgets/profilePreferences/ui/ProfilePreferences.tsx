@@ -9,20 +9,22 @@ import { Badge } from "~/shared/ui/Badge";
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { EditProfilePreferences } from "~/features/editProfilePreferences/ui/EditProfilePreferences";
 import { PreferencesItem } from "./PreferencesItem";
+import { getStringifySalaryForInput } from "~/shared/lib/strings";
 
 export interface ProfilePreferencesProps {
     employmentTypes: Array<EmploymentTypes>,
     workSchedule: Array<WorkSchedule>,
-    salary: string | undefined,
+    salary: number | undefined,
     salaryCurrency: SalaryCurrency,
 }
 
 export const ProfilePreferences: React.FC<ProfilePreferencesProps> = (props) => {
-    const { employmentTypes, workSchedule, salary, salaryCurrency } = props;
+    const { employmentTypes, workSchedule, salary:initSalary, salaryCurrency } = props;
+    const salary = getStringifySalaryForInput(initSalary ?? null)
     const [isEditMode, setIsEditMode] = useState(false);
     return (
         <>
-            <EditProfilePreferences isOpen={isEditMode} setIsOpen={setIsEditMode} />
+            <EditProfilePreferences isOpen={isEditMode} setIsOpen={setIsEditMode} {...props} salary={salary}/>
             <div className={'relative flex flex-col gap-y-2 p-2 w-full'}>
                 <IconEdit className={'absolute right-0 top-0 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />
                 <span className={'text-14 text-text font-500'}>{'Предпочтения'}</span>
