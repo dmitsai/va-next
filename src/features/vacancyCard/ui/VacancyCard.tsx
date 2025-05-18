@@ -76,9 +76,8 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
         <Link
             href={
                 view === 'client'
-                    ? `/vacancies/${vacancyId}?${params}`
-                    : // FIXME: rewrite after add flow for applies
-                      `/vacancy/candidates/${vacancyId}?${params}`
+                    ? `/vacancies/${vacancyId}?${params.toString()}`
+                    : `/vacancy/candidates/${vacancyId}?${params.toString()}`
             }
             className={cn(
                 'card group w-full border-2 border-base bg-mantle transition-colors',
@@ -127,7 +126,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 router.replace(
-                                    `/vacancy/edit/${vacancyId}?${params}`
+                                    `/vacancy/edit/${vacancyId}?${params.toString()}`
                                 );
                             }}
                         >

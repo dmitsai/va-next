@@ -19,7 +19,6 @@ const nextConfig = {
                 hostname: 'kawu84oh09.ufs.sh',
                 port: '',
                 pathname: '/f/**',
-                search: '',
             },
         ],
     },
