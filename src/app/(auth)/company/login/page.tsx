@@ -76,15 +76,6 @@ const CompanyLoginPage = () => {
         </Link>
       </div>
       <div className={`w-1/2 bg-base`}>
-        <Link className={`absolute right-10 top-10`} href="/company/auth">
-          <Button
-            type="button"
-            buttonView={ButtonView.LARGE}
-            className={`bg-mantle text-text hover:bg-text hover:text-base`}
-          >
-            {CONSTANTS.auth.signUp}
-          </Button>
-        </Link>
         <div className={`h-screen flex flex-col items-center justify-center gap-y-5`}>
           <div className={`flex flex-col items-center justify-center gap-y-7`}>
             <h1 className={`text-text`}>{CONSTANTS.auth.lable.logIn}</h1>
