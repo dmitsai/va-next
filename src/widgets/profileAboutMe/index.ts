@@ -1,1 +1,1 @@
-export { ProfileAboutMe, type ProfileAboutMeProps} from './ui/ProfileAboutMe';
+export { ProfileAboutMe } from './ui/ProfileAboutMe';
