@@ -30,23 +30,10 @@ export const TopBar: React.FC = async () => {
         {
             href: '/vacancies',
             label: CONSTANTS.topBar.vacancies,
-        },
-        {
-            href: '/internships',
-            label: CONSTANTS.topBar.internships,
-        },
-        {
-            href: '/events',
-            label: CONSTANTS.topBar.events,
-        },
+        }
     ];
 
     const buttons: Array<ButtonContent> = [
-        {
-            href: '/favourite',
-            icon: IconStar,
-            key: 'link-favourite',
-        },
         {
             href: '/profile',
             icon: IconUser,
