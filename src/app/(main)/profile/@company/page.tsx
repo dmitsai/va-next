@@ -8,6 +8,7 @@ import { CompanyVacancyList } from '~/widgets/companyVacancyList';
 import { getServerSession } from '~/shared/lib/auth';
 import { createSSRHelpers } from 'trpc/helpers';
 import { headers } from 'next/headers';
+import { CompanyTabs } from '~/widgets/companyTabs';
 
 // NOTE: temp data for profile page
 const temp: {
@@ -58,40 +59,7 @@ const CompanyProfilePage = async () => {
                     <ProfileAboutMe {...userData.description} />
                 </div>
                 <div className={'flex h-full w-full flex-col overflow-hidden'}>
-                    <Tabs
-                        defaultValue="vacancy"
-                        className="flex h-full flex-col"
-                    >
-                        <div className="mt-3 flex justify-center">
-                            <TabsList className="bg-mantle">
-                                <TabsTrigger
-                                    value="vacancy"
-                                    className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base"
-                                >
-                                    Вакансии
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="description"
-                                    className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base"
-                                >
-                                    О компании
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
-                        <TabsContent
-                            value="vacancy"
-                            className="flex-1 overflow-auto"
-                        >
-                            <CompanyVacancyList
-                                companyId={profile.company_id}
-                            />
-                        </TabsContent>
-                        <TabsContent value="description" className="flex-1">
-                            <div className="h-full w-full">
-                                <ProfileFileUploader />
-                            </div>
-                        </TabsContent>
-                    </Tabs>
+                    <CompanyTabs companyId={profile.company_id} />
                 </div>
             </div>
         </main>
