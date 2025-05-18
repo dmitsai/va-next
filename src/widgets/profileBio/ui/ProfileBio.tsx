@@ -8,6 +8,7 @@ import { ReactComponent as IconPhone } from '~/shared/assets/icons/icon-phone.sv
 import { ReactComponent as IconEmail } from '~/shared/assets/icons/icon-email.svg';
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { EditProfileBio } from "~/features/editProfileBio";
+import { ProfileAvatarUploader } from "~/widgets/avatar/ui/Avatar";
 
 export interface CompanyBio {
     title: string,
@@ -45,10 +46,8 @@ export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
             <div className={'relative flex flex-col p-2 gap-y-2 w-full'}>
                 <IconEdit className={'absolute right-0 top-0 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />
                 <div className={'flex flex-row w-full gap-x-4'}>
-                    {/* TODO: add Avatar component */}
-                    <div className={'flex w-20 h-20 rounded-20 bg-rosewater items-center justify-center text-14 text-text'}>
-                        AVATAR
-                    </div>
+                   <IconEdit className="absolute right-0 top-0 w-5 h-5 fill-sub hover:fill-surface cursor-pointer" onClick={() => { setIsEditMode(true) }} />
+                    <ProfileAvatarUploader />
                     {type === 'CLIENT' ?  (
                     <div className={'flex flex-col h-full items-start text-14 text-text font-600 pt-2'}>
                         <div className={'flex flex-row gap-x-2'}>
