@@ -14,18 +14,11 @@ import { EditProfileResume, FileInfo } from '~/features/editProfileResume';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-
-
 export const ProfileFileUploader = () => {
-
     const [isEditMode, setIsEditMode] = useState(false);
-
     const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-
     const [numPages, setNumPages] = useState<number>(0);
-
     const [pageNumber, setPageNumber] = useState<number>(1);
-
     const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
 
     const onDocumentLoadSuccess = ({ numPages }: { numPages: number }): void => {
@@ -57,7 +50,6 @@ export const ProfileFileUploader = () => {
                 throw new Error('File not defined after selection');
             }
         }
-
     }, []);
 
     const onDrop = useCallback((files: File[]) => {
@@ -65,7 +57,6 @@ export const ProfileFileUploader = () => {
             const file = files[0];
 
             if (file) {
-
                 const newResumeInfo: FileInfo = {
                     name: file.name,
                     size: file.size,
@@ -81,11 +72,9 @@ export const ProfileFileUploader = () => {
                     setResumeUrl(base64String);
                 };
                 reader.readAsDataURL(file);
-
             } else {
                 throw new Error('File not defined after selection')
             }
-
         } else {
             setResumeUrl(null);
             localStorage.removeItem('resume');
@@ -119,14 +108,15 @@ export const ProfileFileUploader = () => {
                     setIsOpen={setIsEditMode}
                 />
             }
-            <div className={cn('relative flex flex-col w-full h-full items-center', resumeUrl ? 'py-4' : 'p-32  justify-center')}>
+            <div className={cn('relative flex flex-col w-full h-full items-center', resumeUrl ? 'py-4' : 'p-32 justify-center')}>
                 {resumeUrl && <IconEdit className={'absolute right-5 top-4 w-5 h-5 fill-sub hover:fill-surface cursor-pointer'} onClick={() => { setIsEditMode(true) }} />}
-                {!resumeUrl &&
+                
+                {!resumeUrl ? (
                     <div
                         {...getRootProps()}
                         className={cn('group flex flex-col items-center justify-center w-full h-full border-2 border-dashed rounded-10 cursor-pointer',
                             isDragActive ? 'border-green-500 bg-green-500' : 'border-mauve bg-base',
-                            ' hover:bg-text  hover:border-base transition-colors'
+                            ' hover:bg-text hover:border-base transition-colors'
                         )}
                     >
                         <input {...getInputProps()} />
@@ -141,9 +131,8 @@ export const ProfileFileUploader = () => {
                             )}
                         </div>
                     </div>
-                }
-                {resumeUrl && (
-                    <div className=" flex flex-row gap-x-4 items-center">
+                ) : (
+                    <div className="flex flex-row gap-x-4 items-center">
                         <button
                             type={'button'}
                             onClick={goToPrevPage}
@@ -152,13 +141,20 @@ export const ProfileFileUploader = () => {
                         >
                             {'<'}
                         </button>
-                        <div className={'flex flex-col items-center gap-y-2'}>
+                        <div 
+                            {...getRootProps()} 
+                            className="relative flex flex-col items-center gap-y-2"
+                        >
+                            {/* Invisible dropzone overlay - covers only PDF area */}
+                            <div className="absolute inset-0 z-30 opacity-0 cursor-pointer" />
+                            <input {...getInputProps()} />
+                            
                             <span className={'text-14 text-text'}>
                                 {pageNumber} / {numPages}
                             </span>
                             <Document file={resumeUrl} onLoadSuccess={onDocumentLoadSuccess}>
                                 <Page
-                                    scale={0.85}  // 0.9  
+                                    scale={0.85}
                                     pageNumber={pageNumber}
                                     renderAnnotationLayer={false}
                                     renderTextLayer={false}
@@ -179,4 +175,3 @@ export const ProfileFileUploader = () => {
         </>
     );
 };
-
