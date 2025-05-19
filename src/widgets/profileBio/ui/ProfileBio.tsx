@@ -7,36 +7,9 @@ import { ReactComponent as IconTelegram } from '~/shared/assets/icons/icon-teleg
 import { ReactComponent as IconPhone } from '~/shared/assets/icons/icon-phone.svg';
 import { ReactComponent as IconEmail } from '~/shared/assets/icons/icon-email.svg';
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
-import { EditProfileBio } from "~/features/editProfileBio";
-import { ProfileBioProps } from "~/entities/profileBio/model/type";
+import { EditProfileBio } from '~/features/editProfileBio';
+import { ProfileBioProps } from '~/entities/profileBio/model/type';
 import { Avatar } from '~/widgets/avatar/Avatar';
-
-export interface CompanyBio {
-    title: string;
-    email: string;
-    phoneNumber: string;
-    website: string;
-}
-
-export interface ClientBio {
-    firstName: string;
-    lastName: string;
-    patronymic: string | undefined;
-
-    telegram: string | undefined;
-    phoneNumber: string | undefined;
-    email: string | undefined;
-}
-
-export type ProfileBioProps =
-    | {
-          type: 'CLIENT';
-          data: ClientBio;
-      }
-    | {
-          type: 'COMPANY';
-          data: CompanyBio;
-      };
 
 export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
     const { data, type } = props;
@@ -46,7 +19,7 @@ export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
             <EditProfileBio
                 isOpen={isEditMode}
                 setIsOpen={setIsEditMode}
-                type={type}
+                bio={props}
             />
             <div className={'relative flex w-full flex-col gap-y-2 p-2'}>
                 <IconEdit
@@ -58,12 +31,6 @@ export const ProfileBio: React.FC<ProfileBioProps> = (props) => {
                     }}
                 />
                 <div className={'flex w-full flex-row gap-x-4'}>
-                    <IconEdit
-                        className="absolute right-0 top-0 h-5 w-5 cursor-pointer fill-sub hover:fill-surface"
-                        onClick={() => {
-                            setIsEditMode(true);
-                        }}
-                    />
                     <Avatar />
                     {type === 'CLIENT' ? (
                         <div

@@ -108,6 +108,9 @@ const ListPage = () => {
                             >
                                 {rowVacancies.map((candidate) => (
                                     <CandidateCard
+                                        imgUrl={
+                                            candidate.userProfile?.imgUrl ?? ''
+                                        }
                                         wrapperClassName={cn(
                                             'rounded-4 pl-4  pr-10 border-l-4',
                                             selectedCandidate ===

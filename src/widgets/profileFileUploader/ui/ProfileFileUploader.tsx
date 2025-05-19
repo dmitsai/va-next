@@ -28,6 +28,8 @@ export const ProfileFileUploader = () => {
     } = clientApi.files.getPdf.useQuery();
 
     const handleRefetch = () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         refetch();
     };
 

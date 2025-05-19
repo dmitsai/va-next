@@ -6,6 +6,7 @@ import {
 } from '~/shared/lib/strings';
 import cn from 'classnames';
 import Link from 'next/link';
+import { ServerAvatar } from '~/widgets/avatar/ui/ServerAvatar';
 
 export interface CandidateCardProps {
     candidateId: string;
@@ -15,26 +16,11 @@ export interface CandidateCardProps {
     salaryFrom: number | null | undefined;
     currencyChar: string | null;
     vacancyId: string;
+    imgUrl: string | null | undefined;
 
     wrapperClassName?: string;
 }
 
-// TODO: replace after add avatar component
-
-export const Avatar: React.FC<{ id: string; className?: string }> = ({
-    id,
-    className,
-}) => (
-    <div
-        key={id}
-        className={cn(
-            'flex h-14 w-14 flex-col items-center justify-center rounded-full bg-peach',
-            className
-        )}
-    >
-        {'AVA'}
-    </div>
-);
 export const CandidateCard: React.FC<CandidateCardProps> = (props) => {
     const {
         candidateId,
@@ -45,6 +31,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = (props) => {
         currencyChar,
         wrapperClassName,
         vacancyId,
+        imgUrl,
     } = props;
 
     const stringifyApplyDate = getDayWMonth(applyDate);
@@ -59,7 +46,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = (props) => {
             )}
         >
             <div className={'w-1/4'}>
-                <Avatar id={candidateId} />
+                <ServerAvatar userAvatarUrl={imgUrl ?? ''} />
             </div>
             <div className={'flex w-full flex-col'}>
                 <div className={'flex w-full flex-row justify-between'}>

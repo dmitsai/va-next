@@ -9,7 +9,7 @@ export const CandidateSpecInfo: React.FC<CandidateSpecInfoProps> = (props) => {
     const { pdfUrl, aboutMe } = props;
 
     return (
-        <TabGroup as={'div'} className={'w-full'}>
+        <TabGroup as={'div'} className={'h-full w-full pb-20'}>
             <TabList
                 className={
                     'flex w-full flex-row gap-x-8 border-b-2 border-surface-tertiary'
@@ -28,7 +28,12 @@ export const CandidateSpecInfo: React.FC<CandidateSpecInfoProps> = (props) => {
             </TabList>
             <TabPanels className="mt-4">
                 {tabs.map((tab) => (
-                    <TabPanel key={tab.id}>
+                    <TabPanel
+                        key={tab.id}
+                        className={
+                            'flex flex-col items-center justify-center focus:outline-none'
+                        }
+                    >
                         {tab.id === 'aboutMe' && (
                             <AboutMeTab aboutMe={aboutMe} />
                         )}
