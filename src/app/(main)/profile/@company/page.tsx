@@ -1,41 +1,18 @@
 import { Divider, dividerView } from '~/entities/divider';
 import { ProfileBio } from '~/widgets/profileBio';
 import { ProfileFileUploader } from '~/widgets/profileFileUploader';
-import { ProfileAboutMe } from '~/widgets/profileAboutMe';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+
+import { ProfileAboutMe, ProfileAboutMeProps } from '~/widgets/profileAboutMe';
 import { VacancyList } from '~/widgets/VacancyList';
 import { CompanyVacancyList } from '~/widgets/companyVacancyList';
 import { getServerSession } from '~/shared/lib/auth';
 import { createSSRHelpers } from 'trpc/helpers';
 import { headers } from 'next/headers';
+import { CompanyTabs } from '~/widgets/companyTabs';
 import { AboutMeProps } from '~/entities/aboutMe/model/type';
 import { ProfileBioProps } from '~/entities/profileBio/model/type';
 
-// NOTE: temp data for profile page
-// const temp: {
-//     bio: ProfileBioProps;
-//     description: ProfileAboutMeProps;
-// } = {
-//     bio: {
-//         type: 'COMPANY',
-//         data: {
-//             title: 'Тиньк',
-//             email: 'тиньк@mail.ru',
-//             phoneNumber: '+79994446611',
-//             website: 'tink',
-//         },
-//     },
-//     description: {
-//         type: 'COMPANY',
-//         data: {
-//             description:
-//                 "Тинькофф — это российский финансовый сервис, который изначально был основан как онлайн-банк, но со временем превратился в крупную финтех-компанию с широким спектром услуг. Банк был основан в 2006 году под названием 'Тинькофф Кредитные Системы', а его создателем стал предприниматель Олег Тиньков, который в 2023 году продал свою долю.",
-//         },
-//     },
-// };
-
 const CompanyProfilePage = async () => {
-    // const session = await getServerSession();
     const helpers = await createSSRHelpers(headers());
     const profile = await helpers.companyProfile.getProfile.fetch();
 
@@ -84,40 +61,7 @@ const CompanyProfilePage = async () => {
                     <ProfileAboutMe {...description.discription} />
                 </div>
                 <div className={'flex h-full w-full flex-col overflow-hidden'}>
-                    <Tabs
-                        defaultValue="vacancy"
-                        className="flex h-full flex-col"
-                    >
-                        <div className="mt-3 flex justify-center">
-                            <TabsList className="bg-mantle">
-                                <TabsTrigger
-                                    value="vacancy"
-                                    className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base"
-                                >
-                                    Вакансии
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="description"
-                                    className="w-56 data-[state=active]:bg-mauve data-[state=active]:text-base"
-                                >
-                                    О компании
-                                </TabsTrigger>
-                            </TabsList>
-                        </div>
-                        <TabsContent
-                            value="vacancy"
-                            className="flex-1 overflow-auto"
-                        >
-                            <CompanyVacancyList
-                                companyId={profile.company_id}
-                            />
-                        </TabsContent>
-                        <TabsContent value="description" className="flex-1">
-                            <div className="h-full w-full">
-                                <ProfileFileUploader />
-                            </div>
-                        </TabsContent>
-                    </Tabs>
+                    <CompanyTabs companyId={profile.company_id} />
                 </div>
             </div>
         </main>

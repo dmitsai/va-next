@@ -10,7 +10,21 @@ import { ProfileBioProps } from "~/entities/profileBio/model/type";
 import { AboutMeProps } from "~/entities/aboutMe";
 
 
-// NOTE: temp data for profile page
+import { Divider, dividerView } from '~/entities/divider';
+import {
+    employmentTypes,
+    salaryCurrency,
+    workSchedule,
+} from '~/entities/preferences';
+import { ProfileBio, ProfileBioProps } from '~/widgets/profileBio';
+import { ProfileFileUploader } from '~/widgets/profileFileUploader';
+import {
+    ProfilePreferences,
+    ProfilePreferencesProps,
+} from '~/widgets/profilePreferences';
+import { ProfileAboutMe, ProfileAboutMeProps } from '~/widgets/profileAboutMe';
+import { ProfileTipFlow } from '~/widgets/profileTipFlow';
+import { useEffect } from 'react';
 
 const ProfilePage = async () => {
 
@@ -57,8 +71,30 @@ const ProfilePage = async () => {
 
 
     return (
-        <main className={'flex w-full min-h-screen  flex-grow flex-col bg-base'}>
+        <main className={'flex min-h-screen w-full flex-grow flex-col bg-base'}>
+            <ProfileTipFlow
+                hasAboutMe={false}
+                hasPreferences={false}
+                hasResume={false}
+            />
             <Divider view={dividerView.horizontal} />
+            <div className={'flex h-full w-full flex-row gap-x-8 px-8'}>
+                <div
+                    className={
+                        'flex h-full w-2/5 flex-col gap-y-2 border-r-2 border-surface-tertiary pr-8 pt-4'
+                    }
+                >
+                    <ProfileBio {...userData.bio} />
+                    <Divider
+                        view={dividerView.horizontal}
+                        classname={'px-4 mb-1'}
+                    />
+                    <ProfileAboutMe {...userData.description} />
+                    <Divider
+                        view={dividerView.horizontal}
+                        classname={'px-4 mb-1'}
+                    />
+                    <ProfilePreferences {...userData.preferences} />
             <div className={'flex flex-row gap-x-8 w-full h-full px-8'}>
                 <div className={'flex flex-col gap-y-2 w-2/5 h-full pt-4 pr-8 border-r-2 border-surface-tertiary'}>
                     <ProfileBio {...bio.bio} />
@@ -67,12 +103,16 @@ const ProfilePage = async () => {
                     <Divider view={dividerView.horizontal} classname={'px-4 mb-1'} />
                     <ProfilePreferences employmentTypes={profile.preferences?.employmentTypes ?? []} workSchedule={profile.preferences?.workSchedule ?? []} salary={profile?.salaryFrom ?? ''} salaryCurrency={profile?.currency?.char as SalaryCurrency ?? '₽'} />
                 </div>
-                <div className={'flex flex-col justify-center items-center w-full'}>
+                <div
+                    className={
+                        'flex w-full flex-col items-center justify-center'
+                    }
+                >
                     <ProfileFileUploader />
                 </div>
             </div>
         </main>
-    )
+    );
 };
 
 export default ProfilePage;

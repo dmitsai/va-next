@@ -22,8 +22,7 @@ export default async ({
     }
     return (
         <div className={'relative flex w-full flex-col'}>
-            {isClient && client}
-            {isCompany && company}
+            {isClient ? client : company}
         </div>
     );
 };

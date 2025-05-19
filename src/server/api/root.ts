@@ -4,6 +4,7 @@ import { clientProfileRouter } from './routers/clientProfile';
 import { companyProfileRouter } from './routers/companyProfile';
 import { currencyRouter } from './routers/currency';
 import { applicationRouter } from './routers/application';
+import { profileFilesRouter } from './routers/profileFiles';
 
 export const appRouter = createTRPCRouter({
     vacancy: vacancyRouter,
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
     companyProfile: companyProfileRouter,
     currency: currencyRouter,
     application: applicationRouter,
+    files: profileFilesRouter,
 });
 
 export type AppRouter = typeof appRouter;
