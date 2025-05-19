@@ -7,7 +7,8 @@ import { ReactComponent as IconTelegram } from '~/shared/assets/icons/icon-teleg
 import { ReactComponent as IconPhone } from '~/shared/assets/icons/icon-phone.svg';
 import { ReactComponent as IconEmail } from '~/shared/assets/icons/icon-email.svg';
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
-import { EditProfileBio } from '~/features/editProfileBio';
+import { EditProfileBio } from "~/features/editProfileBio";
+import { ProfileBioProps } from "~/entities/profileBio/model/type";
 import { Avatar } from '~/widgets/avatar/Avatar';
 
 export interface CompanyBio {

@@ -1,4 +1,14 @@
-'use client';
+import { Divider, dividerView } from "~/entities/divider";
+import { employmentTypes, SalaryCurrency, salaryCurrency, workSchedule } from "~/entities/preferences";
+import { ProfileBio } from "~/widgets/profileBio";
+import { ProfileFileUploader } from "~/widgets/profileFileUploader";
+import { ProfilePreferences, ProfilePreferencesProps } from "~/widgets/profilePreferences";
+import { ProfileAboutMe } from "~/widgets/profileAboutMe";
+import { createSSRHelpers } from "trpc/helpers";
+import { headers } from "next/headers";
+import { ProfileBioProps } from "~/entities/profileBio/model/type";
+import { AboutMeProps } from "~/entities/aboutMe";
+
 
 import { Divider, dividerView } from '~/entities/divider';
 import {
@@ -16,49 +26,50 @@ import { ProfileAboutMe, ProfileAboutMeProps } from '~/widgets/profileAboutMe';
 import { ProfileTipFlow } from '~/widgets/profileTipFlow';
 import { useEffect } from 'react';
 
-// NOTE: temp data for profile page
-const temp: {
-    bio: ProfileBioProps;
-    preferences: ProfilePreferencesProps;
-    description: ProfileAboutMeProps;
-} = {
-    bio: {
-        type: 'CLIENT',
-        data: {
-            firstName: 'Иван',
-            lastName: 'Иванов',
-            patronymic: 'Иванович',
-            telegram: '@ivanIvan',
-            phoneNumber: '+79998887766',
-            email: 'ivan@gmail.com',
-        },
-    },
-    preferences: {
-        employmentTypes: [
-            employmentTypes.full,
-            employmentTypes.partTime,
-            employmentTypes.internship,
-        ],
-        workSchedule: [
-            workSchedule.flexible,
-            workSchedule.fullday,
-            workSchedule.remote,
-            workSchedule.shift,
-        ],
-        salary: '100 000',
-        salaryCurrency: salaryCurrency.ruble,
-    },
-    description: {
-        type: 'CLIENT',
-        data: {
-            description:
-                'Стремлюсь к постоянному профессиональному развитию в *ваша сфера* и ищу возможности для реализации своих навыков в динамичной и инновационной компании. Обладаю высоким уровнем коммуникабельности, аналитическим мышлением и способностью эффективно работать в команде. В прошлом достиг заметных результатов, например *ваше достижение*. Готов к новым вызовам и нестандартным задачам.',
-        },
-    },
-};
+const ProfilePage = async () => {
 
-const ProfilePage = () => {
-    const userData = temp;
+    const helpers = await createSSRHelpers(headers())
+
+    const profile = await helpers.clientProfile.getProfile.fetch()
+    
+    if (!profile){
+        return(
+            <div>
+                <p>Профиля нет</p>
+            </div>
+        )
+    }
+
+     const bio : {
+        bio: ProfileBioProps,
+     } = {
+        bio: {
+            type : "CLIENT",
+            data : {
+                firstName : profile.name,
+                lastName: profile.surname,
+                patronymic: profile.patronymic,
+                telegram: profile.telegram,
+                phoneNumber: profile.phone,
+                email: profile.email,
+                }
+            }
+        }
+
+    const description : {
+        discription :  AboutMeProps
+    } = {
+        discription: {
+            type : 'CLIENT',
+            data : {description : profile.about_me}
+        }
+    }
+    
+
+
+    
+
+
     return (
         <main className={'flex min-h-screen w-full flex-grow flex-col bg-base'}>
             <ProfileTipFlow
@@ -84,6 +95,13 @@ const ProfilePage = () => {
                         classname={'px-4 mb-1'}
                     />
                     <ProfilePreferences {...userData.preferences} />
+            <div className={'flex flex-row gap-x-8 w-full h-full px-8'}>
+                <div className={'flex flex-col gap-y-2 w-2/5 h-full pt-4 pr-8 border-r-2 border-surface-tertiary'}>
+                    <ProfileBio {...bio.bio} />
+                    <Divider view={dividerView.horizontal} classname={'px-4 mb-1'} />
+                    <ProfileAboutMe {...description.discription} />
+                    <Divider view={dividerView.horizontal} classname={'px-4 mb-1'} />
+                    <ProfilePreferences employmentTypes={profile.preferences?.employmentTypes ?? []} workSchedule={profile.preferences?.workSchedule ?? []} salary={profile?.salaryFrom ?? ''} salaryCurrency={profile?.currency?.char as SalaryCurrency ?? '₽'} />
                 </div>
                 <div
                     className={

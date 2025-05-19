@@ -2,20 +2,35 @@
 
 import React from "react";
 import { Control, FieldValues, useForm } from "react-hook-form";
+import { clientApi } from "trpc/client";
 import Button, { ButtonView } from "~/shared/ui/Button";
 import { Popup, PopupProps } from "~/shared/ui/Popup";
 import { TextArea } from "~/shared/ui/textArea";
+import { ReactComponent as SpinIcon } from "~/shared/assets/icons/spin.svg";
+import { AboutMeProps } from "~/entities/aboutMe/model/type";
 
-export interface EditProfileAboutMeProps extends Omit<PopupProps, 'title'> {
-    type: 'CLIENT' | 'COMPANY'; 
-};
+export interface EditProfileAboutMeProps extends Omit<PopupProps, 'title'> {description:AboutMeProps }
 
 export interface AboutMeForm {
-    description: string,
+    description?: string,
 }
 
 export const EditProfileAboutMe: React.FC<EditProfileAboutMeProps> = (props) => {
-    const { setIsOpen, type } = props;
+    const { setIsOpen, description:{type, data} } = props;
+
+     const {
+            mutate : updateClient,
+            isPending : isClientPending,
+            isSuccess : isClientSuccess,
+            isError : isClientError,
+        } = clientApi.clientProfile.updateProfile.useMutation()
+    
+        const {
+            mutate : updateCompany,
+            isPending : isCompanyPending,
+            isSuccess : isCompanySuccess,
+            isError : isCompanyError,
+        } = clientApi.companyProfile.updateProfile.useMutation()
     
     const title = type === 'CLIENT' 
         ? 'Редактирование информации о себе' 
@@ -25,14 +40,21 @@ export const EditProfileAboutMe: React.FC<EditProfileAboutMeProps> = (props) => 
         ? 'Напишите о себе...'
         : 'Расскажите о компании...';
 
-    const { control, handleSubmit } = useForm<AboutMeForm>({
+    const { control, handleSubmit, formState: {isValid} } = useForm<AboutMeForm>({
         defaultValues: {
-            description: ''
+            description: data.description ?? '',
         },
     });
 
     const onSubmit = (data: AboutMeForm) => {
-        console.info('about me:', JSON.stringify(data));
+        if (type === 'CLIENT'){
+            console.log(data, 'data')
+            updateClient({about_me: data.description})
+        }
+        if (type === 'COMPANY'){
+            updateCompany(data)
+        }
+        console.info('personal info:', JSON.stringify(data));
         setIsOpen(false);
     };
 
@@ -49,8 +71,13 @@ export const EditProfileAboutMe: React.FC<EditProfileAboutMeProps> = (props) => 
                     type={'submit'} 
                     buttonView={ButtonView.LARGE} 
                     className="w-1/4 text-base bg-mauve hover:bg-text transition-colors"
+                    disabled={!isValid || isClientPending || isCompanyPending}
                 >
-                    {'Сохранить'}
+                    {isClientPending || isCompanyPending ?
+                                            <SpinIcon className="mt-1 animate-spin" />
+                                        :
+                                            <span>Сохранить</span>
+                                        }
                 </Button>
             </form>
         </Popup>
