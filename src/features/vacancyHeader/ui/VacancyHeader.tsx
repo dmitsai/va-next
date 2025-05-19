@@ -8,13 +8,14 @@ import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.sv
 import { ReactComponent as IconInfo } from '~/shared/assets/icons/icon-sonner-error.svg';
 import cn from 'classnames';
 import { Tags } from '~/shared/api/model/tags/type';
+import { ServerAvatar } from '~/widgets/avatar/ui/ServerAvatar';
 
 export interface VacancyHeaderProps {
     company: {
         imgUrl: string | null;
         title: string;
     };
-
+    avatar: string | null;
     title: string;
     tags: Tags | null;
     isFavorited: boolean;
@@ -27,6 +28,7 @@ export const VacancyHeader: React.FC<VacancyHeaderProps> = (props) => {
         tags: objectTags,
         isFavorited: initialIsFavorited,
         isApplied: initialIsApplied,
+        avatar,
     } = props;
 
     const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
@@ -37,14 +39,17 @@ export const VacancyHeader: React.FC<VacancyHeaderProps> = (props) => {
     return (
         <div className={'flex w-full flex-col gap-y-5'}>
             <div className={'flex w-full flex-row gap-x-5'}>
-                {/* TODO: add avatar */}
-                <div
-                    className={
-                        'flex h-20 w-20 items-center justify-center rounded-full bg-peach text-base'
-                    }
-                >
-                    {'AVATAR'}
-                </div>
+                {!avatar ? (
+                    <div
+                        className={
+                            'flex h-20 w-20 items-center justify-center rounded-full bg-peach text-base'
+                        }
+                    >
+                        {'AVATAR'}
+                    </div>
+                ) : (
+                    <ServerAvatar userAvatarUrl={avatar} />
+                )}
                 <div
                     className={
                         'flex w-fit flex-col items-start gap-y-2 font-600 text-text'

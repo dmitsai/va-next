@@ -15,6 +15,7 @@ export default async ({ params }: { params: { vacancyId: string } }) => {
     return (
         <main className={'flex w-full flex-col gap-y-8'}>
             <VacancyHeader
+                avatar={vacancy.company.imgUrl}
                 company={vacancy.company}
                 title={vacancy.title}
                 tags={vacancy.tags}
