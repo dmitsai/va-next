@@ -30,7 +30,7 @@ export const TopBar: React.FC = async () => {
         {
             href: '/vacancies',
             label: CONSTANTS.topBar.vacancies,
-        }
+        },
     ];
 
     const buttons: Array<ButtonContent> = [
