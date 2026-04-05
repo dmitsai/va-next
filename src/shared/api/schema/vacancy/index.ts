@@ -19,6 +19,7 @@ export const inputGetVacancyListSchema = z.object({
     salaryFrom: z.string().optional().nullable(),
     period: z.enum(periodsKeys).optional().nullable(),
     currencyName: z.string().optional().nullable(),
+    platformName: z.string().optional().nullable(),
 });
 
 export type InputGetVacancyListSchema = z.infer<
@@ -58,7 +59,6 @@ export type InputDeleteVacancyItemSchema = z.infer<
 export const vacancyResponseSchema = z.object({
     vacancy_id: z.string(),
     title: z.string(),
-    company_id: z.string(),
     description: z.string(),
     salaryFrom: z.number().nullable(),
     salaryTo: z.number().nullable(),
@@ -69,6 +69,17 @@ export const vacancyResponseSchema = z.object({
         title: z.string(),
         imgUrl: z.string().nullable(),
     }),
+    platform: z.object({
+        name: z.string(),
+        title: z.string(),
+    }),
+    sourceUrl: z.string().nullable().optional(),
+    location: z
+        .object({
+            name: z.string(),
+        })
+        .nullable()
+        .optional(),
     published_at: z.date(),
 });
 
