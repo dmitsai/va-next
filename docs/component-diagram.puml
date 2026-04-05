@@ -1,0 +1,178 @@
+@startuml component-diagram
+!theme cerulean
+
+skinparam backgroundColor #FAFAFA
+skinparam componentStyle rectangle
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam shadowing true
+skinparam roundCorner 12
+skinparam packageBorderThickness 2
+skinparam componentBorderThickness 1.5
+skinparam arrowThickness 1.5
+skinparam noteFontSize 11
+
+title <b>Компонентная диаграмма системы «Vacancy Aggregator»</b>\n<i>Агрегатор вакансий с интеграцией HeadHunter</i>
+
+' ============================================
+' FRONTEND
+' ============================================
+package "<<Presentation Layer>>\nFrontend — Next.js 14 (App Router)" as frontend #E3F2FD {
+
+    package "Страницы (App Router)" as pages #BBDEFB {
+        component [Главная\n«/»] as home
+        component [Вакансии\n«/vacancies»] as vacancies
+        component [Профиль\n«/profile»] as profile
+        component [Админ-панель\n«/admin»] as admin
+    }
+
+    package "Features (FSD)" as features #BBDEFB {
+        component [VacancyCard] as vacCard
+        component [FilterMenu] as filterMenu
+        component [AuthBlock] as authBlock
+        component [EditProfile*] as editProfile
+    }
+
+    package "Widgets" as widgets #BBDEFB {
+        component [Search] as search
+        component [VacancyList] as vacList
+        component [TopBar] as topBar
+        component [ProfileWidgets] as profileWidgets
+    }
+
+    package "Shared UI Kit" as sharedUI #BBDEFB {
+        component [Button / Badge / Select\nSearchInput / Popup\nCombobox / Checkbox] as uiKit
+    }
+
+    package "Управление состоянием" as stateLayer #BBDEFB {
+        component [TanStack\nReact Query] as reactQuery
+        component [React Hook Form\n+ Zod] as rhf
+        component [nuqs\n(URL State)] as nuqs
+    }
+}
+
+' ============================================
+' API LAYER
+' ============================================
+package "<<API Layer>>\ntRPC v11 — Типобезопасный RPC" as apiLayer #E8F5E9 {
+
+    component [vacancy\nRouter] as vacRouter
+    component [currency\nRouter] as currRouter
+    component [vacancySync\nRouter] as syncRouter
+
+    package "Middleware (Auth)" as middleware #C8E6C9 {
+        component [publicProcedure] as pubProc
+        component [protectedProcedure] as protProc
+        component [adminProcedure] as adminProc
+        component [companyProcedure] as compProc
+    }
+}
+
+' ============================================
+' AUTH
+' ============================================
+package "<<Authentication>>\nNextAuth.js 4 — JWT" as authLayer #FFF3E0 {
+    component [Credentials\nProvider] as credProvider
+    component [Session\nManagement] as sessionMgmt
+    component [Ролевая модель\nADMIN | USER\nGUEST | COMPANY] as roles
+}
+
+' ============================================
+' BUSINESS LOGIC
+' ============================================
+package "<<Business Logic>>\nСервисный слой" as bizLayer #F3E5F5 {
+    component [VacancySyncService\n(Синхронизация вакансий)] as syncService
+    component [HHProvider\n(Адаптер HeadHunter API)] as hhProvider
+    component [ensureAdminExists\n(Инициализация админа)] as ensureAdmin
+}
+
+' ============================================
+' DATA LAYER
+' ============================================
+package "<<Data Layer>>\nPrisma ORM 6.6" as dataLayer #EFEBE9 {
+
+    package "Модели данных" as models #D7CCC8 {
+        component [Vacancy] as mVacancy
+        component [Platform] as mPlatform
+        component [Currency] as mCurrency
+        component [Location] as mLocation
+        component [Users] as mUsers
+        component [CompanyProfile\nClientProfile] as mProfiles
+        component [ImportRun] as mImportRun
+    }
+}
+
+' ============================================
+' DATABASE
+' ============================================
+database "PostgreSQL" as db #E0E0E0 {
+    component [Реляционное\nхранилище данных] as storage
+}
+
+' ============================================
+' EXTERNAL SYSTEMS
+' ============================================
+cloud "<<External>>\nВнешние системы" as external #FFEBEE {
+    component [HeadHunter API\nhh.ru/api] as hhAPI
+    component [REST API\n(опционально)] as restAPI
+}
+
+' ============================================
+' STYLING & INFRA
+' ============================================
+package "<<Infrastructure>>\nИнструменты и стилизация" as infra #F5F5F5 {
+    component [Tailwind CSS 3.4\n+ SASS] as styling
+    component [Storybook\n+ Chromatic] as storybook
+    component [Jest + Cypress\n(Тестирование)] as testing
+    component [ESLint + Prettier\n(Качество кода)] as linting
+}
+
+' ============================================
+' CONNECTIONS
+' ============================================
+
+' Frontend -> API
+pages -[#1565C0]-> apiLayer : "tRPC Client\n(React Query)"
+reactQuery -[#1565C0,dashed]-> apiLayer
+
+' API -> Auth
+apiLayer -[#EF6C00]-> authLayer : "Авторизация\nзапросов"
+
+' API -> Business Logic
+syncRouter -[#7B1FA2]-> syncService : "Вызов\nсинхронизации"
+vacRouter -[#7B1FA2]-> dataLayer : "CRUD\nоперации"
+currRouter -[#7B1FA2]-> dataLayer
+
+' Business Logic -> External
+syncService -[#C62828]-> hhProvider
+hhProvider -[#C62828]-> hhAPI : "HTTP GET\n(Axios, 300ms rate limit)"
+
+' Business Logic -> Data
+syncService -[#7B1FA2]-> dataLayer : "Upsert\nвакансий"
+ensureAdmin -[#7B1FA2]-> dataLayer
+
+' Auth -> Data
+authLayer -[#EF6C00]-> dataLayer : "Users, Sessions,\nLoginAttempts"
+
+' Data -> DB
+dataLayer -[#5D4037]-> db : "Prisma Client\n(Connection Pool)"
+
+' Infra connections
+infra -[#9E9E9E,dashed]-> frontend : "Поддержка\nразработки"
+
+' ============================================
+' LEGEND
+' ============================================
+legend right
+  |= Цвет |= Слой |
+  | <#E3F2FD> | Presentation (Frontend) |
+  | <#E8F5E9> | API Layer (tRPC) |
+  | <#FFF3E0> | Authentication (NextAuth) |
+  | <#F3E5F5> | Business Logic (Services) |
+  | <#EFEBE9> | Data Layer (Prisma ORM) |
+  | <#E0E0E0> | Database (PostgreSQL) |
+  | <#FFEBEE> | External Systems |
+  | <#F5F5F5> | Infrastructure & Tools |
+endlegend
+
+@enduml

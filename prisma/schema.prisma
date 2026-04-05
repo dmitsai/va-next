@@ -9,29 +9,70 @@ datasource db {
 
 
 model Currency {
-  currency_id String @id @default(uuid())
-  title String @unique
-  char String @unique
+  currency_id String  @id @default(uuid())
+  title       String  @unique
+  char        String  @unique
+  code        String? @unique
 
   Vacancy Vacancy[]
-} 
-model Vacancy {
-  vacancy_id String @id @default(uuid())
-  title String
-  company_id String
-  company  CompanyProfile  @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
-  salaryFrom Int?
-  salaryTo Int?
-  currency_id String    
-  currency    Currency  @relation(fields: [currency_id], references: [currency_id])
-  description String
-  tags Json?
-  imgUrl  String?
-  published_at DateTime @default(now()) 
-  favoritedBy ClientProfile[] @relation("FavoriteVacancies")
+}
 
+model Platform {
+  platform_id String  @id @default(uuid())
+  name        String  @unique
+  title       String
+  baseUrl     String?
+  logoUrl     String?
+  isActive    Boolean @default(true)
+
+  vacancies Vacancy[]
+}
+
+model Location {
+  location_id String  @id @default(uuid())
+  name        String
+  externalId  String?
+  source      String?
+
+  vacancies Vacancy[]
+
+  @@unique([source, externalId])
+  @@index([name])
+}
+
+model Vacancy {
+  vacancy_id     String   @id @default(uuid())
+  title          String
+  description    String
+
+  platform_id    String
+  platform       Platform        @relation(fields: [platform_id], references: [platform_id])
+  sourceUrl      String?
+  externalId     String?
+
+  company_id     String?
+  company        CompanyProfile? @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
+  companyName    String?
+  companyLogoUrl String?
+
+  salaryFrom     Int?
+  salaryTo       Int?
+  currency_id    String?
+  currency       Currency?       @relation(fields: [currency_id], references: [currency_id])
+
+  location_id    String?
+  location       Location?       @relation(fields: [location_id], references: [location_id])
+
+  tags           Json?
+  imgUrl         String?
+  published_at   DateTime @default(now())
+  favoritedBy    ClientProfile[] @relation("FavoriteVacancies")
+
+  @@unique([platform_id, externalId])
   @@index([title], map: "title_search_idx")
   @@index([description], map: "description_search_idx")
+  @@index([platform_id])
+  @@index([published_at])
 }
 model CompanyProfile {
     company_id String @id @default(uuid())
@@ -142,4 +183,25 @@ enum Roles {
   USER
   GUEST
   COMPANY
+}
+
+enum ImportStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model ImportRun {
+  import_run_id String       @id @default(uuid())
+  source        String
+  status        ImportStatus @default(RUNNING)
+  query         String?
+  startedAt     DateTime     @default(now())
+  finishedAt    DateTime?
+  itemsFound    Int          @default(0)
+  itemsCreated  Int          @default(0)
+  itemsUpdated  Int          @default(0)
+  errorMessage  String?
+
+  @@index([source])
 }

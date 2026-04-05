@@ -2,19 +2,66 @@ import { Roles } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { prisma } from './db';
 
+const PLATFORMS = [
+    { name: 'local', title: 'Наша платформа' },
+    { name: 'hh', title: 'HeadHunter', baseUrl: 'https://hh.ru' },
+];
+
+const CURRENCIES = [
+    { title: 'Российский рубль', char: '₽', code: 'RUR' },
+    { title: 'Доллар США', char: '$', code: 'USD' },
+    { title: 'Евро', char: '€', code: 'EUR' },
+    { title: 'Тенге', char: '₸', code: 'KZT' },
+    { title: 'Белорусский рубль', char: 'Br', code: 'BYR' },
+    { title: 'Гривна', char: '₴', code: 'UAH' },
+];
+
 const seed = async () => {
+    for (const p of PLATFORMS) {
+        await prisma.platform.upsert({
+            where: { name: p.name },
+            update: { title: p.title, baseUrl: p.baseUrl },
+            create: p,
+        });
+    }
+    console.log('Platforms seeded');
+
+    for (const c of CURRENCIES) {
+        const existing = await prisma.currency.findFirst({
+            where: { OR: [{ title: c.title }, { char: c.char }] },
+        });
+
+        if (existing) {
+            await prisma.currency.update({
+                where: { currency_id: existing.currency_id },
+                data: { code: c.code },
+            });
+        } else {
+            await prisma.currency.create({ data: c });
+        }
+    }
+    console.log('Currencies seeded');
+
     const hashedPassword = await bcrypt.hash('password', 10);
 
-    const testUser = await prisma.users.create({
-        data: {
+    const localPlatform = await prisma.platform.findUnique({
+        where: { name: 'local' },
+    });
+
+    const testUser = await prisma.users.upsert({
+        where: { email: 'company@gmail.com' },
+        update: {},
+        create: {
             email: 'company@gmail.com',
             password_hash: hashedPassword,
             role: Roles.COMPANY,
         },
     });
 
-    const testCompany = await prisma.companyProfile.create({
-        data: {
+    const testCompany = await prisma.companyProfile.upsert({
+        where: { user_id: testUser.user_id },
+        update: {},
+        create: {
             title: 'T-Company',
             description: 'Test description',
             user_id: testUser.user_id,
@@ -25,77 +72,11 @@ const seed = async () => {
         },
     });
 
-    // const testTags = await prisma.tag.createMany({
-    //   data: [
-    //     {
-    //       title: "Moscow",
-    //       localTitle: "Москва",
-    //     },
-    //     {
-    //       title: "Exp.1-3",
-    //       localTitle: "Опыт работы 1 - 3 года",
-    //     },
-    //     {
-    //       title: "remotely",
-    //       localTitle: "Удаленная работа",
-    //     },
-    //     {
-    //       title: "Design",
-    //       localTitle: "Дизайн",
-    //     },
-    //   ],
-    // });
-
-    // const tags = await prisma.tag.findMany();
-
-    // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    // const vacancy1 = await prisma.vacancy.create({
-    //   data: {
-    //     title: "UI/UX Designer",
-    //     company_id: testCompany.company_id,
-    //     salaryFrom: "100000",
-    //     salaryTo: "150000",
-    //     description:
-    //       "We are looking for an experienced UI/UX Designer to join our team.",
-    //     lan: "55.7558",
-    //     lng: "37.6173",
-    //     imgUrl: "https://example.com/designer-vacancy.jpg",
-    //     tags: {
-    //       connect: [
-    //         { tag_id: tags.find((t) => t.title === "Moscow")?.tag_id },
-    //         { tag_id: tags.find((t) => t.title === "Exp.1-3")?.tag_id },
-    //         { tag_id: tags.find((t) => t.title === "Design")?.tag_id },
-    //       ],
-    //     },
-    //   },
-    // });
-
-    // const vacancy2 = await prisma.vacancy.create({
-    //   data: {
-    //     title: "Frontend Developer",
-    //     company_id: testCompany.company_id,
-    //     salaryFrom: "120000",
-    //     salaryTo: "180000",
-    //     description:
-    //       "Looking for a skilled Frontend Developer with React experience.",
-    //     lan: "55.7558",
-    //     lng: "37.6173",
-    //     imgUrl: "https://example.com/dev-vacancy.jpg",
-    //     tags: {
-    //       connect: [
-    //         { tag_id: tags.find((t) => t.title === "remotely")?.tag_id },
-    //         { tag_id: tags.find((t) => t.title === "Moscow")?.tag_id },
-    //       ],
-    //     },
-    //   },
-    // });
-
     console.log('Seed completed successfully!');
     console.log({
-        user: testUser,
-        company: testCompany,
-        // tags: tags.length,
-        // vacancies: [vacancy1, vacancy2],
+        user: testUser.user_id,
+        company: testCompany.company_id,
+        platform: localPlatform?.platform_id,
     });
 };
 
