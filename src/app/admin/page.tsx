@@ -4,7 +4,7 @@ import { ensureAdminExists } from '~/server/services/ensure-admin';
 import { AdminLogin } from './_components/AdminLogin';
 import { AdminPanel } from './_components/AdminPanel';
 
-export default async function AdminPage() {
+const AdminPage = async () => {
     await ensureAdminExists();
 
     const session = await getServerAuthSession();
@@ -23,4 +23,6 @@ export default async function AdminPage() {
             <AdminPanel userEmail={session.user.email ?? ''} />
         </main>
     );
-}
+};
+
+export default AdminPage;

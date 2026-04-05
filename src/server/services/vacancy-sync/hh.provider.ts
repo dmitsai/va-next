@@ -129,6 +129,7 @@ function mapHHVacancy(hh: HHVacancy): NormalizedVacancy {
 
 export class HHProvider implements VacancyProvider {
     readonly source = 'hh';
+
     private client: AxiosInstance;
 
     constructor() {
@@ -177,7 +178,7 @@ export class HHProvider implements VacancyProvider {
             },
         );
 
-        const data = response.data;
+        const { data } = response;
 
         return {
             items: data.items

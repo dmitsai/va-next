@@ -1,6 +1,11 @@
 'use client';
 
-import { QueryClient, QueryClientProvider, HydrationBoundary  } from '@tanstack/react-query';
+import {
+    DehydratedState,
+    HydrationBoundary,
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query';
 import { createTRPCClient, httpBatchLink,loggerLink } from '@trpc/client';
 import React, { ReactNode, useState } from 'react';
 import { AppRouter } from '~/server/api/root';
@@ -24,10 +29,10 @@ function getQueryClient() {
 
 export const clientApi = createTRPCReact<AppRouter>();
 
-interface ClientApiProviderProps  {
+interface ClientApiProviderProps {
   children: ReactNode;
-  dehydratedState?: unknown; 
-};
+  dehydratedState?: DehydratedState | null;
+}
 
 export const ClientApiProvider: React.FC<ClientApiProviderProps> = ({children,dehydratedState}) => {
   

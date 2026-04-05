@@ -1,7 +1,9 @@
 'use client';
 
+import type { ImportRun } from '@prisma/client';
 import { signOut } from 'next-auth/react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type FormEvent } from 'react';
+import type { InputSyncFromHHSchema } from '~/shared/api/schema/external-vacancy';
 import { clientApi } from 'trpc/client';
 
 const HH_AREAS: Record<string, string> = {
@@ -40,7 +42,48 @@ const HH_SCHEDULE = [
     { value: 'remote', label: 'Удалённо' },
 ] as const;
 
-export function AdminPanel({ userEmail }: { userEmail: string }) {
+const StatusBadge = ({ status }: { status: string }) => {
+    const styles: Record<string, string> = {
+        COMPLETED: 'bg-green/10 text-green',
+        FAILED: 'bg-red/10 text-red',
+        RUNNING: 'bg-yellow/10 text-yellow',
+    };
+    const labels: Record<string, string> = {
+        COMPLETED: 'Готово',
+        FAILED: 'Ошибка',
+        RUNNING: 'В процессе',
+    };
+
+    return (
+        <span
+            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? ''}`}
+        >
+            {labels[status] ?? status}
+        </span>
+    );
+};
+
+const formatDate = (date: Date | string): string => {
+    const d = new Date(date);
+    return d.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const formatDuration = (start: Date | string, end: Date | string): string => {
+    const ms = new Date(end).getTime() - new Date(start).getTime();
+    if (ms < 1000) return `${ms}мс`;
+    const secs = Math.round(ms / 1000);
+    if (secs < 60) return `${secs}с`;
+    const mins = Math.floor(secs / 60);
+    const remainSecs = secs % 60;
+    return `${mins}м ${remainSecs}с`;
+};
+
+export const AdminPanel = ({ userEmail }: { userEmail: string }) => {
     const [text, setText] = useState('');
     const [area, setArea] = useState('');
     const [experience, setExperience] = useState('');
@@ -59,7 +102,7 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
 
     const syncMutation = clientApi.vacancySync.syncFromHH.useMutation({
         onSuccess: () => {
-            importRunsQuery.refetch();
+            void importRunsQuery.refetch();
         },
     });
 
@@ -74,13 +117,10 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
 
     const selectedRoleNames = useMemo(() => {
         if (!rolesQuery.data) return {};
-        const map: Record<string, string> = {};
-        for (const r of rolesQuery.data) {
-            if (selectedRoles.includes(r.id)) {
-                map[r.id] = r.name;
-            }
-        }
-        return map;
+        return rolesQuery.data.reduce<Record<string, string>>((map, r) => {
+            if (!selectedRoles.includes(r.id)) return map;
+            return { ...map, [r.id]: r.name };
+        }, {});
     }, [rolesQuery.data, selectedRoles]);
 
     const toggleRole = (id: string) => {
@@ -89,15 +129,34 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
         );
     };
 
-    const handleSync = (e: React.FormEvent) => {
+    const handleSync = (e: FormEvent) => {
         e.preventDefault();
+
+        const experienceParam: InputSyncFromHHSchema['experience'] =
+            experience === ''
+                ? undefined
+                : (experience as NonNullable<
+                      InputSyncFromHHSchema['experience']
+                  >);
+
+        const employmentParam: InputSyncFromHHSchema['employment'] =
+            employment === ''
+                ? undefined
+                : (employment as NonNullable<
+                      InputSyncFromHHSchema['employment']
+                  >);
+
+        const scheduleParam: InputSyncFromHHSchema['schedule'] =
+            schedule === ''
+                ? undefined
+                : (schedule as NonNullable<InputSyncFromHHSchema['schedule']>);
 
         syncMutation.mutate({
             text: text.trim() || undefined,
             area: area || undefined,
-            experience: (experience || undefined) as any,
-            employment: (employment || undefined) as any,
-            schedule: (schedule || undefined) as any,
+            experience: experienceParam,
+            employment: employmentParam,
+            schedule: scheduleParam,
             professionalRoles:
                 selectedRoles.length > 0 ? selectedRoles : undefined,
             maxPages,
@@ -112,6 +171,7 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
                 <div className="flex items-center gap-4">
                     <span className="small text-subtext0">{userEmail}</span>
                     <button
+                        type="button"
                         onClick={() => signOut({ callbackUrl: '/admin' })}
                         className="small rounded-md border border-surface1 px-3 py-1 text-subtext0 transition hover:border-red hover:text-red"
                     >
@@ -331,7 +391,10 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
                 <div className="mb-4 flex items-center justify-between">
                     <h3>История импортов</h3>
                     <button
-                        onClick={() => importRunsQuery.refetch()}
+                        type="button"
+                        onClick={() => {
+                            void importRunsQuery.refetch();
+                        }}
                         className="small rounded-md border border-surface1 px-3 py-1 text-subtext0 transition hover:border-mauve hover:text-mauve"
                     >
                         Обновить
@@ -342,11 +405,11 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
                     <p className="text-subtext0">Загрузка...</p>
                 )}
 
-                {importRunsQuery.data && importRunsQuery.data.length === 0 && (
+                {importRunsQuery.data?.length === 0 && (
                     <p className="text-subtext0">Импортов пока нет</p>
                 )}
 
-                {importRunsQuery.data && importRunsQuery.data.length > 0 && (
+                {(importRunsQuery.data?.length ?? 0) > 0 && (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
@@ -364,7 +427,7 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {importRunsQuery.data.map((run: any) => (
+                                {importRunsQuery.data?.map((run: ImportRun) => (
                                     <tr
                                         key={run.import_run_id}
                                         className="border-b border-surface0 transition hover:bg-surface0/50"
@@ -409,48 +472,4 @@ export function AdminPanel({ userEmail }: { userEmail: string }) {
             </section>
         </div>
     );
-}
-
-function StatusBadge({ status }: { status: string }) {
-    const styles: Record<string, string> = {
-        COMPLETED: 'bg-green/10 text-green',
-        FAILED: 'bg-red/10 text-red',
-        RUNNING: 'bg-yellow/10 text-yellow',
-    };
-    const labels: Record<string, string> = {
-        COMPLETED: 'Готово',
-        FAILED: 'Ошибка',
-        RUNNING: 'В процессе',
-    };
-
-    return (
-        <span
-            className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${styles[status] ?? ''}`}
-        >
-            {labels[status] ?? status}
-        </span>
-    );
-}
-
-function formatDate(date: Date | string): string {
-    const d = new Date(date);
-    return d.toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
-
-function formatDuration(
-    start: Date | string,
-    end: Date | string,
-): string {
-    const ms = new Date(end).getTime() - new Date(start).getTime();
-    if (ms < 1000) return `${ms}мс`;
-    const secs = Math.round(ms / 1000);
-    if (secs < 60) return `${secs}с`;
-    const mins = Math.floor(secs / 60);
-    const remainSecs = secs % 60;
-    return `${mins}м ${remainSecs}с`;
-}
+};

@@ -15,7 +15,11 @@ const VACANCY_INCLUDE = {
     location: true,
 } as const;
 
-function normalizeVacancy(v: any) {
+type VacancyWithRelations = Prisma.VacancyGetPayload<{
+    include: typeof VACANCY_INCLUDE;
+}>;
+
+function normalizeVacancy(v: VacancyWithRelations) {
     return {
         ...v,
         company: v.company ?? {
@@ -77,21 +81,13 @@ export const vacancyRouter = createTRPCRouter({
                     title: input.title,
                     description: input.description,
                     platform_id: localPlatform.platform_id,
-                    company: {
-                        connect: {
-                            company_id: companyProfile.company_id,
-                        },
-                    },
+                    company_id: companyProfile.company_id,
                     companyName: companyProfile.title,
                     companyLogoUrl: companyProfile.imgUrl,
                     salaryFrom,
                     salaryTo,
                     imgUrl: input.imgUrl,
-                    currency: {
-                        connect: {
-                            currency_id: input.currencyId,
-                        },
-                    },
+                    currency_id: input.currencyId,
                     tags: input.tags,
                 },
                 include: VACANCY_INCLUDE,

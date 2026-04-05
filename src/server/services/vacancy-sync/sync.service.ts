@@ -1,5 +1,9 @@
-import type { PrismaClient } from '@prisma/client';
-import type { VacancyProvider, ProviderSearchParams } from './contracts';
+import type { PrismaClient } from '~/server/db/db';
+import type {
+    NormalizedVacancy,
+    VacancyProvider,
+    ProviderSearchParams,
+} from './contracts';
 
 export interface SyncOptions extends ProviderSearchParams {
     maxPages?: number;
@@ -14,11 +18,23 @@ export interface SyncResult {
 
 const RATE_LIMIT_DELAY_MS = 300;
 
+function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, ms);
+    });
+}
+
 export class VacancySyncService {
-    constructor(
-        private prisma: PrismaClient,
-        private provider: VacancyProvider,
-    ) {}
+    private readonly prisma: PrismaClient;
+
+    private readonly provider: VacancyProvider;
+
+    constructor(prisma: PrismaClient, provider: VacancyProvider) {
+        this.prisma = prisma;
+        this.provider = provider;
+    }
 
     async sync(options: SyncOptions): Promise<SyncResult> {
         const maxPages = options.maxPages ?? 20;
@@ -44,81 +60,85 @@ export class VacancySyncService {
         let totalCreated = 0;
         let totalUpdated = 0;
 
-        try {
-            let currentPage = options.page ?? 0;
+        const processItem = async (item: NormalizedVacancy) => {
+            const locationId = await this.resolveLocation(
+                item.areaName,
+                item.areaId,
+            );
+            const currencyId = await this.resolveCurrency(item.currencyCode);
 
-            while (currentPage < maxPages) {
-                const result = await this.provider.search({
-                    ...options,
-                    page: currentPage,
-                });
+            const data = {
+                title: item.title,
+                description: item.description,
+                companyName: item.companyName,
+                companyLogoUrl: item.companyLogoUrl,
+                salaryFrom: item.salaryFrom,
+                salaryTo: item.salaryTo,
+                currency_id: currencyId,
+                sourceUrl: item.sourceUrl,
+                tags: item.tags ?? undefined,
+                location_id: locationId,
+                published_at: item.publishedAt ?? new Date(),
+            };
 
-                totalFound += result.items.length;
+            const before = await this.prisma.vacancy.findFirst({
+                where: {
+                    platform_id: platform.platform_id,
+                    externalId: item.externalId,
+                },
+                select: { vacancy_id: true },
+            });
 
-                for (const item of result.items) {
-                    const locationId = await this.resolveLocation(
-                        item.areaName,
-                        item.areaId,
-                    );
-                    const currencyId = await this.resolveCurrency(
-                        item.currencyCode,
-                    );
+            await this.prisma.vacancy.upsert({
+                where: {
+                    platform_id_externalId: {
+                        platform_id: platform.platform_id,
+                        externalId: item.externalId,
+                    },
+                },
+                update: data,
+                create: {
+                    ...data,
+                    externalId: item.externalId,
+                    platform_id: platform.platform_id,
+                },
+            });
 
-                    const data = {
-                        title: item.title,
-                        description: item.description,
-                        companyName: item.companyName,
-                        companyLogoUrl: item.companyLogoUrl,
-                        salaryFrom: item.salaryFrom,
-                        salaryTo: item.salaryTo,
-                        currency_id: currencyId,
-                        sourceUrl: item.sourceUrl,
-                        tags: item.tags ?? undefined,
-                        location_id: locationId,
-                        published_at: item.publishedAt ?? new Date(),
-                    };
-
-                    const before =
-                        await this.prisma.vacancy.findFirst({
-                            where: {
-                                platform_id: platform.platform_id,
-                                externalId: item.externalId,
-                            },
-                            select: { vacancy_id: true },
-                        });
-
-                    await this.prisma.vacancy.upsert({
-                        where: {
-                            platform_id_externalId: {
-                                platform_id: platform.platform_id,
-                                externalId: item.externalId,
-                            },
-                        },
-                        update: data,
-                        create: {
-                            ...data,
-                            externalId: item.externalId,
-                            platform_id: platform.platform_id,
-                        },
-                    });
-
-                    if (before) {
-                        totalUpdated++;
-                    } else {
-                        totalCreated++;
-                    }
-                }
-
-                if (
-                    currentPage >= result.pages - 1 ||
-                    result.items.length === 0
-                ) {
-                    break;
-                }
-
-                currentPage++;
-                await delay(RATE_LIMIT_DELAY_MS);
+            if (before) {
+                totalUpdated += 1;
+            } else {
+                totalCreated += 1;
             }
+        };
+
+        const runPage = async (currentPage: number): Promise<void> => {
+            if (currentPage >= maxPages) return;
+
+            const result = await this.provider.search({
+                ...options,
+                page: currentPage,
+            });
+
+            totalFound += result.items.length;
+
+            await result.items.reduce(
+                (chain, item) => chain.then(() => processItem(item)),
+                Promise.resolve(),
+            );
+
+            if (
+                currentPage >= result.pages - 1 ||
+                result.items.length === 0
+            ) {
+                return;
+            }
+
+            await delay(RATE_LIMIT_DELAY_MS);
+            await runPage(currentPage + 1);
+        };
+
+        try {
+            await runPage(options.page ?? 0);
 
             await this.prisma.importRun.update({
                 where: { import_run_id: importRun.import_run_id },
@@ -163,7 +183,7 @@ export class VacancySyncService {
     ): Promise<string | null> {
         if (!areaName) return null;
 
-        const source = this.provider.source;
+        const { source } = this.provider;
 
         if (areaId) {
             const location = await this.prisma.location.upsert({
@@ -203,8 +223,4 @@ export class VacancySyncService {
 
         return currency?.currency_id ?? null;
     }
-}
-
-function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }

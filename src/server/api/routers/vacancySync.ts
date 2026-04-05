@@ -1,13 +1,13 @@
+import { HHProvider, VacancySyncService } from '~/server/services/vacancy-sync';
 import { inputSyncFromHHSchema } from '~/shared/api/schema/external-vacancy';
 import { createTRPCRouter, adminProcedure } from '../trpc';
-import { HHProvider, VacancySyncService } from '~/server/services/vacancy-sync';
 
 const hhProvider = new HHProvider();
 
 export const vacancySyncRouter = createTRPCRouter({
-    getProfessionalRoles: adminProcedure.query(async () => {
-        return hhProvider.getProfessionalRoles();
-    }),
+    getProfessionalRoles: adminProcedure.query(() =>
+        hhProvider.getProfessionalRoles(),
+    ),
 
     syncFromHH: adminProcedure
         .input(inputSyncFromHHSchema)
@@ -29,10 +29,10 @@ export const vacancySyncRouter = createTRPCRouter({
             });
         }),
 
-    getImportRuns: adminProcedure.query(async ({ ctx }) => {
-        return ctx.prisma.importRun.findMany({
+    getImportRuns: adminProcedure.query(({ ctx }) =>
+        ctx.prisma.importRun.findMany({
             orderBy: { startedAt: 'desc' },
             take: 50,
-        });
-    }),
+        }),
+    ),
 });

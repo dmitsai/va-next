@@ -16,30 +16,34 @@ const CURRENCIES = [
     { title: 'Гривна', char: '₴', code: 'UAH' },
 ];
 
-const seed = async () => {
-    for (const p of PLATFORMS) {
-        await prisma.platform.upsert({
-            where: { name: p.name },
-            update: { title: p.title, baseUrl: p.baseUrl },
-            create: p,
+const seedCurrency = async (c: (typeof CURRENCIES)[number]) => {
+    const existing = await prisma.currency.findFirst({
+        where: { OR: [{ title: c.title }, { char: c.char }] },
+    });
+
+    if (existing) {
+        await prisma.currency.update({
+            where: { currency_id: existing.currency_id },
+            data: { code: c.code },
         });
+    } else {
+        await prisma.currency.create({ data: c });
     }
+};
+
+const seed = async () => {
+    await Promise.all(
+        PLATFORMS.map((p) =>
+            prisma.platform.upsert({
+                where: { name: p.name },
+                update: { title: p.title, baseUrl: p.baseUrl },
+                create: p,
+            }),
+        ),
+    );
     console.log('Platforms seeded');
 
-    for (const c of CURRENCIES) {
-        const existing = await prisma.currency.findFirst({
-            where: { OR: [{ title: c.title }, { char: c.char }] },
-        });
-
-        if (existing) {
-            await prisma.currency.update({
-                where: { currency_id: existing.currency_id },
-                data: { code: c.code },
-            });
-        } else {
-            await prisma.currency.create({ data: c });
-        }
-    }
+    await Promise.all(CURRENCIES.map((c) => seedCurrency(c)));
     console.log('Currencies seeded');
 
     const hashedPassword = await bcrypt.hash('password', 10);
