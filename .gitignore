@@ -47,7 +47,6 @@ yarn-error.log*
  .vscode/
 
 #lock
-pnpm-lock.yaml
 *storybook.log
 # Sentry Config File
 .env.sentry-build-plugin
