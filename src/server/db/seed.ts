@@ -70,9 +70,9 @@ const seed = async () => {
             description: 'Test description',
             user_id: testUser.user_id,
             imgUrl: 'https://example.com/company-logo.jpg',
-            phone: '+1234567890',
-            email: 'contact@tcompany.com',
-            website: 'https://tcompany.com',
+            phone: '+1234567899',
+            email: 'contactTESTCOMPANY@tcompany.com',
+            website: 'https://testcompany.com',
         },
     });
 

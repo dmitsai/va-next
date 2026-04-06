@@ -1,82 +1,159 @@
 'use client';
 
-import React, { memo } from "react";
-import { Popup, type PopupProps } from "~/shared/ui/Popup";
+import React, { memo, useState } from 'react';
+import { Popup, type PopupProps } from '~/shared/ui/Popup';
 import { ReactComponent as IconFile } from '~/shared/assets/icons/icon-file.svg';
 import { ReactComponent as IconTrash } from '~/shared/assets/icons/icon-trash.svg';
+import { ReactComponent as LoadingIcon } from '~/shared/assets/icons/spin.svg';
 
-import { useDropzone } from "react-dropzone";
+import { useDropzone } from 'react-dropzone';
 import cn from 'classnames';
-import { formatDate } from "../lib/formatDate";
+import { clientApi } from 'trpc/client';
+import { UploadDropzone } from '~/utils/uploadthing';
+import { formatDate } from '../lib/formatDate';
 
 export interface FileInfo {
-    name: string,
-    size: number,
-    uploadedDate: string
+    name: string;
+    size: number;
+    uploadedDate: string;
 }
 
 export interface EditProfileResumeProps extends Omit<PopupProps, 'title'> {
     fileUrl: string | null;
-    fileInfo: FileInfo | null,
-    handleRemoveFile: () => void,
-    onDrop: (files: File[]) => void
+    fileInfo: FileInfo | null;
+    handleRefetch: () => void;
 }
 
 const parseFileInfo = (fileInfo: FileInfo) => ({
     name: fileInfo.name,
     size: `${(fileInfo.size / 1024).toFixed(2)} КБ `,
     uploadedDate: formatDate(fileInfo.uploadedDate),
-})
-export const EditProfileResume: React.FC<EditProfileResumeProps> = memo((props) => {
-    const { fileInfo, handleRemoveFile, onDrop, setIsOpen } = props;
-    const { name, size, uploadedDate } = fileInfo ? parseFileInfo(fileInfo) : {};
-    const { getRootProps, getInputProps, isDragActive, } = useDropzone({
-        onDrop,
-        accept: {
-            'application/pdf': ['.pdf'],
-        },
-        multiple: false,
-    });
+});
+export const EditProfileResume: React.FC<EditProfileResumeProps> = memo(
+    (props) => {
+        const [isUploading, setIsUploading] = useState(false);
+        const { mutateAsync: deletePdf, isPending } =
+            clientApi.files.deletePdf.useMutation();
+        const { fileInfo, setIsOpen, handleRefetch } = props;
+        const { name, size, uploadedDate } = fileInfo
+            ? parseFileInfo(fileInfo)
+            : ({} as FileInfo);
 
-    return (
-        <Popup title={"Редактирование резюме"} {...props}>
-            <div className={'flex flex-col gap-y-8 w-full h-full items-end'}>
-                {fileInfo && <div className={'flex flex-col gap-y-2 w-full items-start'}>
-                    <div className={'flex flex-row w-full justify-between'}>
-                        <div className={'flex flex-row gap-x-1 justify-center'}>
-                            <IconFile className={'w-5 h-5 fill-sub'} />
-                            <span className={'text-text text-14 font-600'}>{name}</span>
-                        </div>
-                        <IconTrash onClick={() => { handleRemoveFile(); setIsOpen(false); }} className={'w-5 h-5 fill-red cursor-pointer'} />
-                    </div>
-                    <div className={'flex flex-row gap-x-4'}>
-                        <p className={'text-text text-14'}>{'Размер: '}<span className={'font-600'}>{size}</span></p>
-                        <p className={'text-text text-14'}>{'Дата загрузки: '}<span className={'font-600'}>{uploadedDate}</span></p>
-                    </div>
-
-                </div>}
+        const handleRemoveFile = async () => {
+            await deletePdf();
+        };
+        return (
+            <Popup title={'Редактирование резюме'} {...props}>
                 <div
-                    {...getRootProps()}
-                    className={cn('group flex flex-col items-center justify-center w-full  px-4 h-24 border-2 border-dashed rounded-10 cursor-pointer min-w-popup-dragdrop',
-                        isDragActive ? 'border-green-500 bg-green-500' : 'border-mauve bg-base',
-                        ' hover:bg-text  hover:border-base transition-colors'
-                    )}
+                    className={'flex h-full w-full flex-col items-end gap-y-8'}
                 >
-                    <input {...getInputProps()} />
-                    <div className="flex flex-col items-center justify-center">
-                        {isDragActive ? (
-                            <p className={'text-text text-14'}>{'Отпустите файл здесь...'}</p>
+                    {fileInfo && (
+                        <div
+                            className={
+                                'flex w-full flex-col items-start gap-y-2'
+                            }
+                        >
+                            <div
+                                className={
+                                    'flex w-full flex-row justify-between'
+                                }
+                            >
+                                <div
+                                    className={
+                                        'flex flex-row justify-center gap-x-1'
+                                    }
+                                >
+                                    <IconFile className={'h-5 w-5 fill-sub'} />
+                                    <span
+                                        className={'text-14 font-600 text-text'}
+                                    >
+                                        {name}
+                                    </span>
+                                </div>
+                                <IconTrash
+                                    onClick={async () => {
+                                        await handleRemoveFile();
+                                        handleRefetch();
+                                        setIsOpen(false);
+                                    }}
+                                    className={
+                                        'h-5 w-5 cursor-pointer fill-red'
+                                    }
+                                />
+                            </div>
+                            <div className={'flex flex-row gap-x-4'}>
+                                <p className={'text-14 text-text'}>
+                                    {'Размер: '}
+                                    <span className={'font-600'}>{size}</span>
+                                </p>
+                                <p className={'text-14 text-text'}>
+                                    {'Дата загрузки: '}
+                                    <span className={'font-600'}>
+                                        {uploadedDate}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    <div
+                        className={cn(
+                            'group flex h-24 w-full min-w-popup-dragdrop cursor-pointer flex-col items-center justify-center rounded-10 border-2 border-dashed px-4',
+                            'border-green-500 bg-green-500',
+                            'transition-colors hover:border-base hover:bg-text'
+                        )}
+                    >
+                        {!isPending ? (
+                            <div className="relative flex flex-col items-center justify-center">
+                                <p
+                                    className={
+                                        'text-14 text-text transition-colors group-hover:text-base'
+                                    }
+                                >
+                                    {
+                                        'Перетащите файл сюда или нажмите, чтобы изменить резюме'
+                                    }
+                                </p>
+                                <p
+                                    className={
+                                        'text-12 text-sub transition-colors group-hover:text-crust'
+                                    }
+                                >
+                                    {'Только PDF файлы'}
+                                </p>
+                                <UploadDropzone
+                                    config={{ mode: 'auto' }}
+                                    endpoint="pdfUploader"
+                                    className="left-30 top-15 absolute z-30 h-full w-full cursor-pointer opacity-0"
+                                    appearance={{
+                                        container: 'h-full w-full !m-0',
+                                        uploadIcon: 'hidden',
+                                        label: 'hidden',
+                                        button: 'hidden',
+                                    }}
+                                    content={{
+                                        label: '',
+                                        uploadIcon: '',
+                                        allowedContent: '',
+                                    }}
+                                    onUploadProgress={() => {
+                                        setIsUploading(true);
+                                    }}
+                                    onClientUploadComplete={async () => {
+                                        setIsUploading(false);
+                                        setIsOpen(false);
+                                        handleRefetch();
+                                    }}
+                                    onUploadError={(error: Error) => {
+                                        alert(`ERROR! ${error.message}`);
+                                    }}
+                                />
+                            </div>
                         ) : (
-                            <>
-                                <p className={'text-text group-hover:text-base text-14 transition-colors'}>{'Перетащите файл сюда или нажмите, чтобы изменить резюме'}</p>
-                                <p className={'text-sub group-hover:text-crust text-12 transition-colors'}>{'Только PDF файлы'}</p>
-                            </>
+                            <LoadingIcon className={'animate-spin'} />
                         )}
                     </div>
                 </div>
-
-            </div>
-        </Popup>
-    );
-
-})
+            </Popup>
+        );
+    }
+);

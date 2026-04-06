@@ -107,3 +107,23 @@ const enforceUserIsCompany = t.middleware(async ({ ctx, next }) => {
 });
 
 export const companyProcedure = t.procedure.use(enforceUserIsCompany);
+
+const enforceUserIsClient = t.middleware(async ({ ctx, next, input }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  if (ctx.session.user.role !== Roles.USER) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+
+  console.log("USER_ID", ctx.session.user.id);
+
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+export const clientProcedure = t.procedure.use(enforceUserIsClient);

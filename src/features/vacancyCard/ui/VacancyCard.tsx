@@ -6,10 +6,12 @@ import cn from 'classnames';
 import Button, { ButtonView } from '~/shared/ui/Button';
 import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg';
 import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.svg';
+import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { Badge } from '~/shared/ui/Badge';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { type Tags } from '~/shared/api/model/tags/type';
+import { clientApi } from 'trpc/client';
 import { getTagArrayWithColors } from '../utils/tagsWithColors';
 
 export interface VacancyCardProps {
@@ -30,9 +32,13 @@ export interface VacancyCardProps {
         currency_id: string;
         char: string;
     };
+    view?: 'company' | 'client';
 }
 
-export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
+export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
+    view = 'client',
+    ...other
+}) => {
     const {
         vacancyId,
         title,
@@ -44,12 +50,20 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
         salaryTo,
         currency,
         wrapperClassName,
-    } = props;
+    } = other;
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
 
+    const router = useRouter();
+
     const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
+
+    const { mutate: apply } = clientApi.application.createApply.useMutation({});
+
+    const handleApply = () => {
+        apply({ vacancyId });
+    };
 
     const handleIsFavorited = () => {
         // FIXME: add internship to favorited later
@@ -60,7 +74,11 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
 
     return (
         <Link
-            href={`/vacancies/${vacancyId}?${params}`}
+            href={
+                view === 'client'
+                    ? `/vacancies/${vacancyId}?${params.toString()}`
+                    : `/vacancy/candidates/${vacancyId}?${params.toString()}`
+            }
             className={cn(
                 'card group w-full border-2 border-base bg-mantle transition-colors',
                 wrapperClassName
@@ -72,28 +90,53 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
                         'group flex w-full flex-row items-center justify-between'
                     }
                 >
-                    <p className={'text-14 font-500 leading-6 text-text'}>
+                    <p
+                        className={
+                            'line-clamp-1 max-w-44 text-14 font-500 leading-6 text-text'
+                        }
+                    >
                         {title}
                     </p>
-                    <Button
-                        buttonView={ButtonView.SMALL}
-                        className={
-                            'group/favorite h-6 w-6 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
-                        }
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleIsFavorited();
-                        }}
-                    >
-                        <IconStar
-                            className={cn(
-                                'absolute',
-                                isFavorited
-                                    ? 'fill-yellow stroke-none'
-                                    : 'fill-none stroke-text group-hover/favorite:stroke-yellow'
-                            )}
-                        />
-                    </Button>
+                    {view === 'client' ? (
+                        <Button
+                            buttonView={ButtonView.SMALL}
+                            className={
+                                'group/favorite h-6 w-6 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
+                            }
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleIsFavorited();
+                            }}
+                        >
+                            <IconStar
+                                className={cn(
+                                    'absolute',
+                                    isFavorited
+                                        ? 'fill-yellow stroke-none'
+                                        : 'fill-none stroke-text group-hover/favorite:stroke-yellow'
+                                )}
+                            />
+                        </Button>
+                    ) : (
+                        <Button
+                            buttonView={ButtonView.SMALL}
+                            className={
+                                'group/favorite h-7 w-7 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
+                            }
+                            onClick={(e) => {
+                                e.preventDefault();
+                                router.replace(
+                                    `/vacancy/edit/${vacancyId}?${params.toString()}`
+                                );
+                            }}
+                        >
+                            <IconEdit
+                                className={
+                                    'fill-text group-hover/favorite:fill-mauve'
+                                }
+                            />
+                        </Button>
+                    )}
                 </div>
                 <p className={'fot-400 text-14 leading-5 text-text'}>
                     {getStringifySalary(salaryFrom, salaryTo, currency.char)}
@@ -137,6 +180,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = (props) => {
                 <Button
                     onClick={(e) => {
                         e.preventDefault();
+                        handleApply();
                     }}
                     buttonView={ButtonView.SMALL}
                     className={

@@ -48,7 +48,7 @@ const RenderDefaultInput: React.FC<RenderInputProps & ControllerFieldState> = ({
                 className={cn(
                     'peer w-full max-w-input rounded-6 border-2 border-transparent bg-mantle py-2 pr-4 text-text caret-text outline-none focus:border-mauve',
                     Icon ? 'pl-11' : 'pl-4',
-                    invalid && 'border-red',
+                    invalid ? 'border-red' : 'border-transparent',
                     className
                 )}
             />

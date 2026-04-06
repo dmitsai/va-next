@@ -5,6 +5,7 @@ import {
     inputGetVacancyListSchema,
     inputUpdateVacancyItemSchema,
 } from '~/shared/api/schema/vacancy';
+import type { TagsSchema } from '~/shared/api/schema/tag';
 import { Prisma } from '@prisma/client';
 import { createTRPCRouter, companyProcedure, publicProcedure } from '../trpc';
 
@@ -22,6 +23,7 @@ type VacancyWithRelations = Prisma.VacancyGetPayload<{
 function normalizeVacancy(v: VacancyWithRelations) {
     return {
         ...v,
+        tags: (v.tags as TagsSchema | null) ?? null,
         company: v.company ?? {
             title: v.companyName ?? '',
             imgUrl: v.companyLogoUrl ?? null,
@@ -58,6 +60,13 @@ export const vacancyRouter = createTRPCRouter({
                 throw new Error('Company profile not found');
             }
 
+            const currency = await ctx.prisma.currency.findFirst({
+                where: input.currencyName ? { title: input.currencyName } : {},
+            });
+
+            if (!currency) {
+                throw new Error('Currency not found');
+            }
             const localPlatform =
                 await ctx.prisma.platform.findUnique({
                     where: { name: 'local' },
@@ -68,7 +77,6 @@ export const vacancyRouter = createTRPCRouter({
                     'Platform "local" not found. Run seed first.',
                 );
             }
-
             const salaryFrom = input.salaryFrom
                 ? parseInt(input.salaryFrom, 10)
                 : null;
@@ -87,7 +95,7 @@ export const vacancyRouter = createTRPCRouter({
                     salaryFrom,
                     salaryTo,
                     imgUrl: input.imgUrl,
-                    currency_id: input.currencyId,
+                    currency_id: currency.currency_id,
                     tags: input.tags,
                 },
                 include: VACANCY_INCLUDE,
@@ -109,6 +117,13 @@ export const vacancyRouter = createTRPCRouter({
             if (!companyProfile) {
                 throw new Error('Company profile not found');
             }
+            const currency = await ctx.prisma.currency.findFirst({
+                where: input.currencyName ? { title: input.currencyName } : {},
+            });
+
+            if (!currency) {
+                throw new Error('Currency not found');
+            }
 
             const salaryFrom = input.salaryFrom
                 ? parseInt(input.salaryFrom, 10)
@@ -127,13 +142,7 @@ export const vacancyRouter = createTRPCRouter({
                     salaryFrom,
                     salaryTo,
                     description: input.description,
-                    currency: input.currencyId
-                        ? {
-                              connect: {
-                                  currency_id: input.currencyId,
-                              },
-                          }
-                        : undefined,
+                    currency_id: currency?.currency_id,
                     imgUrl: input.imgUrl,
                 },
                 include: VACANCY_INCLUDE,
@@ -189,11 +198,17 @@ export const vacancyRouter = createTRPCRouter({
                 period,
                 salaryFrom,
                 currencyName,
+                companyId,
                 platformName,
             } = input;
 
             const whereConditions: Prisma.VacancyWhereInput[] = [];
 
+            if (companyId) {
+                whereConditions.push({
+                    company_id: companyId,
+                });
+            }
             if (platformName) {
                 whereConditions.push({
                     platform: { name: platformName },
@@ -285,7 +300,7 @@ export const vacancyRouter = createTRPCRouter({
                 }
             }
 
-            if (tags?.workSchedule && tags.workSchedule.length > 0) {
+            if (tags?.workSchedule && tags?.workSchedule.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['workSchedule'],
@@ -293,7 +308,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.employmentTypes && tags.employmentTypes.length > 0) {
+            if (tags?.employmentTypes && tags?.employmentTypes.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['employmentTypes'],
@@ -301,7 +316,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.experience && tags.experience.length > 0) {
+            if (tags?.experience && tags?.experience.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['experience'],
@@ -309,7 +324,7 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-            if (tags?.education && tags.education.length > 0) {
+            if (tags?.education && tags?.education.length > 0) {
                 whereConditions.push({
                     tags: {
                         path: ['education'],
@@ -317,7 +332,6 @@ export const vacancyRouter = createTRPCRouter({
                     },
                 });
             }
-
             const where: Prisma.VacancyWhereInput =
                 whereConditions.length > 0
                     ? { AND: whereConditions }

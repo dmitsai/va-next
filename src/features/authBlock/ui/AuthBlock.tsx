@@ -3,7 +3,7 @@
 import React from "react";
 import { Divider, dividerView } from "~/entities/divider";
 import { CONSTANTS } from "~/shared/lib/strings";
-import Button, { ButtonView } from "~/shared/ui/Button";
+import { LinkButton, LinkView } from "~/shared/ui/Button/LinkButtton";
 
 export const AuthBlock: React.FC = () => (
     <div className={'flex flex-col gap-y-8 w-full'}>
@@ -19,8 +19,8 @@ export const AuthBlock: React.FC = () => (
                 }
             </span>
             <div className={'flex flex-col gap-y-2 w-full h-full'}>
-                <Button buttonView={ButtonView.LARGE} className={'muted bg-mauve hover:text-base hover:bg-text text-base text-14'} >{CONSTANTS.auth.signUp}</Button>
-                <Button buttonView={ButtonView.LARGE} className={'muted bg-mantle hover:text-base hover:bg-text text-14'} >{CONSTANTS.auth.logIn}</Button>
+                <LinkButton href='./user/auth' className={'muted bg-mauve hover:text-base hover:bg-text text-base text-14'} linkView={LinkView.LARGE} >{CONSTANTS.auth.signUp}</LinkButton>
+                <LinkButton href='./user/login' className={'muted bg-mantle hover:text-base hover:bg-text text-14'} linkView={LinkView.LARGE} >{CONSTANTS.auth.logIn}</LinkButton>
             </div>
         </div>
     </div>

@@ -1,0 +1,1 @@
+export {type AboutMeProps, type ClientAboutMe, type CompanyAboutMe} from './model/type'
