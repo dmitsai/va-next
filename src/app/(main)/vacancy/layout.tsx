@@ -10,7 +10,7 @@ export default async ({
     const headersList = headers();
     const referer = headersList.get('referer');
 
-    if (!session || session.user.role !== 'COMPANY') redirect(referer ?? '/');
+    if (session?.user.role !== 'COMPANY') redirect(referer ?? '/');
 
     return (
         <div className={'relative flex max-h-page w-full flex-col px-20 py-10'}>

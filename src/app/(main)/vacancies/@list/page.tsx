@@ -11,11 +11,12 @@ import {
     workSchedule,
     employmentTypes,
 } from '~/shared/api/model/tags/data';
-import {
+import type {
     EducationKey,
     EmploymentTypesKey,
     ExperienceKey,
     PeriodKey,
+    Tags,
     WorkScheduleKey,
 } from '~/shared/api/model/tags/type';
 import { SkeletonVancy } from '~/entities/vacancies';
@@ -165,7 +166,7 @@ const ListPage = () => {
                                         vacancyId={vacancy.vacancy_id}
                                         title={vacancy.title}
                                         isFavorited={false}
-                                        tags={vacancy.tags}
+                                        tags={vacancy.tags as Tags | null}
                                         description={vacancy.description}
                                         company={vacancy.company}
                                         salaryFrom={vacancy.salaryFrom}

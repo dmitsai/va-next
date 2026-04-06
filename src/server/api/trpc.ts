@@ -57,7 +57,7 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -71,7 +71,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -88,8 +88,8 @@ const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
 
 export const adminProcedure = t.procedure.use(enforceUserIsAdmin);
 
-const enforceUserIsCompany = t.middleware(async ({ ctx, next, input }) => {
-  if (!ctx.session || !ctx.session.user) {
+const enforceUserIsCompany = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
@@ -109,7 +109,7 @@ const enforceUserIsCompany = t.middleware(async ({ ctx, next, input }) => {
 export const companyProcedure = t.procedure.use(enforceUserIsCompany);
 
 const enforceUserIsClient = t.middleware(async ({ ctx, next, input }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

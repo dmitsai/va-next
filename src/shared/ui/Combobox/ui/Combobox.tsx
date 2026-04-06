@@ -29,11 +29,11 @@ export const Combobox: React.FC<ComboboxProps> = (props) => {
         setIsDirty(value !== '');
     };
 
-    const handleSelection = (value: string) => {
+    const handleSelection = (value: string | null) => {
         setSelected(value);
         setQuery('');
         setIsDirty(false);
-    }
+    };
 
     const filteredState = doFilter(query);
 

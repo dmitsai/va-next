@@ -1,6 +1,7 @@
 'use client';
 
 import {
+    DehydratedState,
     QueryClient,
     QueryClientProvider,
     HydrationBoundary,
@@ -35,7 +36,7 @@ export const clientApi = createTRPCReact<AppRouter>();
 
 interface ClientApiProviderProps {
     children: ReactNode;
-    dehydratedState?: unknown;
+    dehydratedState?: DehydratedState | null;
 }
 
 export const ClientApiProvider: React.FC<ClientApiProviderProps> = ({

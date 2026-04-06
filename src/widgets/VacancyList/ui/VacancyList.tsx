@@ -1,5 +1,6 @@
 import React from 'react';
 import { VacancyCard } from '~/features/vacancyCard';
+import type { Tags } from '~/shared/api/model/tags/type';
 import { CONSTANTS } from '~/shared/lib/strings';
 import { Badge } from '~/shared/ui/Badge';
 import Button, { ButtonView } from '~/shared/ui/Button';
@@ -54,7 +55,7 @@ export const VacancyList: React.FC<VacancyListProps> = async (props) => {
                 {vacancies.map((vacancy) => (
                     <VacancyCard
                         title={vacancy.title}
-                        tags={vacancy.tags}
+                        tags={vacancy.tags as Tags | null}
                         description={vacancy.description}
                         company={vacancy.company}
                         vacancyId={vacancy.vacancy_id}

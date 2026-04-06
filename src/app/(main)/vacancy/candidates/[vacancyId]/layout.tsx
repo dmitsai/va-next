@@ -22,7 +22,7 @@ export default async ({
             <div className={'flex w-full flex-row items-center gap-x-4'}>
                 <p className={'text-32 font-500'}> {`Отклики на вакансию:`}</p>
                 <Badge
-                    placeholder={vacancy.title}
+                    placeholder={vacancy?.title ?? 'Вакансия не найдена'}
                     className={
                         'items-center justify-center bg-mantle py-6 text-24'
                     }

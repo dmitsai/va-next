@@ -4,10 +4,37 @@ import {
     inputGetVacancyItemSchema,
     inputGetVacancyListSchema,
     inputUpdateVacancyItemSchema,
-    VacancyResponseSchema,
 } from '~/shared/api/schema/vacancy';
+import type { TagsSchema } from '~/shared/api/schema/tag';
 import { Prisma } from '@prisma/client';
 import { createTRPCRouter, companyProcedure, publicProcedure } from '../trpc';
+
+const VACANCY_INCLUDE = {
+    currency: true,
+    company: true,
+    platform: true,
+    location: true,
+} as const;
+
+type VacancyWithRelations = Prisma.VacancyGetPayload<{
+    include: typeof VACANCY_INCLUDE;
+}>;
+
+function normalizeVacancy(v: VacancyWithRelations) {
+    return {
+        ...v,
+        tags: (v.tags as TagsSchema | null) ?? null,
+        company: v.company ?? {
+            title: v.companyName ?? '',
+            imgUrl: v.companyLogoUrl ?? null,
+        },
+        currency: v.currency ?? {
+            currency_id: '',
+            title: '',
+            char: '',
+        },
+    };
+}
 
 const prepareQuery = (query: string | undefined) => {
     if (!query) return [];
@@ -18,14 +45,16 @@ const prepareQuery = (query: string | undefined) => {
         .split(/\s+/)
         .filter((term) => term.length > 2);
 };
+
 export const vacancyRouter = createTRPCRouter({
     createVacancy: companyProcedure
         .input(inputCreateVacancyItemSchema)
         .mutation(async ({ ctx, input }) => {
             const companyUserId = ctx.session.user.id;
-            const companyProfile = await ctx.prisma.companyProfile.findUnique({
-                where: { user_id: companyUserId },
-            });
+            const companyProfile =
+                await ctx.prisma.companyProfile.findUnique({
+                    where: { user_id: companyUserId },
+                });
 
             if (!companyProfile) {
                 throw new Error('Company profile not found');
@@ -38,47 +67,52 @@ export const vacancyRouter = createTRPCRouter({
             if (!currency) {
                 throw new Error('Currency not found');
             }
+            const localPlatform =
+                await ctx.prisma.platform.findUnique({
+                    where: { name: 'local' },
+                });
+
+            if (!localPlatform) {
+                throw new Error(
+                    'Platform "local" not found. Run seed first.',
+                );
+            }
             const salaryFrom = input.salaryFrom
                 ? parseInt(input.salaryFrom, 10)
                 : null;
             const salaryTo = input.salaryTo
                 ? parseInt(input.salaryTo, 10)
                 : null;
+
             const newVacancy = await ctx.prisma.vacancy.create({
                 data: {
                     title: input.title,
-                    company: {
-                        connect: {
-                            company_id: companyProfile.company_id,
-                        },
-                    },
+                    description: input.description,
+                    platform_id: localPlatform.platform_id,
+                    company_id: companyProfile.company_id,
+                    companyName: companyProfile.title,
+                    companyLogoUrl: companyProfile.imgUrl,
                     salaryFrom,
                     salaryTo,
-                    description: input.description,
                     imgUrl: input.imgUrl,
-                    currency: {
-                        connect: {
-                            currency_id: currency.currency_id,
-                        },
-                    },
+                    currency_id: currency.currency_id,
                     tags: input.tags,
                 },
-                include: {
-                    currency: true,
-                    company: true,
-                },
+                include: VACANCY_INCLUDE,
             });
 
-            return newVacancy as VacancyResponseSchema;
+            return normalizeVacancy(newVacancy);
         }),
+
     updateVacancy: companyProcedure
         .input(inputUpdateVacancyItemSchema)
         .mutation(async ({ ctx, input }) => {
             const companyUserId = ctx.session.user.id;
 
-            const companyProfile = await ctx.prisma.companyProfile.findUnique({
-                where: { user_id: companyUserId },
-            });
+            const companyProfile =
+                await ctx.prisma.companyProfile.findUnique({
+                    where: { user_id: companyUserId },
+                });
 
             if (!companyProfile) {
                 throw new Error('Company profile not found');
@@ -108,20 +142,13 @@ export const vacancyRouter = createTRPCRouter({
                     salaryFrom,
                     salaryTo,
                     description: input.description,
-                    currency: currency.currency_id
-                        ? {
-                              connect: { currency_id: currency.currency_id },
-                          }
-                        : undefined,
+                    currency_id: currency?.currency_id,
                     imgUrl: input.imgUrl,
                 },
-                include: {
-                    currency: true,
-                    company: true,
-                },
+                include: VACANCY_INCLUDE,
             });
 
-            return updatedVacancy as VacancyResponseSchema;
+            return normalizeVacancy(updatedVacancy);
         }),
 
     deleteVacancy: companyProcedure
@@ -129,25 +156,24 @@ export const vacancyRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const companyUserId = ctx.session.user.id;
 
-            const companyProfile = await ctx.prisma.companyProfile.findUnique({
-                where: { user_id: companyUserId },
-            });
+            const companyProfile =
+                await ctx.prisma.companyProfile.findUnique({
+                    where: { user_id: companyUserId },
+                });
 
             if (!companyProfile) {
                 throw new Error('Company profile not found');
             }
+
             const deletedVacancy = await ctx.prisma.vacancy.delete({
                 where: {
                     vacancy_id: input.vacancyId,
                     company_id: companyProfile.company_id,
                 },
-                include: {
-                    company: true,
-                    currency: true,
-                },
+                include: VACANCY_INCLUDE,
             });
 
-            return deletedVacancy as VacancyResponseSchema;
+            return normalizeVacancy(deletedVacancy);
         }),
 
     getVacancyItem: publicProcedure
@@ -155,12 +181,11 @@ export const vacancyRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const vacancy = await ctx.prisma.vacancy.findUnique({
                 where: { vacancy_id: input.vacancyId },
-                include: {
-                    currency: true,
-                    company: true,
-                },
+                include: VACANCY_INCLUDE,
             });
-            return vacancy as VacancyResponseSchema;
+
+            if (!vacancy) return null;
+            return normalizeVacancy(vacancy);
         }),
 
     infinityVacancy: publicProcedure
@@ -174,6 +199,7 @@ export const vacancyRouter = createTRPCRouter({
                 salaryFrom,
                 currencyName,
                 companyId,
+                platformName,
             } = input;
 
             const whereConditions: Prisma.VacancyWhereInput[] = [];
@@ -183,12 +209,17 @@ export const vacancyRouter = createTRPCRouter({
                     company_id: companyId,
                 });
             }
-            if (currencyName) {
-                const currency = await ctx.prisma.currency.findFirst({
-                    where: {
-                        title: currencyName,
-                    },
+            if (platformName) {
+                whereConditions.push({
+                    platform: { name: platformName },
                 });
+            }
+
+            if (currencyName) {
+                const currency =
+                    await ctx.prisma.currency.findFirst({
+                        where: { title: currencyName },
+                    });
 
                 if (currency) {
                     whereConditions.push({
@@ -213,13 +244,19 @@ export const vacancyRouter = createTRPCRouter({
 
                 switch (period) {
                     case 'day':
-                        startDate = new Date(now.setDate(now.getDate() - 1));
+                        startDate = new Date(
+                            now.setDate(now.getDate() - 1),
+                        );
                         break;
                     case 'month':
-                        startDate = new Date(now.setMonth(now.getMonth() - 1));
+                        startDate = new Date(
+                            now.setMonth(now.getMonth() - 1),
+                        );
                         break;
                     case 'threeMonths':
-                        startDate = new Date(now.setMonth(now.getMonth() - 3));
+                        startDate = new Date(
+                            now.setMonth(now.getMonth() - 3),
+                        );
                         break;
                     default:
                         break;
@@ -242,13 +279,19 @@ export const vacancyRouter = createTRPCRouter({
                                 {
                                     title: {
                                         contains: term,
-                                        mode: 'insensitive',
+                                        mode: 'insensitive' as const,
                                     },
                                 },
                                 {
                                     description: {
                                         contains: term,
-                                        mode: 'insensitive',
+                                        mode: 'insensitive' as const,
+                                    },
+                                },
+                                {
+                                    companyName: {
+                                        contains: term,
+                                        mode: 'insensitive' as const,
                                     },
                                 },
                             ],
@@ -290,16 +333,17 @@ export const vacancyRouter = createTRPCRouter({
                 });
             }
             const where: Prisma.VacancyWhereInput =
-                whereConditions.length > 0 ? { AND: whereConditions } : {};
+                whereConditions.length > 0
+                    ? { AND: whereConditions }
+                    : {};
 
             const vacancyList = await ctx.prisma.vacancy.findMany({
                 where,
-                include: {
-                    currency: true,
-                    company: true,
-                },
+                include: VACANCY_INCLUDE,
                 take: limit + 1,
-                cursor: cursor ? { vacancy_id: cursor } : undefined,
+                cursor: cursor
+                    ? { vacancy_id: cursor }
+                    : undefined,
                 orderBy: {
                     published_at: 'desc',
                 },
@@ -312,7 +356,7 @@ export const vacancyRouter = createTRPCRouter({
             }
 
             return {
-                vacancyList: vacancyList as VacancyResponseSchema[],
+                vacancyList: vacancyList.map(normalizeVacancy),
                 nextCursor,
             };
         }),
