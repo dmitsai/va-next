@@ -107,11 +107,11 @@ model ClientProfile {
     name String?
     surname String?
     patronymic String?
-    imgUrl String?  
+    imgUrl String?
     telegram String? @unique
     phone String? @unique
     email String? @unique
-    about_me String? 
+    about_me String?
     preferences Json?
     pdfUrl String?
     favoriteVacancies Vacancy[] @relation("FavoriteVacancies")
@@ -119,8 +119,10 @@ model ClientProfile {
     user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
     salaryFrom Int?
-    currency_id String    
-    currency    Currency  @relation(fields: [currency_id], references: [currency_id])
+    currency_id String?
+    currency    Currency? @relation(fields: [currency_id], references: [currency_id])
+
+    resumes Resume[]
 }
 
 model Users {
@@ -136,6 +138,7 @@ model Users {
   ClientProfile ClientProfile?
 
   Application Application[]
+  ai_logs     AiGenerationLog[]
 }
 
 model LoginAttempts {
@@ -224,4 +227,82 @@ model ImportRun {
   errorMessage  String?
 
   @@index([source])
+}
+
+enum ResumeStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ResumeSectionType {
+  BASIC
+  CONTACTS
+  ABOUT
+  EXPERIENCE
+  EDUCATION
+  SKILLS
+  PORTFOLIO
+}
+
+model Resume {
+  resume_id         String        @id @default(uuid())
+  client_profile_id String
+  client_profile    ClientProfile @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
+  title             String
+  desired_position  String?
+  status            ResumeStatus  @default(DRAFT)
+  version           Int           @default(1)
+  is_active         Boolean       @default(false)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+
+  sections ResumeSection[]
+  analysis ResumeAnalysis?
+  ai_logs  AiGenerationLog[]
+
+  @@index([client_profile_id])
+  @@index([status])
+}
+
+model ResumeSection {
+  section_id  String            @id @default(uuid())
+  resume_id   String
+  resume      Resume            @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
+  type        ResumeSectionType
+  order_index Int               @default(0)
+  content     Json
+  is_visible  Boolean           @default(true)
+  updated_at  DateTime          @updatedAt
+
+  @@unique([resume_id, type])
+  @@index([resume_id])
+}
+
+model ResumeAnalysis {
+  analysis_id        String   @id @default(uuid())
+  resume_id          String   @unique
+  resume             Resume   @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
+  score_total        Int
+  score_completeness Int
+  score_structure    Int
+  score_keywords     Int
+  score_skills       Int
+  recommendations    Json
+  trending_skills    Json
+  analyzed_at        DateTime @default(now())
+}
+
+model AiGenerationLog {
+  log_id       String             @id @default(uuid())
+  resume_id    String?
+  resume       Resume?            @relation(fields: [resume_id], references: [resume_id], onDelete: SetNull)
+  user_id      String
+  user         Users              @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  section_type ResumeSectionType
+  tokens_used  Int                @default(0)
+  created_at   DateTime           @default(now())
+
+  @@index([user_id])
+  @@index([resume_id])
 }

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('Next.js:', p.dependencies.next\\); console.log\\('React:', p.dependencies.react\\)\")"
+    ]
+  }
+}

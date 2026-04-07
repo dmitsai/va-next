@@ -20,6 +20,10 @@ const nextConfig = {
                 port: '',
                 pathname: '/f/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'img.hhcdn.ru',
+            },
         ],
     },
     optimizeFonts: false,

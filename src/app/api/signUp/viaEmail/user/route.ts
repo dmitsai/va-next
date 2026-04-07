@@ -33,18 +33,10 @@ export const POST = async (request: NextRequest) => {
             },
         });
 
-        // NOTE: temp solution
-        const currency = await prisma.currency.findUnique({
-            where: { title: 'RUB' },
-        });
-        if (!currency) {
-            throw new Error('Currency not found');
-        }
         const clientProfile = await prisma.clientProfile.create({
             data: {
                 user_id: user.user_id,
                 email: input.data.email,
-                currency_id: currency.currency_id,
             },
         });
         return { user, clientProfile };
