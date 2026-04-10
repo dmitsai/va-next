@@ -3,13 +3,15 @@ import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
     darkMode: ["class"],
-    content: ["./src/**/*.tsx",
+    content: ["./src/**/*.{ts,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
   	fontSize: {
   		'10': '0.625rem',
+		'11': '0.6875rem',
   		'12': '0.75rem',
+		'13': '0.8125rem',
   		'14': '0.875rem',
   		'16': '1rem',
   		'18': '1.125rem',
@@ -54,11 +56,16 @@ export default {
   			peach: 'rgb(var(--peach) / <alpha-value>)',
   			yellow: 'rgb(var(--yellow) / <alpha-value>)',
   			green: 'rgb(var(--green) / <alpha-value>)',
+  			'score-success-text': 'rgb(var(--score-success-text) / <alpha-value>)',
+  			'score-success-border': 'rgb(var(--score-success-border) / <alpha-value>)',
+  			'score-success-bg': 'rgb(var(--score-success-bg) / <alpha-value>)',
   			teal: 'rgb(var(--teal) / <alpha-value>)',
   			sky: 'rgb(var(--sky) / <alpha-value>)',
   			sapphire: 'rgb(var(--sapphire) / <alpha-value>)',
   			blue: 'rgb(var(--blue) / <alpha-value>)',
   			lavender: 'rgb(var(--lavender) / <alpha-value>)',
+  			'resume-progress-active': 'rgb(var(--resume-progress-active) / <alpha-value>)',
+  			'resume-progress-active-text': 'rgb(var(--resume-progress-active-text) / <alpha-value>)',
   			text: 'rgb(var(--text) / <alpha-value>)',
   			sub: 'rgb(var(--sub) / <alpha-value>)',
   			'sub-secondary': 'rgb(var(--sub-secondary) / <alpha-value>)',

@@ -1,9 +1,8 @@
-import { number } from 'zod';
-
 export const CONSTANTS = {
     topBar: {
         placeholder: 'vakansiy.net',
         vacancies: 'Вакансии',
+        resume: 'Резюме',
         internships: 'Стажировки',
         events: 'События',
         theme: {
