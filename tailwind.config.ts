@@ -9,7 +9,9 @@ export default {
   theme: {
   	fontSize: {
   		'10': '0.625rem',
+		'11': '0.6875rem',
   		'12': '0.75rem',
+		'13': '0.8125rem',
   		'14': '0.875rem',
   		'16': '1rem',
   		'18': '1.125rem',

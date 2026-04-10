@@ -17,7 +17,7 @@ export const SectionStatus: React.FC<SectionStatusProps> = ({
     return (
         <div
             className={cn(
-                'flex flex-row items-center gap-x-3 rounded-8 px-4 py-2 transition-colors',
+                'flex flex-row items-center gap-x-3 px-4 py-2 transition-colors',
                 isActive &&
                     'bg-resume-progress-active/10 group-hover:bg-resume-progress-active/20',
                 !isActive && 'group-hover:bg-resume-progress-active/20'
@@ -36,7 +36,7 @@ export const SectionStatus: React.FC<SectionStatusProps> = ({
                 )}
             >
                 {isCompleted ? (
-                    <IconCheck className="fill-score-success-text size-2" />
+                    <IconCheck className="size-2 fill-score-success-text" />
                 ) : (
                     number
                 )}
@@ -44,7 +44,9 @@ export const SectionStatus: React.FC<SectionStatusProps> = ({
             <p
                 className={cn(
                     'text-14 transition-colors',
-                    isActive ? 'text-text' : 'text-surface group-hover:text-text'
+                    isActive
+                        ? 'text-text'
+                        : 'text-surface group-hover:text-text'
                 )}
             >
                 {title}

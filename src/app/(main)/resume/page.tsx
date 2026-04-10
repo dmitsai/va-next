@@ -8,8 +8,8 @@ import {
     ResumeImportFromPdf,
     ResumeStepByStep,
 } from '~/entities/resume';
-import { ResumeProgress } from '~/features/resumeProgress';
-import { RESUME_TABS } from '~/features/resumeProgress/model/data';
+
+export const dynamic = 'force-dynamic';
 
 const RESUME_LIMIT = 2;
 
@@ -28,13 +28,6 @@ export default async () => {
 
     return (
         <main className="flex w-full flex-grow flex-col gap-y-8 px-20 py-10">
-            <ResumeProgress
-                tabs={Object.values(RESUME_TABS).map((tab) => ({
-                    ...tab,
-                    status: 'not_started',
-                }))}
-                defaultActiveTabId="basic"
-            />
             <ResumeHeader
                 activeCount={activeCount}
                 limit={RESUME_LIMIT}

@@ -15,15 +15,18 @@ import { useResumeActions } from '../model/useResumeActions';
 
 interface ResumeCardProps {
     resume: ResumeWithRelations;
+    displayTitle?: string;
 }
 
-export const ResumeCard: React.FC<ResumeCardProps> = ({ resume }) => {
+export const ResumeCard: React.FC<ResumeCardProps> = ({ resume, displayTitle }) => {
     const {
         handleEdit,
         handleExportPdf,
         handleDeleteClick,
         scoreTotal,
         sectionsCount,
+        confirmDelete,
+        setConfirmDelete,
     } = useResumeActions(resume);
 
     return (
@@ -47,7 +50,7 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({ resume }) => {
                             'text-14 font-500 leading-6 text-text duration-300 group-hover:text-mauve sm:whitespace-nowrap'
                         }
                     >
-                        {resume.title}
+                        {displayTitle ?? resume.title}
                     </p>
                     <ul
                         className={
@@ -117,17 +120,37 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({ resume }) => {
                         className={'size-5 fill-text group-hover/btn:fill-base'}
                     />
                 </Button>
-                <Button
-                    onClick={handleDeleteClick}
-                    buttonView={ButtonView.LARGE}
-                    className={
-                        'group/btn bg-surface-tertiary transition-all duration-300 hover:bg-red'
-                    }
-                >
-                    <IconTrash
-                        className={'size-4 fill-text group-hover/btn:fill-base'}
-                    />
-                </Button>
+                {confirmDelete ? (
+                    <div className="flex items-center gap-x-1">
+                        <Button
+                            onClick={handleDeleteClick}
+                            buttonView={ButtonView.LARGE}
+                            className="bg-red text-base"
+                        >
+                            <IconTrash className="size-4 fill-base" />
+                            <span className="text-12 font-500">Удалить?</span>
+                        </Button>
+                        <Button
+                            onClick={() => setConfirmDelete(false)}
+                            buttonView={ButtonView.LARGE}
+                            className="bg-surface-tertiary text-sub hover:bg-surface"
+                        >
+                            <span className="text-12 font-500">Отмена</span>
+                        </Button>
+                    </div>
+                ) : (
+                    <Button
+                        onClick={handleDeleteClick}
+                        buttonView={ButtonView.LARGE}
+                        className={
+                            'group/btn bg-surface-tertiary transition-all duration-300 hover:bg-red'
+                        }
+                    >
+                        <IconTrash
+                            className={'size-4 fill-text group-hover/btn:fill-base'}
+                        />
+                    </Button>
+                )}
             </div>
         </div>
     );

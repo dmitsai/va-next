@@ -10,7 +10,7 @@ export const StatusBar = ({ tabs }: StatusBarProps) => {
     const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
     return (
-        <div className="flex flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2 px-5">
             <div className="h-1 w-full overflow-hidden rounded-full bg-surface/35">
                 <div
                     className="h-full bg-mauve transition-all duration-300"

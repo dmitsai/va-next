@@ -1,16 +1,8 @@
 import { Divider, dividerView } from '~/entities/divider';
-import {
-    employmentTypes,
-    SalaryCurrency,
-    salaryCurrency,
-    workSchedule,
-} from '~/entities/preferences';
+import { SalaryCurrency } from '~/entities/preferences';
 import { ProfileBio } from '~/widgets/profileBio';
-import { ProfileFileUploader } from '~/widgets/profileFileUploader';
-import {
-    ProfilePreferences,
-    ProfilePreferencesProps,
-} from '~/widgets/profilePreferences';
+import { ResumeWidget } from '~/widgets/resumeWidget';
+import { ProfilePreferences } from '~/widgets/profilePreferences';
 import { ProfileAboutMe } from '~/widgets/profileAboutMe';
 import { createSSRHelpers } from 'trpc/helpers';
 import { headers } from 'next/headers';
@@ -18,12 +10,14 @@ import { ProfileBioProps } from '~/entities/profileBio/model/type';
 import { AboutMeProps } from '~/entities/aboutMe';
 
 import { ProfileTipFlow } from '~/widgets/profileTipFlow';
-import { useEffect } from 'react';
 
 const ProfilePage = async () => {
     const helpers = await createSSRHelpers(headers());
 
-    const profile = await helpers.clientProfile.getProfile.fetch();
+    const [profile, resumes] = await Promise.all([
+        helpers.clientProfile.getProfile.fetch(),
+        helpers.resume.getList.fetch(),
+    ]);
 
     if (!profile) {
         return (
@@ -63,7 +57,7 @@ const ProfilePage = async () => {
             <ProfileTipFlow
                 hasAboutMe={!!profile.about_me}
                 hasPreferences={!!profile.preferences}
-                hasResume={!!profile.pdfUrl}
+                hasResume={resumes.length > 0}
             />
             <Divider view={dividerView.horizontal} />
             <div className={'flex h-full w-full flex-row gap-x-8 px-8'}>
@@ -95,10 +89,10 @@ const ProfilePage = async () => {
                 </div>
                 <div
                     className={
-                        'flex w-full flex-col items-center justify-center'
+                        'flex w-full flex-col items-start pt-4'
                     }
                 >
-                    <ProfileFileUploader />
+                    <ResumeWidget />
                 </div>
             </div>
         </main>

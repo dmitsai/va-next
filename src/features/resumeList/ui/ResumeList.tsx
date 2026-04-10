@@ -19,10 +19,26 @@ export const ResumeList: React.FC<ResumeListProps> = ({ resumes }) => {
             </div>
         );
     }
+    // Build display titles: use desired_position, deduplicate with (1), (2)...
+    const positionCounts = new Map<string, number>();
+    const positionIndex = new Map<string, number>();
+    resumes.forEach((r) => {
+        const key = (r.desired_position ?? r.title).trim();
+        positionCounts.set(key, (positionCounts.get(key) ?? 0) + 1);
+    });
+    const displayTitles = resumes.map((r) => {
+        const key = (r.desired_position ?? r.title).trim();
+        const base = r.desired_position?.trim() ?? r.title;
+        if ((positionCounts.get(key) ?? 0) <= 1) return base;
+        const idx = (positionIndex.get(key) ?? 0) + 1;
+        positionIndex.set(key, idx);
+        return idx === 1 ? base : `${base} (${idx - 1})`;
+    });
+
     return (
         <div className="flex flex-col gap-y-3">
-            {resumes.map((resume) => (
-                <ResumeCard key={resume.resume_id} resume={resume} />
+            {resumes.map((resume, i) => (
+                <ResumeCard key={resume.resume_id} resume={resume} displayTitle={displayTitles[i]} />
             ))}
         </div>
     );

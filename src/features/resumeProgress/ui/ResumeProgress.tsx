@@ -1,27 +1,23 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { Divider } from '~/entities/divider';
 import { ResumeTab } from '../model/types';
 import { SectionStatus } from './SectionStatus';
 import { StatusBar } from './StatusBar';
 
 interface ResumeProgressProps {
     tabs: ResumeTab[];
-    defaultActiveTabId?: string;
+    activeTabId: string;
+    onTabChange: (tabId: string) => void;
 }
 
 export const ResumeProgress = ({
     tabs,
-    defaultActiveTabId,
+    activeTabId,
+    onTabChange,
 }: ResumeProgressProps) => {
-    const fallbackId = tabs[0]?.id ?? '';
-
-    const [activeTabId, setActiveTabId] = useState(() => {
-        const id = defaultActiveTabId ?? fallbackId;
-        return tabs.some((t) => t.id === id) ? id : fallbackId;
-    });
-
     const selectedIndex = useMemo(() => {
         const i = tabs.findIndex((t) => t.id === activeTabId);
         return i === -1 ? 0 : i;
@@ -34,34 +30,37 @@ export const ResumeProgress = ({
     return (
         <TabGroup
             as="div"
-            className="flex w-[400px] flex-col gap-y-2"
+            className="flex w-full flex-col gap-y-10"
             selectedIndex={selectedIndex}
             onChange={(index) => {
                 const id = tabs[index]?.id;
-                if (id) setActiveTabId(id);
+                if (id) onTabChange(id);
             }}
         >
-            <p className="text-14 font-600 text-text">{'Разделы'}</p>
-            <TabList className="flex flex-col gap-y-2 outline-none">
-                {tabs.map((tab) => (
-                    <Tab
-                        key={tab.id}
-                        className="group w-full rounded-8 text-left outline-none transition-colors"
-                    >
-                        <SectionStatus
-                            {...tab}
-                            isActive={activeTabId === tab.id}
-                        />
-                    </Tab>
-                ))}
-            </TabList>
-            <TabPanels className="hidden">
-                {tabs.map((tab) => (
-                    <TabPanel key={tab.id}>
-                        <span className="sr-only">{tab.title}</span>
-                    </TabPanel>
-                ))}
-            </TabPanels>
+            <div className="flex flex-col gap-y-4">
+                <p className="px-5 text-14 text-surface">{'РАЗДЕЛЫ'}</p>
+                <TabList className="flex flex-col outline-none">
+                    {tabs.map((tab) => (
+                        <Tab
+                            key={tab.id}
+                            className="group w-full text-left outline-none transition-colors"
+                        >
+                            <SectionStatus
+                                {...tab}
+                                isActive={activeTabId === tab.id}
+                            />
+                        </Tab>
+                    ))}
+                </TabList>
+                <TabPanels className="hidden">
+                    {tabs.map((tab) => (
+                        <TabPanel key={tab.id}>
+                            <span className="sr-only">{tab.title}</span>
+                        </TabPanel>
+                    ))}
+                </TabPanels>
+            </div>
+            <Divider view={'horizontal'} />
             <StatusBar tabs={tabs} />
         </TabGroup>
     );

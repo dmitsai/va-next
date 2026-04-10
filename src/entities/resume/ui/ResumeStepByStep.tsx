@@ -5,7 +5,7 @@ import { ReactComponent as IconFile } from '~/shared/assets/icons/icon-file.svg'
 export const ResumeStepByStep = () => (
     <Link
         href="/resume/builder/new"
-        className="group flex flex-col items-start gap-y-4 rounded-10 border-2 border-base bg-mantle px-5 py-4 transition-colors hover:border-mauve"
+        className="group flex h-full flex-col items-start gap-y-4 rounded-10 border-2 border-base bg-mantle px-5 py-4 transition-colors hover:border-mauve"
     >
         <div className="flex w-full items-start justify-between">
             <div className="flex h-10 w-10 items-center justify-center rounded-8 bg-mauve/10">

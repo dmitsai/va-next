@@ -208,6 +208,24 @@ enum Roles {
   COMPANY
 }
 
+enum SkillType {
+  HARD
+  SOFT
+}
+
+model Skill {
+  skill_id   String    @id @default(uuid())
+  name       String    @unique
+  slug       String    @unique
+  type       SkillType @default(HARD)
+  category   String?
+  mentions   Int       @default(0)
+  updated_at DateTime  @updatedAt
+
+  @@index([mentions])
+  @@index([name])
+}
+
 enum ImportStatus {
   RUNNING
   COMPLETED

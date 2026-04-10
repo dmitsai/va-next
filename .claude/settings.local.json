@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('Next.js:', p.dependencies.next\\); console.log\\('React:', p.dependencies.react\\)\")"
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('Next.js:', p.dependencies.next\\); console.log\\('React:', p.dependencies.react\\)\")",
+      "Bash(node -e \"const m = require\\('pdf-parse'\\); console.log\\(typeof m, Object.keys\\(m\\).slice\\(0,5\\)\\)\")",
+      "Bash(node -e \"const m = require\\('pdf-parse'\\); console.log\\(typeof m.default, typeof m.extractText, Object.keys\\(m\\)\\)\")",
+      "Bash(npx prisma:*)",
+      "Bash(pnpm add:*)"
     ]
   }
 }

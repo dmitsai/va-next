@@ -40,3 +40,6 @@ export const inputImportFromPdfSchema = z.object({
     fileBase64: z.string().min(1),
 });
 export type InputImportFromPdfSchema = z.infer<typeof inputImportFromPdfSchema>;
+
+export const inputGetTrendingSkillsSchema = inputGetResumeItemSchema;
+export type InputGetTrendingSkillsSchema = z.infer<typeof inputGetTrendingSkillsSchema>;

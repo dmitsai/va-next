@@ -31,6 +31,10 @@ export const TopBar: React.FC = async () => {
             href: '/vacancies',
             label: CONSTANTS.topBar.vacancies,
         },
+        {
+            href: '/resume',
+            label: CONSTANTS.topBar.resume,
+        },
     ];
 
     const buttons: Array<ButtonContent> = [

@@ -1,6 +1,7 @@
 import { Roles } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { prisma } from './db';
+import { seedSkills } from './seeds/skills';
 
 const PLATFORMS = [
     { name: 'local', title: 'Наша платформа' },
@@ -75,6 +76,8 @@ const seed = async () => {
             website: 'https://testcompany.com',
         },
     });
+
+    await seedSkills(prisma);
 
     console.log('Seed completed successfully!');
     console.log({

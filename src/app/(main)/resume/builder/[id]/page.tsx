@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getServerSession } from '~/shared/lib/auth';
 import { createSSRHelpers } from 'trpc/helpers';
-import { ResumeBuilder } from '~/components/resume/ResumeBuilder';
+import { ResumeBuilder } from '~/widgets/resumeBuilder';
 
 interface ResumeBuilderPageProps {
     params: {

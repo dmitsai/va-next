@@ -7,6 +7,9 @@ import { applicationRouter } from './routers/application';
 import { profileFilesRouter } from './routers/profileFiles';
 import { vacancySyncRouter } from './routers/vacancySync';
 import { resumeRouter } from './routers/resume';
+import { skillRouter } from './routers/skill';
+import { aiRouter } from './routers/ai';
+import { positionsRouter } from './routers/positions';
 
 export const appRouter = createTRPCRouter({
     vacancy: vacancyRouter,
@@ -17,6 +20,9 @@ export const appRouter = createTRPCRouter({
     files: profileFilesRouter,
     vacancySync: vacancySyncRouter,
     resume: resumeRouter,
+    skill: skillRouter,
+    ai: aiRouter,
+    positions: positionsRouter,
 });
 
 export type AppRouter = typeof appRouter;
