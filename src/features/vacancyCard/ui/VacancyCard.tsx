@@ -9,9 +9,12 @@ import { ReactComponent as IconArrow } from '~/shared/assets/icons/icon-arrow.sv
 import { ReactComponent as IconEdit } from '~/shared/assets/icons/icon-edit.svg';
 import { Badge } from '~/shared/ui/Badge';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { type Tags } from '~/shared/api/model/tags/type';
 import { clientApi } from 'trpc/client';
+import { ApplyPopup } from '~/features/applyPopup';
+import { ResumeSelectPopup } from '~/features/resumeSelectPopup';
 import { getTagArrayWithColors } from '../utils/tagsWithColors';
 
 export interface VacancyCardProps {
@@ -32,6 +35,10 @@ export interface VacancyCardProps {
         currency_id: string;
         char: string;
     };
+    /** Вакансия с площадки vakansiy.net (platform `local`), иначе внешняя агрегация */
+    isLocal: boolean;
+    sourceUrl: string | null;
+    isApplied?: boolean;
     view?: 'company' | 'client';
 }
 
@@ -50,40 +57,111 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
         salaryTo,
         currency,
         wrapperClassName,
+        isLocal,
+        sourceUrl,
+        isApplied: initialIsApplied = false,
     } = other;
 
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
+    const pathname = usePathname();
 
     const router = useRouter();
+    const { status } = useSession();
 
-    const [isFavorited, setIsFavorited] = useState(initialIsFavoritedState);
+    const [isExternalApplyOpen, setIsExternalApplyOpen] = useState(false);
+    const [isResumeSelectOpen, setIsResumeSelectOpen] = useState(false);
 
-    const { mutate: apply } = clientApi.application.createApply.useMutation({});
+    const { data: isFavoritedFromApi } = clientApi.application.checkIsFavorited.useQuery(
+        { vacancyId },
+        { enabled: status === 'authenticated' && view === 'client' }
+    );
+
+    const isFavorited = isFavoritedFromApi ?? initialIsFavoritedState;
+
+    const utils = clientApi.useUtils();
+
+    const { mutate: toggleFavorite } = clientApi.application.toggleFavorite.useMutation({
+        onSuccess: async () => {
+            await utils.application.checkIsFavorited.invalidate({ vacancyId });
+        },
+    });
+
+    const { mutate: recordExternalApply } = clientApi.application.createApply.useMutation({
+        onSuccess: async () => {
+            await Promise.all([
+                utils.application.getMyAppliedVacancyIds.invalidate(),
+                utils.application.getMyApplications.invalidate(),
+            ]);
+        },
+    });
+
+    const isApplied = initialIsApplied;
 
     const handleApply = () => {
-        apply({ vacancyId });
+        if (view !== 'client') return;
+        if (status === 'loading') return;
+        if (status === 'unauthenticated') {
+            const qs = searchParams.toString();
+            const callbackUrl = `${pathname}${qs ? `?${qs}` : ''}`;
+            router.push(`/user/auth?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            return;
+        }
+        if (!isLocal) {
+            setIsExternalApplyOpen(true);
+            return;
+        }
+        setIsResumeSelectOpen(true);
     };
 
-    const handleIsFavorited = () => {
-        // FIXME: add internship to favorited later
-        setIsFavorited(!isFavorited);
+    const handleToggleFavorite = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (status === 'loading') return;
+        if (status === 'unauthenticated') {
+            const qs = searchParams.toString();
+            const callbackUrl = `${pathname}${qs ? `?${qs}` : ''}`;
+            router.push(`/user/auth?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            return;
+        }
+        toggleFavorite({ vacancyId });
     };
 
     const tagArrayWithColors = getTagArrayWithColors(tags);
 
     return (
-        <Link
-            href={
-                view === 'client'
-                    ? `/vacancies/${vacancyId}?${params.toString()}`
-                    : `/vacancy/candidates/${vacancyId}?${params.toString()}`
-            }
-            className={cn(
-                'card group w-full border-2 border-base bg-mantle transition-colors',
-                wrapperClassName
-            )}
-        >
+        <>
+            {view === 'client' ? (
+                <>
+                    <ApplyPopup
+                        isOpen={isExternalApplyOpen}
+                        setIsOpen={setIsExternalApplyOpen}
+                        vacancyTitle={title}
+                        sourceUrl={sourceUrl}
+                        onApplyConfirm={() => {
+                            if (status === 'authenticated') {
+                                recordExternalApply({ vacancyId });
+                            }
+                        }}
+                    />
+                    <ResumeSelectPopup
+                        isOpen={isResumeSelectOpen}
+                        setIsOpen={setIsResumeSelectOpen}
+                        vacancyTitle={title}
+                        vacancyId={vacancyId}
+                    />
+                </>
+            ) : null}
+            <Link
+                href={
+                    view === 'client'
+                        ? `/vacancies/${vacancyId}?${params.toString()}`
+                        : `/vacancy/candidates/${vacancyId}?${params.toString()}`
+                }
+                className={cn(
+                    'card group w-full border-2 border-base bg-mantle transition-colors',
+                    wrapperClassName
+                )}
+            >
             <div className={'flex w-full flex-col items-start'}>
                 <div
                     className={
@@ -103,10 +181,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                             className={
                                 'group/favorite h-6 w-6 !px-1.5 opacity-0 duration-300 hover:bg-mantle group-hover:opacity-100'
                             }
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleIsFavorited();
-                            }}
+                            onClick={handleToggleFavorite}
                         >
                             <IconStar
                                 className={cn(
@@ -177,23 +252,39 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                     }
                     placeholder={company.title}
                 />
-                <Button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleApply();
-                    }}
-                    buttonView={ButtonView.SMALL}
-                    className={
-                        'bg-mauve text-base opacity-0 transition-all duration-300 hover:bg-text group-hover:opacity-100'
-                    }
-                >
-                    <IconArrow className={'fill-base'} />
-                    <p className={'text-12 font-500 leading-6'}>
-                        {CONSTANTS.card.apply}
-                    </p>
-                </Button>
+                {view === 'client' ? (
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!isApplied) handleApply();
+                        }}
+                        disabled={isApplied}
+                        buttonView={ButtonView.SMALL}
+                        className={cn(
+                            'opacity-0 transition-all duration-300 group-hover:opacity-100',
+                            isApplied
+                                ? 'bg-surface-tertiary text-sub cursor-default'
+                                : 'bg-mauve text-base hover:bg-text'
+                        )}
+                    >
+                        {isApplied ? (
+                            <p className={'text-12 font-500 leading-6'}>
+                                Откликнулись
+                            </p>
+                        ) : (
+                            <>
+                                <IconArrow className={'fill-base'} />
+                                <p className={'text-12 font-500 leading-6'}>
+                                    {CONSTANTS.card.apply}
+                                </p>
+                            </>
+                        )}
+                    </Button>
+                ) : null}
             </div>
         </Link>
+        </>
     );
 };
 

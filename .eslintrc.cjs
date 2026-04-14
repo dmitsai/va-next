@@ -17,6 +17,8 @@ const config = {
     ],
     rules: {
         'react-hooks/exhaustive-deps': 'off',
+        'react/no-array-index-key': 'off',
+        'no-underscore-dangle': 'off',
         'no-void': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'warn',
         '@typescript-eslint/no-unsafe-call': 'warn',

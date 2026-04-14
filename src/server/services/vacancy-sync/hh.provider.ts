@@ -10,24 +10,24 @@ import type {
 const HH_API_BASE = 'https://api.hh.ru';
 
 const EXPERIENCE_MAP: Record<string, string> = {
-    noExperience: 'noExperience',
-    between1And3: 'FromOneToThreeYears',
-    between3And6: 'FromThreeToSixYears',
-    moreThan6: 'MoreSixYears',
+    noExperience: 'Нет опыта',
+    between1And3: 'От 1 года до 3 лет',
+    between3And6: 'От 3 до 6 лет',
+    moreThan6: 'Более 6 лет',
 };
 
 const EMPLOYMENT_MAP: Record<string, string> = {
-    full: 'full',
-    part: 'partTime',
-    project: 'project',
-    probation: 'internship',
+    full: 'Полная занятость',
+    part: 'Частичная занятость',
+    project: 'Проектная работа',
+    probation: 'Стажировка',
 };
 
 const SCHEDULE_MAP: Record<string, string> = {
-    fullDay: 'fullday',
-    shift: 'shift',
-    flexible: 'flexible',
-    remote: 'remote',
+    fullDay: 'Полный день',
+    shift: 'Сменный график',
+    flexible: 'Гибкий график',
+    remote: 'Удалённая работа',
 };
 
 interface HHSalary {
@@ -115,7 +115,7 @@ function mapHHVacancy(hh: HHVacancy): NormalizedVacancy {
             null,
         salaryFrom: hh.salary?.from ?? null,
         salaryTo: hh.salary?.to ?? null,
-        currencyCode: hh.salary?.currency ?? null,
+        currencyCode: hh.salary?.currency === 'RUR' ? 'RUB' : (hh.salary?.currency ?? null),
         sourceUrl:
             hh.alternate_url ?? `https://hh.ru/vacancy/${hh.id}`,
         publishedAt: hh.published_at

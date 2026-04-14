@@ -6,10 +6,12 @@ import { seedSkills } from './seeds/skills';
 const PLATFORMS = [
     { name: 'local', title: 'Наша платформа' },
     { name: 'hh', title: 'HeadHunter', baseUrl: 'https://hh.ru' },
+    { name: 'trudvsem', title: 'Труд Всём (Роструд)', baseUrl: 'https://trudvsem.ru' },
+    { name: 'jobicy', title: 'Jobicy (Remote Jobs)', baseUrl: 'https://jobicy.com' },
 ];
 
 const CURRENCIES = [
-    { title: 'Российский рубль', char: '₽', code: 'RUR' },
+    { title: 'Российский рубль', char: '₽', code: 'RUB' },
     { title: 'Доллар США', char: '$', code: 'USD' },
     { title: 'Евро', char: '€', code: 'EUR' },
     { title: 'Тенге', char: '₸', code: 'KZT' },

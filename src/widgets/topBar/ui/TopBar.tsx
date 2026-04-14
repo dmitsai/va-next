@@ -26,6 +26,9 @@ export interface LinkItem {
 }
 
 export const TopBar: React.FC = async () => {
+    const session = await getServerSession();
+    const isUser = session?.user?.role === 'USER';
+
     const links: Array<LinkItem> = [
         {
             href: '/vacancies',
@@ -35,6 +38,9 @@ export const TopBar: React.FC = async () => {
             href: '/resume',
             label: CONSTANTS.topBar.resume,
         },
+        ...(isUser
+            ? [{ href: '/applications', label: CONSTANTS.topBar.applications }]
+            : []),
     ];
 
     const buttons: Array<ButtonContent> = [
@@ -44,8 +50,6 @@ export const TopBar: React.FC = async () => {
             key: 'link-profile',
         },
     ];
-    const session = await getServerSession();
-
     const isAuth = !!session;
 
     return (

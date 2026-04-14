@@ -8,7 +8,7 @@ import { ReactComponent as ChevronIcon } from '~/shared/assets/icons/chevron-ico
 
 export interface SelectProps {
     selected?: string,
-    setSelected: (value: string) => void,
+    setSelected: (_value: string) => void,
     state: string[],
     className?: string,
 }

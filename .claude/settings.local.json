@@ -6,7 +6,12 @@
       "Bash(node -e \"const m = require\\('pdf-parse'\\); console.log\\(typeof m, Object.keys\\(m\\).slice\\(0,5\\)\\)\")",
       "Bash(node -e \"const m = require\\('pdf-parse'\\); console.log\\(typeof m.default, typeof m.extractText, Object.keys\\(m\\)\\)\")",
       "Bash(npx prisma:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.arbeitnow.com)",
+      "WebFetch(domain:documenter.getpostman.com)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ]
   }
 }
