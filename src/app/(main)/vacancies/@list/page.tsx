@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo } from 'react';
 import { clientApi } from 'trpc/client';
+import { useSession } from 'next-auth/react';
 import { VacancyCard } from '~/features/vacancyCard';
 import cn from 'classnames';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -25,6 +26,7 @@ import Loading from './loading';
 
 const ListPage = () => {
     const params = useParams();
+    const { status, data: session } = useSession();
 
     const searchParams = useSearchParams();
 
@@ -92,6 +94,14 @@ const ListPage = () => {
 
         return data.pages.flatMap((page) => page.vacancyList ?? []);
     }, [data]);
+
+    const { data: appliedIds = [] } =
+        clientApi.application.getMyAppliedVacancyIds.useQuery(undefined, {
+            enabled:
+                status === 'authenticated' && session?.user?.role === 'USER',
+        });
+
+    const appliedSet = useMemo(() => new Set(appliedIds), [appliedIds]);
 
     const { containerRef, rows, items, virtualizer, isLastVisible } =
         useVirtualVacancies({
@@ -166,12 +176,19 @@ const ListPage = () => {
                                         vacancyId={vacancy.vacancy_id}
                                         title={vacancy.title}
                                         isFavorited={false}
+                                        isApplied={appliedSet.has(
+                                            vacancy.vacancy_id
+                                        )}
                                         tags={vacancy.tags as Tags | null}
                                         description={vacancy.description}
                                         company={vacancy.company}
                                         salaryFrom={vacancy.salaryFrom}
                                         salaryTo={vacancy.salaryTo}
                                         currency={vacancy.currency}
+                                        isLocal={
+                                            vacancy.platform.name === 'local'
+                                        }
+                                        sourceUrl={vacancy.sourceUrl}
                                     />
                                 ))}
                             </div>

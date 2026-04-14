@@ -21,11 +21,10 @@ export const metadata: Metadata = {
 
 export default ({ children }: Readonly<{ children: React.ReactNode }>) => (
   <html lang="en" className={`${jetBrainsMono.variable} !font-sans`}>
-    <AppProviders>
-      <body className="flex h-screen min-h-screen flex-col">
-        {/* <TopBar isAuth /> */}
+    <body className="flex h-screen min-h-screen flex-col">
+      <AppProviders>
         {children}
-      </body>
-    </AppProviders>
+      </AppProviders>
+    </body>
   </html>
 );

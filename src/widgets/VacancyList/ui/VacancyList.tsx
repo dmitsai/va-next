@@ -1,13 +1,10 @@
 import React from 'react';
-import { VacancyCard } from '~/features/vacancyCard';
-import type { Tags } from '~/shared/api/model/tags/type';
 import { CONSTANTS } from '~/shared/lib/strings';
 import { Badge } from '~/shared/ui/Badge';
-import Button, { ButtonView } from '~/shared/ui/Button';
 import { createSSRHelpers } from 'trpc/helpers';
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import { LinkButton, LinkView } from '~/shared/ui/Button/LinkButton';
+import { VacancyListClient } from './VacancyListClient';
 // import { vacancies } from '../model/data';
 
 interface VacancyListProps {
@@ -52,20 +49,7 @@ export const VacancyList: React.FC<VacancyListProps> = async (props) => {
                         {CONSTANTS.home.vacancies.placeholder.unauthecated}
                     </span>
                 )}
-                {vacancies.map((vacancy) => (
-                    <VacancyCard
-                        title={vacancy.title}
-                        tags={vacancy.tags as Tags | null}
-                        description={vacancy.description}
-                        company={vacancy.company}
-                        vacancyId={vacancy.vacancy_id}
-                        isFavorited={false}
-                        salaryFrom={vacancy.salaryFrom}
-                        salaryTo={vacancy.salaryTo}
-                        currency={vacancy.currency}
-                        key={vacancy.vacancy_id}
-                    />
-                ))}
+                <VacancyListClient vacancies={vacancies} />
                 <LinkButton
                     href={'/vacancies'}
                     linkView={LinkView.LARGE}

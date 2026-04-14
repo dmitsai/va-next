@@ -1,28 +1,7 @@
-import { Roles } from '@prisma/client';
-import { getServerAuthSession } from '~/server/auth';
-import { ensureAdminExists } from '~/server/services/ensure-admin';
-import { AdminLogin } from './_components/AdminLogin';
-import { AdminPanel } from './_components/AdminPanel';
+import { redirect } from 'next/navigation';
 
-const AdminPage = async () => {
-    await ensureAdminExists();
-
-    const session = await getServerAuthSession();
-    const isAdmin = session?.user?.role === Roles.ADMIN;
-
-    if (!session || !isAdmin) {
-        return (
-            <main className="flex min-h-screen items-center justify-center">
-                <AdminLogin />
-            </main>
-        );
-    }
-
-    return (
-        <main className="mx-auto w-full max-w-5xl px-4 py-8">
-            <AdminPanel userEmail={session.user.email ?? ''} />
-        </main>
-    );
+const AdminPage = () => {
+    redirect('/admin/dashboard');
 };
 
 export default AdminPage;

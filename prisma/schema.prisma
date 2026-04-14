@@ -13,6 +13,8 @@ model Application {
   vacancy        Vacancy @relation(fields: [vacancy_id], references: [vacancy_id], onDelete: Cascade)
   user_id        String
   user           Users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  resume_id      String?
+  resume         Resume? @relation(fields: [resume_id], references: [resume_id], onDelete: SetNull)
   created_at     DateTime @default(now())
 
   @@unique([vacancy_id, user_id], name: "user_vacancy_unique")
@@ -84,7 +86,7 @@ model Vacancy {
 
   @@unique([platform_id, externalId])
   @@index([title], map: "title_search_idx")
-  @@index([description], map: "description_search_idx")
+  // description full-text index is created manually via migration (GIN index)
   @@index([platform_id])
   @@index([published_at])
 }
@@ -237,6 +239,7 @@ model ImportRun {
   source        String
   status        ImportStatus @default(RUNNING)
   query         String?
+  triggeredBy   String       @default("manual")
   startedAt     DateTime     @default(now())
   finishedAt    DateTime?
   itemsFound    Int          @default(0)
@@ -245,6 +248,7 @@ model ImportRun {
   errorMessage  String?
 
   @@index([source])
+  @@index([triggeredBy])
 }
 
 enum ResumeStatus {
@@ -275,9 +279,10 @@ model Resume {
   created_at        DateTime      @default(now())
   updated_at        DateTime      @updatedAt
 
-  sections ResumeSection[]
-  analysis ResumeAnalysis?
-  ai_logs  AiGenerationLog[]
+  sections     ResumeSection[]
+  analysis     ResumeAnalysis?
+  ai_logs      AiGenerationLog[]
+  applications Application[]
 
   @@index([client_profile_id])
   @@index([status])

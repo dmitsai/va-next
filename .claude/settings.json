@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint:*)",
+      "Bash(grep \"no-underscore\" .eslintrc* .eslintignore)",
+      "Bash(ls .eslint*)",
+      "Bash(pnpm dev:*)",
+      "Bash(curl -s http://localhost:3000 -o /dev/null -w \"%{http_code}\" --max-time 5)",
+      "Read(//c/Users/dmitr/AppData/Local/Temp/claude/w--va-next/992ca7cc-2d34-4984-943c-f0796f5c480b/tasks/**)",
+      "Bash(npm run:*)",
+      "Bash(grep -v \"^$\")",
+      "Bash(awk '/^\\\\.\\\\/src/{file=$0} /Error:/{print file\": \"$0}')"
+    ]
+  }
+}

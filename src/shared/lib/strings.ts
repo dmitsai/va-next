@@ -3,6 +3,7 @@ export const CONSTANTS = {
         placeholder: 'vakansiy.net',
         vacancies: 'Вакансии',
         resume: 'Резюме',
+        applications: 'Отклики',
         internships: 'Стажировки',
         events: 'События',
         theme: {
@@ -71,6 +72,12 @@ export const CONSTANTS = {
         currencyChar: '₽',
         learnMore: 'Подробнее',
     },
+    applyPopup: {
+        title: 'Отклик через сайт недоступен',
+        explanation:
+            'Эта вакансия размещена на внешней площадке. Откликнуться можно только у работодателя на стороннем сайте — через vakansiy.net отклик пока не поддерживается.',
+        openVacancyLink: 'Открыть вакансию на источнике',
+    },
     months: [
         'Января',
         'Февраля',
@@ -85,6 +92,10 @@ export const CONSTANTS = {
         'Ноября',
         'Декабря',
     ],
+    employerCandidates: {
+        vacancyDescription: 'Описание вакансии',
+        viewFullOnSite: 'Посмотреть полностью на сайте',
+    },
     detailedVacancy: {
         salary: {
             from: 'от',

@@ -7,6 +7,7 @@ import type {
 
 export interface SyncOptions extends ProviderSearchParams {
     maxPages?: number;
+    triggeredBy?: 'manual' | 'cron';
 }
 
 export interface SyncResult {
@@ -17,6 +18,7 @@ export interface SyncResult {
 }
 
 const RATE_LIMIT_DELAY_MS = 300;
+const CANCELED_MESSAGE = 'Синхронизация отменена пользователем';
 
 function delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
@@ -45,7 +47,7 @@ export class VacancySyncService {
 
         if (!platform) {
             throw new Error(
-                `Platform "${this.provider.source}" not found. Run seed first.`,
+                `Platform "${this.provider.source}" not found. Run seed first.`
             );
         }
 
@@ -53,17 +55,32 @@ export class VacancySyncService {
             data: {
                 source: this.provider.source,
                 query: options.text ?? null,
+                triggeredBy: options.triggeredBy ?? 'manual',
             },
         });
 
         let totalFound = 0;
         let totalCreated = 0;
         let totalUpdated = 0;
+        const importRunId = importRun.import_run_id;
+
+        const assertRunActive = async () => {
+            const run = await this.prisma.importRun.findUnique({
+                where: { import_run_id: importRunId },
+                select: { status: true },
+            });
+
+            if (run?.status !== 'RUNNING') {
+                throw new Error(CANCELED_MESSAGE);
+            }
+        };
 
         const processItem = async (item: NormalizedVacancy) => {
+            await assertRunActive();
+
             const locationId = await this.resolveLocation(
                 item.areaName,
-                item.areaId,
+                item.areaId
             );
             const currencyId = await this.resolveCurrency(item.currencyCode);
 
@@ -113,6 +130,7 @@ export class VacancySyncService {
 
         const runPage = async (currentPage: number): Promise<void> => {
             if (currentPage >= maxPages) return;
+            await assertRunActive();
 
             const result = await this.provider.search({
                 ...options,
@@ -123,13 +141,10 @@ export class VacancySyncService {
 
             await result.items.reduce(
                 (chain, item) => chain.then(() => processItem(item)),
-                Promise.resolve(),
+                Promise.resolve()
             );
 
-            if (
-                currentPage >= result.pages - 1 ||
-                result.items.length === 0
-            ) {
+            if (currentPage >= result.pages - 1 || result.items.length === 0) {
                 return;
             }
 
@@ -158,18 +173,21 @@ export class VacancySyncService {
                 totalUpdated,
             };
         } catch (error) {
-            await this.prisma.importRun.update({
-                where: { import_run_id: importRun.import_run_id },
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+
+            await this.prisma.importRun.updateMany({
+                where: {
+                    import_run_id: importRun.import_run_id,
+                    status: 'RUNNING',
+                },
                 data: {
                     status: 'FAILED',
                     finishedAt: new Date(),
                     itemsFound: totalFound,
                     itemsCreated: totalCreated,
                     itemsUpdated: totalUpdated,
-                    errorMessage:
-                        error instanceof Error
-                            ? error.message
-                            : String(error),
+                    errorMessage,
                 },
             });
 
@@ -179,7 +197,7 @@ export class VacancySyncService {
 
     private async resolveLocation(
         areaName?: string | null,
-        areaId?: string | null,
+        areaId?: string | null
     ): Promise<string | null> {
         if (!areaName) return null;
 
@@ -213,7 +231,7 @@ export class VacancySyncService {
     }
 
     private async resolveCurrency(
-        currencyCode?: string | null,
+        currencyCode?: string | null
     ): Promise<string | null> {
         if (!currencyCode) return null;
 

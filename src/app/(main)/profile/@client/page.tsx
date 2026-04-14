@@ -8,8 +8,9 @@ import { createSSRHelpers } from 'trpc/helpers';
 import { headers } from 'next/headers';
 import { ProfileBioProps } from '~/entities/profileBio/model/type';
 import { AboutMeProps } from '~/entities/aboutMe';
-
 import { ProfileTipFlow } from '~/widgets/profileTipFlow';
+import { ApplicationsWidget } from '~/widgets/applicationsWidget';
+import { FavoritesWidget } from '~/widgets/favoritesWidget';
 
 const ProfilePage = async () => {
     const helpers = await createSSRHelpers(headers());
@@ -87,12 +88,12 @@ const ProfilePage = async () => {
                         }
                     />
                 </div>
-                <div
-                    className={
-                        'flex w-full flex-col items-start pt-4'
-                    }
-                >
+                <div className={'flex w-full flex-col items-start gap-y-8 pt-4'}>
                     <ResumeWidget />
+                    <Divider view={dividerView.horizontal} />
+                    <ApplicationsWidget />
+                    <Divider view={dividerView.horizontal} />
+                    <FavoritesWidget />
                 </div>
             </div>
         </main>

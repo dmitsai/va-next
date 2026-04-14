@@ -1,4 +1,5 @@
 import { createTRPCRouter } from '~/server/api/trpc';
+import { adminRouter } from './routers/admin';
 import { vacancyRouter } from './routers/vacancy';
 import { clientProfileRouter } from './routers/clientProfile';
 import { companyProfileRouter } from './routers/companyProfile';
@@ -12,6 +13,7 @@ import { aiRouter } from './routers/ai';
 import { positionsRouter } from './routers/positions';
 
 export const appRouter = createTRPCRouter({
+    admin: adminRouter,
     vacancy: vacancyRouter,
     clientProfile: clientProfileRouter,
     companyProfile: companyProfileRouter,
