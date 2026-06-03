@@ -136,7 +136,7 @@ export const PdfImportForm = () => {
                         <button
                             type="button"
                             onClick={() => inputRef.current?.click()}
-                            className="mt-2 rounded-8 bg-accent px-4 py-2 text-14 font-500 text-white transition-opacity hover:opacity-80"
+                            className="mt-2 rounded-8 bg-mauve px-4 py-2 text-14 font-500 text-base transition-colors hover:bg-text hover:text-base"
                         >
                             Выбрать файл
                         </button>
@@ -180,7 +180,7 @@ export const PdfImportForm = () => {
                                 </div>
                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-mantle">
                                     <div
-                                        className="h-full rounded-full bg-accent transition-all duration-500"
+                                        className="h-full rounded-full bg-mauve transition-all duration-500"
                                         style={{ width: `${state.progress}%` }}
                                     />
                                 </div>
@@ -208,7 +208,7 @@ export const PdfImportForm = () => {
                 <button
                     type="button"
                     onClick={handleSubmit}
-                    className="w-full rounded-8 bg-accent py-3 text-14 font-600 text-white transition-opacity hover:opacity-80"
+                    className="w-full rounded-8 bg-mauve py-3 text-14 font-600 text-base transition-colors hover:bg-text hover:text-base"
                 >
                     Загрузить и создать черновик
                 </button>

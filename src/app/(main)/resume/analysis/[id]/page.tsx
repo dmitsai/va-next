@@ -57,11 +57,11 @@ const SECTION_RECOMMENDATIONS: Record<
         priority: 'improve',
     },
     SKILLS: {
-        text: 'Добавьте больше hard skills — в разделе навыков всего 5 технологий, рекомендуется 8–12 для вашей специальности',
+        text: 'Добавьте больше навыков — рекомендуется 8–12 технологий, релевантных вашей специальности',
         priority: 'improve',
     },
     PORTFOLIO: {
-        text: 'Отсутствует ссылка на портфолио или GitHub — критично для Frontend-разработчика',
+        text: 'Добавьте ссылку на портфолио или GitHub — это важно для IT-специалистов',
         priority: 'critical',
     },
 };
@@ -78,13 +78,16 @@ function isSectionFilled(type: string, content: unknown): boolean {
             return typeof c.text === 'string' && c.text.trim().length > 0;
         case 'EXPERIENCE':
         case 'EDUCATION':
-        case 'PORTFOLIO':
             return Array.isArray(c.items) && c.items.length > 0;
-        case 'SKILLS':
-            return (
-                (Array.isArray(c.hard) && c.hard.length > 0) ||
-                (Array.isArray(c.soft) && c.soft.length > 0)
-            );
+        case 'PORTFOLIO': {
+            if (Array.isArray(c.items) && c.items.length > 0) return true;
+            return false;
+        }
+        case 'SKILLS': {
+            const hard = Array.isArray(c.hard) ? c.hard.length : 0;
+            const soft = Array.isArray(c.soft) ? c.soft.length : 0;
+            return (hard + soft) >= 4;
+        }
         default:
             return false;
     }
@@ -150,6 +153,24 @@ function getSectionBadge(
 
 // ─── Score calculation ─────────────────────────────────────────────────────
 
+function hasPortfolioOrCodeLinks(sections: Map<string, unknown>): boolean {
+    const portfolio = sections.get('PORTFOLIO');
+    if (
+        portfolio &&
+        typeof portfolio === 'object' &&
+        Array.isArray((portfolio as { items?: unknown[] }).items) &&
+        (portfolio as { items: unknown[] }).items.length > 0
+    ) {
+        return true;
+    }
+    const contacts = sections.get('CONTACTS');
+    if (contacts && typeof contacts === 'object') {
+        const c = contacts as { github?: string; linkedin?: string };
+        if (c.github?.trim() || c.linkedin?.trim()) return true;
+    }
+    return false;
+}
+
 function computeAnalysis(sections: ResumeSection[]) {
     const map = new Map(sections.map((s) => [s.type as string, s.content]));
 
@@ -157,7 +178,10 @@ function computeAnalysis(sections: ResumeSection[]) {
         type,
         label: SECTION_LABELS[type]!,
         content: map.get(type) ?? null,
-        filled: isSectionFilled(type, map.get(type) ?? null),
+        filled:
+            type === 'PORTFOLIO'
+                ? hasPortfolioOrCodeLinks(map)
+                : isSectionFilled(type, map.get(type) ?? null),
     }));
 
     const pct = (types: readonly string[]) =>
@@ -279,7 +303,7 @@ const ScoreRing = ({ score }: { score: number }) => {
 const PROGRESS_COLORS = [
     'bg-teal',
     'bg-mauve',
-    'bg-amber',
+    'bg-yellow',
     'bg-blue',
 ] as const;
 

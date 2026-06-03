@@ -81,7 +81,7 @@ export const ApplicationRow: React.FC<ApplicationRowProps> = ({
                 </div>
             </Link>
 
-            <div className="flex shrink-0 flex-row items-center gap-x-2">
+            <div className="flex shrink-0 flex-row items-center gap-x-2 sm:self-center">
                 <span className="text-12 text-sub-secondary/70">
                     {getDayWMonth(application.created_at)}
                 </span>

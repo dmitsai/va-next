@@ -41,7 +41,9 @@ const SortBarsIcon = ({ invert }: { invert: boolean }) => {
     );
 };
 
-const gridCols = 'grid-cols-[2fr_1.2fr_1fr_0.8fr_0.4fr_0.55fr_auto]';
+/** Narrow cols are fixed; flexible cols share remaining space (single grid + contents rows). */
+const gridCols =
+    'grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(5rem,max-content)_4.5rem_4.5rem_minmax(4.5rem,auto)]';
 
 const ColHeader = ({
     label,
@@ -185,61 +187,103 @@ export const VacancyTable = ({
                     className="min-h-0 overflow-auto overscroll-contain [scrollbar-gutter:stable]"
                     style={{ maxHeight: 'min(74vh, calc(100dvh - 22rem))' }}
                 >
-                    <div className="w-max min-w-full">
-                        {/* Sticky header */}
-                        <div
-                            className={`sticky top-0 z-20 grid ${gridCols} items-start gap-2 border-b border-surface-tertiary bg-base px-4 py-2.5 text-12 text-sub shadow-sm`}
-                        >
-                            <ColHeader label="Название" field="title" sortField={sortField} sortDir={sortDir} onSort={setNextSort} />
-                            <ColHeader label="Компания" field="company" sortField={sortField} sortDir={sortDir} onSort={setNextSort} />
-                            <ColHeader label="Зарплата" field="salary" sortField={sortField} sortDir={sortDir} onSort={setNextSort} />
-                            <ColHeader label="Регион" field="location" sortField={sortField} sortDir={sortDir} onSort={setNextSort} />
-                            <ColHeader label="Отклики" field="applications" sortField={sortField} sortDir={sortDir} onSort={setNextSort} className="items-center" />
-                            <ColHeader label="Дата" field="date" sortField={sortField} sortDir={sortDir} onSort={setNextSort} />
-                            <div />
+                    <div className={`grid ${gridCols} gap-x-2 px-4`}>
+                        {/* Header — one grid so column widths align with rows */}
+                        <div className="contents">
+                            <ColHeader
+                                label="Название"
+                                field="title"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 border-b border-surface-tertiary bg-base px-0 py-2.5 text-12 text-sub shadow-sm"
+                            />
+                            <ColHeader
+                                label="Компания"
+                                field="company"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 border-b border-surface-tertiary bg-base px-0 py-2.5 text-12 text-sub shadow-sm"
+                            />
+                            <ColHeader
+                                label="Зарплата"
+                                field="salary"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 border-b border-surface-tertiary bg-base px-0 py-2.5 text-12 text-sub shadow-sm"
+                            />
+                            <ColHeader
+                                label="Регион"
+                                field="location"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 border-b border-surface-tertiary bg-base px-0 py-2.5 text-12 text-sub shadow-sm"
+                            />
+                            <ColHeader
+                                label="Отклики"
+                                field="applications"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 items-center border-b border-surface-tertiary bg-base px-0 py-2.5 text-center text-12 text-sub shadow-sm"
+                            />
+                            <ColHeader
+                                label="Дата"
+                                field="date"
+                                sortField={sortField}
+                                sortDir={sortDir}
+                                onSort={setNextSort}
+                                className="sticky top-0 z-20 border-b border-surface-tertiary bg-base px-0 py-2.5 text-12 text-sub shadow-sm"
+                            />
+                            <div className="sticky top-0 z-20 border-b border-surface-tertiary bg-base py-2.5 shadow-sm" />
                         </div>
 
-                        {/* Rows */}
-                        <div className="divide-y divide-surface-tertiary">
-                            {rows.map((v) => {
-                                const apps = v._count.Application;
-                                const salary =
-                                    v.salaryFrom || v.salaryTo
-                                        ? `${v.salaryFrom?.toLocaleString('ru-RU') ?? ''}${v.salaryTo ? `–${v.salaryTo.toLocaleString('ru-RU')}` : '+'} ${v.currency?.char ?? ''}`
-                                        : '—';
+                        {rows.map((v) => {
+                            const apps = v._count.Application;
+                            const salary =
+                                v.salaryFrom || v.salaryTo
+                                    ? `${v.salaryFrom?.toLocaleString('ru-RU') ?? ''}${v.salaryTo ? `–${v.salaryTo.toLocaleString('ru-RU')}` : '+'} ${v.currency?.char ?? ''}`
+                                    : '—';
 
-                                return (
-                                    <div
-                                        key={v.vacancy_id}
-                                        className={`grid ${gridCols} items-center gap-2 px-4 py-2 text-12 transition-colors hover:bg-surface0/30`}
+                            return (
+                                <div key={v.vacancy_id} className="contents">
+                                    <span
+                                        className="min-w-0 truncate border-b border-surface-tertiary py-2 font-500 text-text transition-colors hover:bg-surface0/30"
+                                        title={v.title}
                                     >
-                                        <span className="block max-w-[220px] truncate font-500 text-text" title={v.title}>
-                                            {v.title}
-                                        </span>
-                                        <span className="block max-w-[150px] truncate text-subtext1" title={v.companyName ?? undefined}>
-                                            {v.companyName ?? '—'}
-                                        </span>
-                                        <span className="whitespace-nowrap text-subtext1">
-                                            {salary}
-                                        </span>
-                                        <span className="text-subtext1">
-                                            {v.location?.name ?? '—'}
-                                        </span>
-                                        <div className="flex justify-center">
-                                            {apps > 0 ? (
-                                                <span className="rounded-full bg-green/10 px-1.5 py-0.5 text-11 font-500 text-green">
-                                                    {apps}
-                                                </span>
-                                            ) : (
-                                                <span className="text-11 text-overlay0">0</span>
-                                            )}
-                                        </div>
-                                        <span className="text-11 text-overlay0">
-                                            {new Date(v.published_at).toLocaleDateString('ru-RU', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                            })}
-                                        </span>
+                                        {v.title}
+                                    </span>
+                                    <span
+                                        className="min-w-0 truncate border-b border-surface-tertiary py-2 text-subtext1 transition-colors hover:bg-surface0/30"
+                                        title={v.companyName ?? undefined}
+                                    >
+                                        {v.companyName ?? '—'}
+                                    </span>
+                                    <span className="whitespace-nowrap border-b border-surface-tertiary py-2 text-subtext1 transition-colors hover:bg-surface0/30">
+                                        {salary}
+                                    </span>
+                                    <span className="whitespace-nowrap border-b border-surface-tertiary py-2 text-subtext1 transition-colors hover:bg-surface0/30">
+                                        {v.location?.name ?? '—'}
+                                    </span>
+                                    <div className="flex justify-center border-b border-surface-tertiary py-2 transition-colors hover:bg-surface0/30">
+                                        {apps > 0 ? (
+                                            <span className="rounded-full bg-green/10 px-1.5 py-0.5 text-11 font-500 text-green">
+                                                {apps}
+                                            </span>
+                                        ) : (
+                                            <span className="text-11 text-overlay0">0</span>
+                                        )}
+                                    </div>
+                                    <span className="whitespace-nowrap border-b border-surface-tertiary py-2 text-center text-11 text-overlay0 transition-colors hover:bg-surface0/30">
+                                        {new Date(v.published_at).toLocaleDateString('ru-RU', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                        })}
+                                    </span>
+                                    <div className="border-b border-surface-tertiary py-2 transition-colors hover:bg-surface0/30">
                                         <button
                                             type="button"
                                             disabled={deletingId === v.vacancy_id}
@@ -252,9 +296,9 @@ export const VacancyTable = ({
                                             {deletingId === v.vacancy_id ? '…' : 'Удалить'}
                                         </button>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             )}

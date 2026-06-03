@@ -171,7 +171,10 @@ const FilterMenuComponent: React.FC<FilterMenuProps> = (props) => {
                           : true
                   )
                 : [];
-        const currencyName = selectedCurrency?.title;
+        // Only send currencyName when the user explicitly chose a real DB currency
+        const currencyName = selectedCurrency?.currency_id
+            ? selectedCurrency.title
+            : undefined;
         updateAllFilters({
             filters: filtersToSet,
             salary,
@@ -276,6 +279,7 @@ const FilterMenuComponent: React.FC<FilterMenuProps> = (props) => {
                 </div>
                 <div className={'flex w-full flex-row justify-end gap-x-4'}>
                     <Button
+                        type={'button'}
                         className={
                             'bg-mantle text-14 text-text hover:bg-text hover:text-base'
                         }

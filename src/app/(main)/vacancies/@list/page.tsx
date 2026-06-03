@@ -5,7 +5,7 @@ import { clientApi } from 'trpc/client';
 import { useSession } from 'next-auth/react';
 import { VacancyCard } from '~/features/vacancyCard';
 import cn from 'classnames';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
     education,
     experience,
@@ -22,10 +22,10 @@ import type {
 } from '~/shared/api/model/tags/type';
 import { SkeletonVancy } from '~/entities/vacancies';
 import { useVirtualVacancies } from './helpers/useVirtualVacancies';
-import Loading from './loading';
 
 const ListPage = () => {
     const params = useParams();
+    const router = useRouter();
     const { status, data: session } = useSession();
 
     const searchParams = useSearchParams();
@@ -82,7 +82,7 @@ const ListPage = () => {
             currencyName,
             search,
             tags,
-            limit: 8,
+            limit: 20,
         },
         {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -114,14 +114,20 @@ const ListPage = () => {
             void fetchNextPage();
     }, [hasNextPage, isFetchingNextPage, isLastVisible]);
 
+    useEffect(() => {
+        if (isSuccess && vacancies.length === 0 && selectedVacancyId) {
+            const currentParams = new URLSearchParams(searchParams.toString());
+            router.replace(`/vacancies?${currentParams.toString()}`);
+        }
+    }, [isSuccess, vacancies.length, selectedVacancyId]);
+
     return (
         <div
             className={
-                'no-scrollbar relative h-screen w-full max-w-card overflow-y-auto'
+                'no-scrollbar relative h-screen w-full max-w-card shrink-0 overflow-x-hidden overflow-y-auto'
             }
             ref={containerRef}
         >
-            {isLoading && <Loading />}
             {isSuccess && (
                 <div
                     style={{
@@ -140,18 +146,17 @@ const ListPage = () => {
                         if (isLoaderRow)
                             return (
                                 <SkeletonVancy
-                                    key={
-                                        rowVacancies[virtualRow.index]
-                                            ?.vacancy_id
-                                    }
+                                    key={`skeleton-${virtualRow.index}`}
                                     data-index={virtualRow.index}
                                     ref={virtualizer.measureElement}
-                                    className={'w-full py-3'}
+                                    className={
+                                        'absolute left-0 top-0 w-full pb-3'
+                                    }
+                                    style={{
+                                        transform: `translateY(${virtualRow.start + 12}px)`,
+                                    }}
                                 />
                             );
-                        if (hasNextPage) {
-                            <p className={'text-text'}>Вакансий нет</p>;
-                        }
                         return (
                             <div
                                 ref={virtualizer.measureElement}
@@ -196,7 +201,7 @@ const ListPage = () => {
                     })}
                 </div>
             )}
-            {items.length === 0 && (
+            {isSuccess && items.length === 0 && (
                 <div className={'flex flex-col items-start gap-y-3'}>
                     <p className={'text-14 text-text'}>
                         <span>{'По  запросу "'}</span>

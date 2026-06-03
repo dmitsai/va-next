@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button, ButtonView } from '~/shared/ui/Button/Button';
 import { DatePicker } from '~/shared/ui/DatePicker';
 import { Divider } from '~/entities/divider';
@@ -15,20 +15,40 @@ const emptyItem: EducationItem = {
     year_to: '',
 };
 
+const newItemKey = () =>
+    typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `edu-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 interface StepEducationProps {
     state: EducationSection;
     onChange: (next: EducationSection) => void;
 }
 
 export const StepEducation: React.FC<StepEducationProps> = ({ state, onChange }) => {
+    const itemKeysRef = useRef<string[]>([]);
+
+    while (itemKeysRef.current.length < state.items.length) {
+        itemKeysRef.current.push(newItemKey());
+    }
+    if (itemKeysRef.current.length > state.items.length) {
+        itemKeysRef.current = itemKeysRef.current.slice(0, state.items.length);
+    }
+
     const update = (index: number, patch: Partial<EducationItem>) => {
         const items = [...state.items];
         items[index] = { ...items[index]!, ...patch };
         onChange({ items });
     };
 
-    const add = () => onChange({ items: [...state.items, { ...emptyItem }] });
-    const remove = (i: number) => onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    const add = () => {
+        itemKeysRef.current.push(newItemKey());
+        onChange({ items: [...state.items, { ...emptyItem }] });
+    };
+    const remove = (i: number) => {
+        itemKeysRef.current.splice(i, 1);
+        onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    };
 
     return (
         <div className="flex flex-col gap-y-6">
@@ -38,9 +58,8 @@ export const StepEducation: React.FC<StepEducationProps> = ({ state, onChange })
             </div>
 
             {state.items.map((item, index) => {
-                const rowKey = `${item.institution}|${item.degree}|${item.field}|${String(item.year_from)}|${index}`;
                 return (
-                <React.Fragment key={rowKey}>
+                <React.Fragment key={itemKeysRef.current[index] ?? index}>
                     {index > 0 && <Divider view="horizontal" />}
                     <div className="flex flex-col gap-y-4">
                         <div className="flex items-center justify-between">

@@ -149,7 +149,7 @@ export const resumeRouter = createTRPCRouter({
                 throw new TRPCError({ code: 'FORBIDDEN' });
             }
 
-            return ctx.prisma.resumeSection.upsert({
+            const section = await ctx.prisma.resumeSection.upsert({
                 where: {
                     resume_id_type: {
                         resume_id: input.resume_id,
@@ -173,6 +173,23 @@ export const resumeRouter = createTRPCRouter({
                     }),
                 },
             });
+
+            // Keep resume.desired_position and title in sync with BASIC section
+            if (input.type === 'BASIC') {
+                const basic = input.content as { desired_position?: string; name?: string; surname?: string };
+                const desiredPosition = basic.desired_position?.trim() ?? null;
+                const nameParts = [basic.name, basic.surname].filter(Boolean);
+                const title = desiredPosition || (nameParts.length > 0 ? nameParts.join(' ') : null);
+                await ctx.prisma.resume.update({
+                    where: { resume_id: input.resume_id },
+                    data: {
+                        ...(desiredPosition !== null && { desired_position: desiredPosition }),
+                        ...(title && { title }),
+                    },
+                });
+            }
+
+            return section;
         }),
 
     publish: clientProcedure

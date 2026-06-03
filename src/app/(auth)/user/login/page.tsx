@@ -66,6 +66,7 @@ const LoginPage = () => {
         }
       } else {
         router.push("/");
+        router.refresh();
       }
     } catch (err) {
       setFormError('root', {

@@ -33,15 +33,14 @@ export function exportResumeToPdf(state: ResumeFormState): void {
         `<span class="chip">${esc(text)}</span>`;
 
     const contactChips = [
-        state.CONTACTS.email,
-        state.CONTACTS.phone,
-        state.CONTACTS.city,
-        state.CONTACTS.telegram,
-        state.CONTACTS.github,
-        state.CONTACTS.linkedin,
+        state.CONTACTS.email    && chip(`Email: ${state.CONTACTS.email}`),
+        state.CONTACTS.phone    && chip(`Телефон: ${state.CONTACTS.phone}`),
+        state.CONTACTS.city     && chip(state.CONTACTS.city),
+        state.CONTACTS.telegram && chip(`Telegram: ${state.CONTACTS.telegram}`),
+        state.CONTACTS.github   && chip(`GitHub: ${state.CONTACTS.github}`),
+        state.CONTACTS.linkedin && chip(`LinkedIn: ${state.CONTACTS.linkedin}`),
     ]
         .filter(Boolean)
-        .map((v) => chip(v!))
         .join('');
 
     const experienceHtml = state.EXPERIENCE.items
@@ -96,11 +95,12 @@ export function exportResumeToPdf(state: ResumeFormState): void {
         )
         .join('');
 
+    const hasBoth = state.SKILLS.hard.length > 0 && state.SKILLS.soft.length > 0;
     const skillsContent =
         state.SKILLS.hard.length || state.SKILLS.soft.length
             ? `
-            ${hardSkills ? `<p class="skills-label">Hard skills</p><div class="skills-row">${hardSkills}</div>` : ''}
-            ${softSkills ? `<p class="skills-label">Soft skills</p><div class="skills-row">${softSkills}</div>` : ''}
+            ${hardSkills ? `${hasBoth ? '<p class="skills-label">Технические навыки</p>' : ''}<div class="skills-row">${hardSkills}</div>` : ''}
+            ${softSkills ? `<p class="skills-label">Дополнительные навыки</p><div class="skills-row">${softSkills}</div>` : ''}
         `
             : '';
 
@@ -111,8 +111,8 @@ export function exportResumeToPdf(state: ResumeFormState): void {
     <title>${esc(fullName)}</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        @page { size: A4; margin: 20mm 18mm; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a2e; line-height: 1.5; }
+        @page { size: A4; margin: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a2e; line-height: 1.5; padding: 20mm 18mm; }
 
         .header { border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 20px; }
         .name { font-size: 22px; font-weight: 700; color: #111827; }

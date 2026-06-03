@@ -13,6 +13,7 @@ const NAV_GROUPS = [
             { href: '/admin/vacancies/hh', label: 'HH.ru' },
             { href: '/admin/vacancies/trudvsem', label: 'Труд Всем' },
             { href: '/admin/vacancies/jobicy', label: 'Jobicy' },
+            { href: '/admin/vacancies/remotive', label: 'Remotive' },
             { href: '/admin/vacancies/local', label: 'vakansiy.net' },
         ],
     },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, ButtonView } from '~/shared/ui/Button/Button';
 import { DatePicker } from '~/shared/ui/DatePicker';
 import { Divider } from '~/entities/divider';
@@ -23,19 +23,65 @@ interface StepExperienceProps {
     onActiveItemChange?: (_index: number) => void;
 }
 
+const newItemKey = () =>
+    typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `exp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+/** Parse mm/yyyy string to a sortable number (yyyymm), or 0 if invalid */
+function parsePeriod(period: string): number {
+    const match = /^(\d{2})\/(\d{4})$/.exec(period.trim());
+    if (!match) return 0;
+    return parseInt(match[2]!) * 100 + parseInt(match[1]!);
+}
+
 export const StepExperience: React.FC<StepExperienceProps> = ({
     state,
     onChange,
     onActiveItemChange,
 }) => {
+    const itemKeysRef = useRef<string[]>([]);
+    const [dateErrors, setDateErrors] = useState<Record<number, string>>({});
+
+    while (itemKeysRef.current.length < state.items.length) {
+        itemKeysRef.current.push(newItemKey());
+    }
+    if (itemKeysRef.current.length > state.items.length) {
+        itemKeysRef.current = itemKeysRef.current.slice(0, state.items.length);
+    }
+
     const update = (index: number, patch: Partial<ExperienceItem>) => {
         const items = [...state.items];
-        items[index] = { ...items[index]!, ...patch };
+        const updated = { ...items[index]!, ...patch };
+        items[index] = updated;
         onChange({ items });
+
+        // Validate date order
+        if (!updated.is_current && updated.period_from && updated.period_to) {
+            const from = parsePeriod(updated.period_from);
+            const to = parsePeriod(updated.period_to);
+            if (from > 0 && to > 0 && from > to) {
+                setDateErrors((prev) => ({
+                    ...prev,
+                    [index]: 'Дата окончания не может быть раньше даты начала',
+                }));
+            } else {
+                setDateErrors((prev) => { const next = { ...prev }; delete next[index]; return next; });
+            }
+        } else {
+            setDateErrors((prev) => { const next = { ...prev }; delete next[index]; return next; });
+        }
     };
 
-    const add = () => onChange({ items: [...state.items, { ...emptyItem }] });
-    const remove = (i: number) => onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    const add = () => {
+        itemKeysRef.current.push(newItemKey());
+        onChange({ items: [...state.items, { ...emptyItem }] });
+    };
+
+    const remove = (i: number) => {
+        itemKeysRef.current.splice(i, 1);
+        onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    };
 
     return (
         <div className="flex flex-col gap-y-6">
@@ -45,9 +91,8 @@ export const StepExperience: React.FC<StepExperienceProps> = ({
             </div>
 
             {state.items.map((item, index) => {
-                const rowKey = `${item.company}|${item.position}|${item.period_from}|${index}`;
                 return (
-                <React.Fragment key={rowKey}>
+                <React.Fragment key={itemKeysRef.current[index] ?? index}>
                     {index > 0 && <Divider view="horizontal" />}
                     {/* Clicking/focusing any field in this block marks it as active */}
                     {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- group focus/mousedown to track active row */}
@@ -106,6 +151,10 @@ export const StepExperience: React.FC<StepExperienceProps> = ({
                             </div>
                         </div>
 
+                        {dateErrors[index] && (
+                            <p className="text-12 text-red">{dateErrors[index]}</p>
+                        )}
+
                         <label className="flex cursor-pointer items-center gap-x-2 text-13 text-sub">
                             <input
                                 type="checkbox"
@@ -124,8 +173,9 @@ export const StepExperience: React.FC<StepExperienceProps> = ({
                         <div className="flex flex-col gap-y-1.5">
                             <label className="text-12 font-500 text-sub">Обязанности и достижения</label>
                             <textarea
-                                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70"
+                                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70 resize-y"
                                 rows={4}
+                                style={{ minHeight: '6rem' }}
                                 value={item.description}
                                 onChange={(e) => update(index, { description: e.target.value })}
                             />

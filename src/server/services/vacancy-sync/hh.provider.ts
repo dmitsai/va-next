@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance } from 'axios';
+import { env } from '~/env';
 import type {
     VacancyProvider,
     ProviderSearchResult,
@@ -136,8 +137,7 @@ export class HHProvider implements VacancyProvider {
         this.client = axios.create({
             baseURL: HH_API_BASE,
             headers: {
-                'User-Agent':
-                    'VacancyAggregator/1.0 (vacancy-aggregator-web)',
+                'User-Agent': env.HH_USER_AGENT,
             },
             timeout: 15_000,
         });
@@ -146,15 +146,19 @@ export class HHProvider implements VacancyProvider {
     async search(
         params: ProviderSearchParams,
     ): Promise<ProviderSearchResult> {
+        const perPage = Math.min(params.perPage ?? 20, 20);
+        const page = Math.min(params.page ?? 0, 19);
+
         const queryParams: Record<string, unknown> = {
-            area: params.area,
-            experience: params.experience,
-            employment: params.employment,
-            schedule: params.schedule,
-            page: params.page ?? 0,
-            per_page: params.perPage ?? 100,
+            page,
+            per_page: perPage,
             order_by: 'publication_time',
         };
+
+        if (params.area) queryParams.area = params.area;
+        if (params.experience) queryParams.experience = params.experience;
+        if (params.employment) queryParams.employment = params.employment;
+        if (params.schedule) queryParams.schedule = params.schedule;
 
         if (params.text) {
             queryParams.text = params.text;

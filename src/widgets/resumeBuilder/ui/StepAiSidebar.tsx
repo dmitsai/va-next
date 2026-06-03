@@ -311,20 +311,31 @@ const EducationSidebar = () => {
 const SkillsSidebar = ({
     state,
     onAddSkill,
+    resumeId,
 }: {
     state: ResumeFormState;
     onAddSkill: (_skill: string) => void;
+    resumeId?: string;
 }) => {
     const position = state.BASIC.desired_position?.trim();
     const allSkills = [...state.SKILLS.hard, ...state.SKILLS.soft];
     const sk = sidebarSuggestions.skills;
 
-    const { data: popularSkills } = clientApi.skill.getPopular.useQuery(
-        { limit: 15 },
-        { staleTime: 60_000 }
+    const { data: trendingData } = clientApi.resume.getTrendingSkills.useQuery(
+        { resume_id: resumeId! },
+        { enabled: !!resumeId && !!position, staleTime: 120_000 }
     );
 
-    const recommendations = popularSkills?.filter((s) => !allSkills.includes(s.name)) ?? [];
+    const { data: popularSkills } = clientApi.skill.getPopular.useQuery(
+        { limit: 15 },
+        { enabled: !resumeId || !position, staleTime: 60_000 }
+    );
+
+    const positionSkills = trendingData?.skills.map((s) => ({ skill_id: s.name, name: s.name, mentions: s.count })) ?? [];
+    const fallbackSkills = popularSkills ?? [];
+    const sourceSkills = positionSkills.length > 0 ? positionSkills : fallbackSkills;
+
+    const recommendations = sourceSkills.filter((s) => !allSkills.includes(s.name));
 
     const randomTips = useMemo(() => pickRandomTips(sk.pool), []);
 
@@ -432,7 +443,7 @@ export const StepAiSidebar: React.FC<StepAiSidebarProps> = ({
             case 5:
                 return <EducationSidebar />;
             case 6:
-                return <SkillsSidebar state={state} onAddSkill={onAddSkill} />;
+                return <SkillsSidebar state={state} onAddSkill={onAddSkill} resumeId={resumeId} />;
             case 7:
                 return <PortfolioSidebar />;
             default:

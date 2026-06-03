@@ -131,7 +131,8 @@ export const useVacancyFilter = () => {
                 currentParams.set('currency', params.currencyName);
             }
 
-            router.replace(`${pathname}?${currentParams.toString()}`);
+            const targetPath = pathname === '/' ? '/vacancies' : pathname;
+            router.replace(`${targetPath}?${currentParams.toString()}`);
         },
         [searchParams, pathname, router]
     );

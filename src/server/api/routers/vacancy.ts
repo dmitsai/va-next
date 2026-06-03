@@ -216,16 +216,9 @@ export const vacancyRouter = createTRPCRouter({
             }
 
             if (currencyName) {
-                const currency =
-                    await ctx.prisma.currency.findFirst({
-                        where: { title: currencyName },
-                    });
-
-                if (currency) {
-                    whereConditions.push({
-                        currency_id: currency.currency_id,
-                    });
-                }
+                whereConditions.push({
+                    currency: { title: currencyName },
+                });
             }
 
             if (salaryFrom) {

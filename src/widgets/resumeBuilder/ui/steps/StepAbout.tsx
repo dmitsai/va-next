@@ -18,7 +18,7 @@ export const StepAbout: React.FC<StepAboutProps> = ({ state, onChange }) => (
         <div className="flex flex-col gap-y-1.5">
             <label className="text-12 font-500 text-sub">Текст</label>
             <textarea
-                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70"
+                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70 resize-y"
                 rows={9}
                 value={state.text}
                 onChange={(e) => onChange({ text: e.target.value })}

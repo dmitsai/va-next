@@ -29,6 +29,55 @@ const KEY_TO_SECTION: Record<keyof ParsedResume, ResumeSectionType> = {
     portfolio: 'PORTFOLIO',
 };
 
+// ─── Date normalization helpers ───────────────────────────────────────────────
+
+const RU_MONTHS: Record<string, string> = {
+    'янв': '01', 'январь': '01', 'января': '01',
+    'фев': '02', 'февраль': '02', 'февраля': '02',
+    'мар': '03', 'март': '03', 'марта': '03',
+    'апр': '04', 'апрель': '04', 'апреля': '04',
+    'май': '05', 'мая': '05',
+    'июн': '06', 'июнь': '06', 'июня': '06',
+    'июл': '07', 'июль': '07', 'июля': '07',
+    'авг': '08', 'август': '08', 'августа': '08',
+    'сен': '09', 'сент': '09', 'сентябрь': '09', 'сентября': '09',
+    'окт': '10', 'октябрь': '10', 'октября': '10',
+    'ноя': '11', 'нояб': '11', 'ноябрь': '11', 'ноября': '11',
+    'дек': '12', 'декабрь': '12', 'декабря': '12',
+};
+
+/** Normalize a raw date string to mm/yyyy format, or return '' */
+function normalizePeriod(raw: string | undefined | null): string {
+    if (!raw) return '';
+    const s = raw.trim().toLowerCase();
+
+    // Already mm/yyyy
+    if (/^\d{2}\/\d{4}$/.test(s)) return s;
+
+    // "месяц гггг" or "месяц гггг" — Russian month name + year
+    const ruMatch = /^([а-яё]+)\.?\s+(\d{4})$/i.exec(s);
+    if (ruMatch) {
+        const month = RU_MONTHS[ruMatch[1]!.toLowerCase()];
+        if (month) return `${month}/${ruMatch[2]}`;
+    }
+
+    // Only a year: "2020"
+    if (/^\d{4}$/.test(s)) return `01/${s}`;
+
+    // "2020-01" or "2020/01"
+    const isoMatch = /^(\d{4})[-/](\d{2})$/.exec(s);
+    if (isoMatch) return `${isoMatch[2]}/${isoMatch[1]}`;
+
+    return '';
+}
+
+/** Detect if a string means "current job" */
+function isCurrent(raw: string | undefined | null): boolean {
+    if (!raw) return false;
+    const s = raw.trim().toLowerCase();
+    return /настоящ|по сей|present|current|н\.в\.|н\.вр\./.test(s);
+}
+
 // ─── Algorithmic contact extraction (regex — reliable) ────────────────────────
 
 function extractContacts(text: string): ParsedResume['contacts'] {
@@ -92,7 +141,9 @@ IMPORTANT RULES:
 - "education.items[].year_from" is the enrollment year (start), "year_to" is graduation year (end).
   The resume may show "Резюме обновлено 25 марта 2026" — that is NOT an education year, ignore it.
 - "about.text" is the personal summary / "О себе" block. It may appear at the bottom under "Дополнительная информация" in HH.ru format — find it regardless of position.
-- "experience.items[].description" should include full achievement text, do not truncate.
+- "experience.items[].description" MUST preserve the original structure: keep each bullet point or achievement on its own line, separated by \\n. If the PDF uses "•", "-", or "–" as list markers, keep them at the start of each line. Do NOT merge multiple achievements into one paragraph. Do not truncate.
+- Each experience.items[] entry MUST correspond to exactly ONE job/company from the PDF. Do NOT merge multiple companies into one item.
+- "about.text" should preserve paragraph breaks as \\n. Do NOT mix content from different sections.
 - Omit any key you cannot confidently extract.
 
 Return ONLY valid JSON matching this shape (no markdown, no backticks):
@@ -131,6 +182,30 @@ ${resumeText}`;
     // Contacts from regex override AI (regex is more precise for structured fields)
     if (algorithmicContacts) {
         parsed.contacts = { ...parsed.contacts, ...algorithmicContacts };
+    }
+
+    // Normalize experience dates to mm/yyyy format
+    if (parsed.experience?.items) {
+        parsed.experience.items = parsed.experience.items.map((item) => {
+            const periodTo = item.period_to ?? '';
+            const isCurrentJob = item.is_current || isCurrent(periodTo);
+            return {
+                ...item,
+                period_from: normalizePeriod(item.period_from),
+                period_to: isCurrentJob ? '' : normalizePeriod(periodTo),
+                is_current: isCurrentJob,
+            };
+        });
+    }
+
+    // Normalize education years: AI returns numbers; the form expects strings
+    if (parsed.education?.items) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (parsed.education as any).items = parsed.education.items.map((item) => ({
+            ...item,
+            year_from: item.year_from ? String(item.year_from) : '',
+            year_to: item.year_to ? String(item.year_to) : undefined,
+        }));
     }
 
     // Limit skills to MAX_SKILLS to match form constraints

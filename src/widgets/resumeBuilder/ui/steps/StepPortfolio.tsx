@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button, ButtonView } from '~/shared/ui/Button/Button';
 import { Divider } from '~/entities/divider';
 import type { PortfolioItem, PortfolioSection } from '../../model/types';
@@ -8,20 +8,40 @@ const inputCls =
 
 const emptyItem: PortfolioItem = { title: '', url: '', description: '' };
 
+const newItemKey = () =>
+    typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `port-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 interface StepPortfolioProps {
     state: PortfolioSection;
     onChange: (next: PortfolioSection) => void;
 }
 
 export const StepPortfolio: React.FC<StepPortfolioProps> = ({ state, onChange }) => {
+    const itemKeysRef = useRef<string[]>([]);
+
+    while (itemKeysRef.current.length < state.items.length) {
+        itemKeysRef.current.push(newItemKey());
+    }
+    if (itemKeysRef.current.length > state.items.length) {
+        itemKeysRef.current = itemKeysRef.current.slice(0, state.items.length);
+    }
+
     const update = (index: number, patch: Partial<PortfolioItem>) => {
         const items = [...state.items];
         items[index] = { ...items[index]!, ...patch };
         onChange({ items });
     };
 
-    const add = () => onChange({ items: [...state.items, { ...emptyItem }] });
-    const remove = (i: number) => onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    const add = () => {
+        itemKeysRef.current.push(newItemKey());
+        onChange({ items: [...state.items, { ...emptyItem }] });
+    };
+    const remove = (i: number) => {
+        itemKeysRef.current.splice(i, 1);
+        onChange({ items: state.items.filter((_, idx) => idx !== i) });
+    };
 
     return (
         <div className="flex flex-col gap-y-6">
@@ -31,9 +51,8 @@ export const StepPortfolio: React.FC<StepPortfolioProps> = ({ state, onChange })
             </div>
 
             {state.items.map((item, index) => {
-                const rowKey = `${item.title}|${item.url}|${index}`;
                 return (
-                <React.Fragment key={rowKey}>
+                <React.Fragment key={itemKeysRef.current[index] ?? index}>
                     {index > 0 && <Divider view="horizontal" />}
                     <div className="flex flex-col gap-y-4">
                         <div className="flex items-center justify-between">
@@ -69,7 +88,7 @@ export const StepPortfolio: React.FC<StepPortfolioProps> = ({ state, onChange })
                                 <span className="text-sub/40">(опционально)</span>
                             </label>
                             <textarea
-                                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70"
+                                className="w-full rounded-6 border border-base bg-mantle px-3 py-2.5 text-14 text-text outline-none transition-colors focus:border-mauve/70 resize-y"
                                 rows={3}
                                 value={item.description ?? ''}
                                 onChange={(e) => update(index, { description: e.target.value })}
