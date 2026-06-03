@@ -127,7 +127,7 @@ export const StepFinal: React.FC<StepFinalProps> = ({
                             disabled={!resumeId || isPublishing}
                             onClick={onPublish}
                         >
-                            {isPublishing ? 'Анализируем резюме...' : 'Опубликовать и получить анализ'}
+                            {isPublishing ? 'Публикуем...' : 'Опубликовать'}
                         </Button>
                         {isPublishing && (
                             <p className="text-center text-12 text-sub/60">

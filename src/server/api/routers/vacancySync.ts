@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { HHProvider, TrudvsemProvider, JobicyProvider, VacancySyncService } from '~/server/services/vacancy-sync';
+import { HHProvider, TrudvsemProvider, JobicyProvider, RemotiveProvider, VacancySyncService } from '~/server/services/vacancy-sync';
 import { inputSyncFromHHSchema } from '~/shared/api/schema/external-vacancy';
 import { createTRPCRouter, adminProcedure } from '../trpc';
 
 const hhProvider = new HHProvider();
 const trudvsemProvider = new TrudvsemProvider();
 const jobicyProvider = new JobicyProvider();
+const remotiveProvider = new RemotiveProvider();
 
 export const vacancySyncRouter = createTRPCRouter({
     getProfessionalRoles: adminProcedure.query(() =>
@@ -68,6 +69,26 @@ export const vacancySyncRouter = createTRPCRouter({
                 text: input.text,
                 area: input.area,
                 perPage: input.count,
+                maxPages: 1,
+                triggeredBy: 'manual',
+            });
+        }),
+
+    syncFromRemotive: adminProcedure
+        .input(
+            z.object({
+                text: z.string().optional(),
+                category: z.string().optional(),
+                limit: z.number().min(1).max(100).default(100),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const syncService = new VacancySyncService(ctx.prisma, remotiveProvider);
+
+            return syncService.sync({
+                text: input.text,
+                area: input.category,
+                perPage: input.limit,
                 maxPages: 1,
                 triggeredBy: 'manual',
             });

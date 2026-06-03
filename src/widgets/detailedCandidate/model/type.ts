@@ -1,5 +1,11 @@
 import { OptionalString } from '~/shared/lib/types';
 
+export interface AttachedResume {
+    resume_id: string;
+    title: string | null;
+    desired_position: string | null;
+}
+
 export interface DetailedCandidateProps {
     firstName: OptionalString;
     lastName: OptionalString;
@@ -11,4 +17,5 @@ export interface DetailedCandidateProps {
     pdfUrl: OptionalString;
     imgUrl: OptionalString;
     userId: string;
+    attachedResume?: AttachedResume | null;
 }

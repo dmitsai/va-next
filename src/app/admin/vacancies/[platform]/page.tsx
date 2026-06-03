@@ -2,22 +2,24 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createSSRHelpers } from 'trpc/helpers';
-import { CreateLocalVacancyForm, HHSyncPanel, TrudvsemSyncPanel, JobicySyncPanel, VacancyTable } from '~/widgets/admin';
+import { CreateLocalVacancyForm, HHSyncPanel, TrudvsemSyncPanel, JobicySyncPanel, RemotiveSyncPanel, VacancyTable } from '~/widgets/admin';
 
-const PLATFORMS = ['hh', 'trudvsem', 'jobicy', 'local'] as const;
+const PLATFORMS = ['hh', 'trudvsem', 'jobicy', 'remotive', 'local'] as const;
 type PlatformSlug = (typeof PLATFORMS)[number];
 
 const PLATFORM_LABELS: Record<PlatformSlug, string> = {
     hh: 'HH.ru',
     trudvsem: 'Труд Всём',
     jobicy: 'Jobicy',
+    remotive: 'Remotive',
     local: 'Локальные',
 };
 
 const PLATFORM_DESCRIPTIONS: Record<PlatformSlug, string> = {
-    hh: 'Импортированные с HH.ru',
+    hh: 'HH.ru — API недоступен с 15.12.2025',
     trudvsem: 'Импортированные с Труд Всём (Роструд)',
     jobicy: 'Remote-вакансии с Jobicy (международные)',
+    remotive: 'Remote-вакансии с Remotive (международные)',
     local: 'Созданные вручную',
 };
 
@@ -73,6 +75,7 @@ const VacanciesPlatformPage = async ({
             {slug === 'hh' && <HHSyncPanel />}
             {slug === 'trudvsem' && <TrudvsemSyncPanel />}
             {slug === 'jobicy' && <JobicySyncPanel />}
+            {slug === 'remotive' && <RemotiveSyncPanel />}
             {slug === 'local' && <CreateLocalVacancyForm />}
 
             <VacancyTable

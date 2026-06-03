@@ -17,8 +17,13 @@ export const ResumeWidget = async () => {
     if (resumes.length > 0) {
         return (
             <div className="flex w-full flex-col gap-y-3">
+                <p className="text-16 font-600 text-text">Мои резюме</p>
                 {resumes.map((resume) => (
-                    <ResumeCard key={resume.resume_id} resume={resume} />
+                    <ResumeCard
+                        key={resume.resume_id}
+                        resume={resume}
+                        displayTitle={resume.desired_position?.trim() || resume.title?.trim() || 'Резюме'}
+                    />
                 ))}
             </div>
         );

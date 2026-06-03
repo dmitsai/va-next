@@ -115,10 +115,14 @@ export function useResumeBuilder(
     const { data: profile } =
         clientApi.clientProfile.getProfile.useQuery(undefined);
 
-    // Sync resume data when it refreshes
+    // Sync resume data when it refreshes — skip if user has unsaved changes
     useEffect(() => {
         if (!resume) return;
-        setState(toState(resume));
+        const hasDirty = Object.values(dirty).some(Boolean);
+        if (!hasDirty) {
+            setState(toState(resume));
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resume]);
 
     // Autosave — 2000ms debounce per dirty section.

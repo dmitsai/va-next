@@ -201,6 +201,17 @@ export const VacancyHeader: React.FC<VacancyHeaderProps> = (props) => {
                             : CONSTANTS.detailedVacancy.favorite.add}
                     </p>
                 </Button>
+                {!isLocal && sourceUrl && (
+                    <Button
+                        onClick={() => window.open(sourceUrl, '_blank', 'noopener,noreferrer')}
+                        buttonView={ButtonView.LARGE}
+                        className={'bg-mantle text-text transition-all hover:bg-text hover:text-base'}
+                    >
+                        <p className={'text-12 font-500 leading-6'}>
+                            {CONSTANTS.employerCandidates.viewFullOnSite}
+                        </p>
+                    </Button>
+                )}
             </div>
         </div>
     );

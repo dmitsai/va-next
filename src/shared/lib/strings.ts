@@ -3,6 +3,7 @@ export const CONSTANTS = {
         placeholder: 'vakansiy.net',
         vacancies: 'Вакансии',
         resume: 'Резюме',
+        companyVacancies: 'Вакансии компании',
         applications: 'Отклики',
         internships: 'Стажировки',
         events: 'События',
@@ -154,7 +155,7 @@ export const getStringifySalary = (
     salaryCurrency: string | null
 ) => {
     const { from, to } = CONSTANTS.detailedVacancy.salary;
-    const currency = salaryCurrency ?? CONSTANTS.currency.ruble;
+    const currency = salaryCurrency || CONSTANTS.currency.ruble;
 
     const formatNumber = (num: number): string =>
         num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');

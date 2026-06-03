@@ -205,9 +205,11 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                         <div className="flex flex-col gap-y-3">
                             {state.SKILLS.hard.length > 0 && (
                                 <div>
-                                    <p className="text-11 mb-1.5 font-600 uppercase tracking-wide text-[#9ca3af]">
-                                        Hard skills
-                                    </p>
+                                    {state.SKILLS.soft.length > 0 && (
+                                        <p className="text-11 mb-1.5 font-600 uppercase tracking-wide text-[#9ca3af]">
+                                            Технические навыки
+                                        </p>
+                                    )}
                                     <div className="flex flex-wrap gap-1.5">
                                         {state.SKILLS.hard.map((skill) => (
                                             <span
@@ -223,7 +225,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
                             {state.SKILLS.soft.length > 0 && (
                                 <div>
                                     <p className="text-11 mb-1.5 font-600 uppercase tracking-wide text-[#9ca3af]">
-                                        Soft skills
+                                        Дополнительные навыки
                                     </p>
                                     <div className="flex flex-wrap gap-1.5">
                                         {state.SKILLS.soft.map((skill) => (

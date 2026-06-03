@@ -8,6 +8,7 @@ const PLATFORMS = [
     { name: 'hh', title: 'HeadHunter', baseUrl: 'https://hh.ru' },
     { name: 'trudvsem', title: 'Труд Всём (Роструд)', baseUrl: 'https://trudvsem.ru' },
     { name: 'jobicy', title: 'Jobicy (Remote Jobs)', baseUrl: 'https://jobicy.com' },
+    { name: 'remotive', title: 'Remotive (Remote Jobs)', baseUrl: 'https://remotive.com' },
 ];
 
 const CURRENCIES = [

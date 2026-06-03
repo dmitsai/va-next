@@ -160,14 +160,6 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
         }
     };
 
-    if (!currentResumeId && isCreating) {
-        return (
-            <div className="flex flex-1 items-center justify-center">
-                <p className="text-14 text-sub">Создаём черновик резюме...</p>
-            </div>
-        );
-    }
-
     return (
         <div className="flex min-h-0 flex-1 overflow-hidden bg-base">
             {/* ── Left sidebar (sticky, profile-like) ── */}
@@ -192,16 +184,16 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                     <span
                         className={cn(
                             'h-1.5 w-1.5 shrink-0 rounded-full transition-colors',
-                            isSaving ? 'bg-amber' : 'bg-teal'
+                            (isSaving || isCreating) ? 'bg-amber' : 'bg-teal'
                         )}
                     />
                     <span
                         className={cn(
                             'text-12',
-                            isSaving ? 'text-amber' : 'text-teal'
+                            (isSaving || isCreating) ? 'text-amber' : 'text-teal'
                         )}
                     >
-                        {isSaving ? 'Сохранение...' : 'Автосохранение'}
+                        {isCreating ? 'Создание...' : isSaving ? 'Сохранение...' : 'Автосохранение'}
                     </span>
                 </div>
             </aside>

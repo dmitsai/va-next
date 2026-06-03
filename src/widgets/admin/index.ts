@@ -5,5 +5,6 @@ export { VacancyTable } from './ui/VacancyTable';
 export { HHSyncPanel } from './ui/HHSyncPanel';
 export { TrudvsemSyncPanel } from './ui/TrudvsemSyncPanel';
 export { JobicySyncPanel } from './ui/JobicySyncPanel';
+export { RemotiveSyncPanel } from './ui/RemotiveSyncPanel';
 export { CreateVacancyForm } from './ui/CreateVacancyForm';
 export { CreateLocalVacancyForm } from './ui/CreateLocalVacancyForm';

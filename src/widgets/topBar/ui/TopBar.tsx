@@ -1,18 +1,14 @@
 import Link from 'next/link';
 import type React from 'react';
 import { CONSTANTS } from '~/shared/lib/strings';
-import Button, { ButtonView } from '~/shared/ui/Button';
 import { ReactComponent as IconStar } from '~/shared/assets/icons/icon-star.svg';
-import { ReactComponent as IconBell } from '~/shared/assets/icons/icon-bell.svg';
 import { ReactComponent as IconUser } from '~/shared/assets/icons/icon-user.svg';
 import { type Icon } from '~/shared/lib/types';
-import { useSession } from 'next-auth/react';
 import { getServerSession } from '~/shared/lib/auth';
 import { LinkButton, LinkView } from '~/shared/ui/Button/LinkButtton';
 import { ThemePicker } from './ThemePicker';
 import { HomeLink } from './HomeLink';
-
-// FIXME: temp solution, fix after add autharization
+import { LogoutButton } from './LogoutButton';
 
 export interface ButtonContent {
     href: string;
@@ -27,17 +23,26 @@ export interface LinkItem {
 
 export const TopBar: React.FC = async () => {
     const session = await getServerSession();
+    const isAuth = !!session;
     const isUser = session?.user?.role === 'USER';
+    const isCompany = session?.user?.role === 'COMPANY';
 
     const links: Array<LinkItem> = [
         {
             href: '/vacancies',
             label: CONSTANTS.topBar.vacancies,
         },
-        {
-            href: '/resume',
-            label: CONSTANTS.topBar.resume,
-        },
+        ...(isUser
+            ? [{ href: '/resume', label: CONSTANTS.topBar.resume }]
+            : []),
+        ...(isCompany
+            ? [
+                  {
+                      href: '/profile',
+                      label: CONSTANTS.topBar.companyVacancies,
+                  },
+              ]
+            : []),
         ...(isUser
             ? [{ href: '/applications', label: CONSTANTS.topBar.applications }]
             : []),
@@ -45,12 +50,16 @@ export const TopBar: React.FC = async () => {
 
     const buttons: Array<ButtonContent> = [
         {
+            href: '/favorites',
+            icon: IconStar,
+            key: 'link-favorites',
+        },
+        {
             href: '/profile',
             icon: IconUser,
             key: 'link-profile',
         },
     ];
-    const isAuth = !!session;
 
     return (
         <header
@@ -77,22 +86,24 @@ export const TopBar: React.FC = async () => {
             <div className={'flex flex-row gap-x-4'}>
                 {!isAuth ? (
                     <div className={'flex flex-row gap-x-1'}>
-                        <Button
-                            buttonView={ButtonView.SMALL}
+                        <LinkButton
+                            href="/user/auth"
+                            linkView={LinkView.SMALL}
                             className={
                                 'muted bg-mauve text-base hover:bg-text hover:text-base'
                             }
                         >
                             {CONSTANTS.auth.signUp}
-                        </Button>
-                        <Button
-                            buttonView={ButtonView.SMALL}
+                        </LinkButton>
+                        <LinkButton
+                            href="/user/login"
+                            linkView={LinkView.SMALL}
                             className={
                                 'muted bg-mantle hover:bg-text hover:text-base'
                             }
                         >
                             {CONSTANTS.auth.logIn}
-                        </Button>
+                        </LinkButton>
                     </div>
                 ) : (
                     <div
@@ -100,22 +111,39 @@ export const TopBar: React.FC = async () => {
                             'flex flex-row items-center justify-center gap-x-4'
                         }
                     >
-                        {buttons.map((button) => (
+                        {isUser &&
+                            buttons.map((button) => (
+                                <LinkButton
+                                    href={button.href}
+                                    key={button.key}
+                                    linkView={LinkView.SMALL}
+                                    className={
+                                        'bg-mantle !px-1.5 transition-colors hover:bg-text'
+                                    }
+                                >
+                                    <button.icon
+                                        className={
+                                            'fill-text group-hover:fill-base group-disabled:fill-sub-secondary/70'
+                                        }
+                                    />
+                                </LinkButton>
+                            ))}
+                        {!isUser && (
                             <LinkButton
-                                href={button.href}
-                                key={button.key}
+                                href="/profile"
                                 linkView={LinkView.SMALL}
                                 className={
                                     'bg-mantle !px-1.5 transition-colors hover:bg-text'
                                 }
                             >
-                                <button.icon
+                                <IconUser
                                     className={
                                         'fill-text group-hover:fill-base group-disabled:fill-sub-secondary/70'
                                     }
                                 />
                             </LinkButton>
-                        ))}
+                        )}
+                        <LogoutButton />
                     </div>
                 )}
                 <ThemePicker />

@@ -1,11 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import cn from 'classnames';
 import { clientApi } from 'trpc/client';
 import type { RouterOutputs } from 'trpc/shared';
 import { ApplicationRow } from '~/widgets/applicationsWidget/ui/ApplicationRow';
 import Button, { ButtonView } from '~/shared/ui/Button';
 import Link from 'next/link';
+
+type FilterType = 'all' | 'local' | 'external';
+
+const FILTER_TABS: { value: FilterType; label: string }[] = [
+    { value: 'all',      label: 'Все'       },
+    { value: 'local',    label: 'Платформа' },
+    { value: 'external', label: 'Внешние'   },
+];
 
 type Application =
     RouterOutputs['application']['getMyApplications']['applications'][number];
@@ -25,6 +34,7 @@ export const ApplicationsPageClient = ({
         initialNextCursor
     );
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [filter, setFilter] = useState<FilterType>('all');
 
     const utils = clientApi.useUtils();
 
@@ -39,7 +49,12 @@ export const ApplicationsPageClient = ({
         }
     );
 
-    const applications = freshData?.applications ?? allApplications;
+    const allApps = freshData?.applications ?? allApplications;
+    const applications = allApps.filter((app) => {
+        if (filter === 'all') return true;
+        const isLocal = app.vacancy.platform.name === 'local';
+        return filter === 'local' ? isLocal : !isLocal;
+    });
 
     const handleLoadMore = async () => {
         if (!cursor) return;
@@ -71,7 +86,25 @@ export const ApplicationsPageClient = ({
     }
 
     return (
-        <div className="flex w-full flex-col gap-y-3">
+        <div className="flex w-full flex-col gap-y-4">
+            <div className="flex flex-row gap-x-1">
+                {FILTER_TABS.map((tab) => (
+                    <button
+                        key={tab.value}
+                        type="button"
+                        onClick={() => setFilter(tab.value)}
+                        className={cn(
+                            'rounded-6 px-3 py-1.5 text-12 font-500 transition-colors',
+                            filter === tab.value
+                                ? 'bg-mauve text-base'
+                                : 'bg-surface-tertiary text-sub hover:bg-surface'
+                        )}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
             {applications.map((app) => (
                 <ApplicationRow key={app.application_id} application={app} />
             ))}
@@ -89,6 +122,7 @@ export const ApplicationsPageClient = ({
                     </Button>
                 </div>
             )}
+            </div>
         </div>
     );
 };

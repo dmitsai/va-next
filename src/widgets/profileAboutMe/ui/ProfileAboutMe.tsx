@@ -23,18 +23,24 @@ export const ProfileAboutMe: React.FC<AboutMeProps> = (props) => {
                         <span className={'text-14 text-text font-500'}>{'О компании'}</span>
                     )}
                 <div className={'flex flex-col gap-y-1'}>
-                    <p className={cn('text-14 text-text h-fit', !isShowMore && 'line-clamp-4')}>
-                        {
-                            data.description
-                        }
-                    </p>
-                    <Button
-                        onClick={() => { setIsShowMore(!isShowMore) }}
-                        className={'text-14 text-mauve bg-base hover:text-text !hover:bg-base !items-start self-end'}
-                        buttonView={ButtonView.SMALL}
-                    >
-                        {isShowMore ? 'Показать меньше' : 'Показать полностью'}
-                    </Button>
+                    {data.description ? (
+                        <>
+                            <p className={cn('text-14 text-text h-fit', !isShowMore && 'line-clamp-4')}>
+                                {data.description}
+                            </p>
+                            <Button
+                                onClick={() => { setIsShowMore(!isShowMore) }}
+                                className={'text-14 text-mauve bg-base hover:text-text !hover:bg-base !items-start self-end'}
+                                buttonView={ButtonView.SMALL}
+                            >
+                                {isShowMore ? 'Показать меньше' : 'Показать полностью'}
+                            </Button>
+                        </>
+                    ) : (
+                        <p className={'text-14 text-sub-secondary/50 italic'}>
+                            Расскажите о себе
+                        </p>
+                    )}
                 </div>
             </div>
         </>

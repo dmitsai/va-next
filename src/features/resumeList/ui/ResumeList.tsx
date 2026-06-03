@@ -20,18 +20,20 @@ export const ResumeList: React.FC<ResumeListProps> = ({ resumes }) => {
         );
     }
     // Build display titles: use desired_position, deduplicate with (1), (2)...
+    const getBase = (r: ResumeWithRelations) =>
+        r.desired_position?.trim() || r.title?.trim() || 'Резюме';
+
     const positionCounts = new Map<string, number>();
     const positionIndex = new Map<string, number>();
     resumes.forEach((r) => {
-        const key = (r.desired_position ?? r.title).trim();
+        const key = getBase(r);
         positionCounts.set(key, (positionCounts.get(key) ?? 0) + 1);
     });
     const displayTitles = resumes.map((r) => {
-        const key = (r.desired_position ?? r.title).trim();
-        const base = r.desired_position?.trim() ?? r.title;
-        if ((positionCounts.get(key) ?? 0) <= 1) return base;
-        const idx = (positionIndex.get(key) ?? 0) + 1;
-        positionIndex.set(key, idx);
+        const base = getBase(r);
+        if ((positionCounts.get(base) ?? 0) <= 1) return base;
+        const idx = (positionIndex.get(base) ?? 0) + 1;
+        positionIndex.set(base, idx);
         return idx === 1 ? base : `${base} (${idx - 1})`;
     });
 

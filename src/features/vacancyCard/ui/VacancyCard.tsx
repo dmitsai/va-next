@@ -14,8 +14,10 @@ import { useSession } from 'next-auth/react';
 import { type Tags } from '~/shared/api/model/tags/type';
 import { clientApi } from 'trpc/client';
 import { ApplyPopup } from '~/features/applyPopup';
+import { AuthRequiredPopup } from '~/features/authRequiredPopup';
 import { ResumeSelectPopup } from '~/features/resumeSelectPopup';
 import { getTagArrayWithColors } from '../utils/tagsWithColors';
+import { SkeletonVancy } from '~/entities/vacancies';
 
 export interface VacancyCardProps {
     vacancyId: string;
@@ -71,6 +73,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
 
     const [isExternalApplyOpen, setIsExternalApplyOpen] = useState(false);
     const [isResumeSelectOpen, setIsResumeSelectOpen] = useState(false);
+    const [isAuthRequiredOpen, setIsAuthRequiredOpen] = useState(false);
 
     const { data: isFavoritedFromApi } = clientApi.application.checkIsFavorited.useQuery(
         { vacancyId },
@@ -98,13 +101,13 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
 
     const isApplied = initialIsApplied;
 
+    const authCallbackUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+
     const handleApply = () => {
         if (view !== 'client') return;
         if (status === 'loading') return;
         if (status === 'unauthenticated') {
-            const qs = searchParams.toString();
-            const callbackUrl = `${pathname}${qs ? `?${qs}` : ''}`;
-            router.push(`/user/auth?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            setIsAuthRequiredOpen(true);
             return;
         }
         if (!isLocal) {
@@ -118,9 +121,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
         e.preventDefault();
         if (status === 'loading') return;
         if (status === 'unauthenticated') {
-            const qs = searchParams.toString();
-            const callbackUrl = `${pathname}${qs ? `?${qs}` : ''}`;
-            router.push(`/user/auth?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+            setIsAuthRequiredOpen(true);
             return;
         }
         toggleFavorite({ vacancyId });
@@ -149,6 +150,11 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                         vacancyTitle={title}
                         vacancyId={vacancyId}
                     />
+                    <AuthRequiredPopup
+                        isOpen={isAuthRequiredOpen}
+                        setIsOpen={setIsAuthRequiredOpen}
+                        callbackUrl={authCallbackUrl}
+                    />
                 </>
             ) : null}
             <Link
@@ -158,7 +164,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                         : `/vacancy/candidates/${vacancyId}?${params.toString()}`
                 }
                 className={cn(
-                    'card group w-full border-2 border-base bg-mantle transition-colors',
+                    'card group w-full overflow-hidden border-2 border-base bg-mantle transition-colors',
                     wrapperClassName
                 )}
             >
@@ -240,48 +246,68 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
                     {description}
                 </p>
             </div>
-            <div
-                className={
-                    'absolute bottom-3 left-0 right-0 flex w-full flex-row items-end justify-between pl-1 pr-4'
-                }
-            >
-                {/* Add Avatar of company later */}
-                <Badge
-                    className={
-                        'flex max-h-6 max-w-36 flex-wrap rounded-16 py-1.5 text-14 font-500 leading-5 text-sub'
-                    }
-                    placeholder={company.title}
-                />
-                {view === 'client' ? (
-                    <Button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            if (!isApplied) handleApply();
-                        }}
-                        disabled={isApplied}
-                        buttonView={ButtonView.SMALL}
+            <div className={'absolute inset-x-4 bottom-3'}>
+                <div className={'relative min-h-6 w-full'}>
+                    {/* Add Avatar of company later */}
+                    <span
                         className={cn(
-                            'opacity-0 transition-all duration-300 group-hover:opacity-100',
-                            isApplied
-                                ? 'bg-surface-tertiary text-sub cursor-default'
-                                : 'bg-mauve text-base hover:bg-text'
+                            'block min-w-0 truncate px-3 py-1.5 text-14 font-500 leading-5 text-sub transition-opacity duration-300',
+                            view === 'client' &&
+                                'group-hover:pointer-events-none group-hover:opacity-0'
                         )}
+                        title={company.title}
                     >
-                        {isApplied ? (
-                            <p className={'text-12 font-500 leading-6'}>
-                                Откликнулись
-                            </p>
-                        ) : (
-                            <>
-                                <IconArrow className={'fill-base'} />
-                                <p className={'text-12 font-500 leading-6'}>
-                                    {CONSTANTS.card.apply}
-                                </p>
-                            </>
+                        {company.title}
+                    </span>
+                {view === 'client' ? (
+                    <div
+                        className={
+                            'absolute inset-y-0 right-0 z-10 flex flex-row items-center gap-x-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100'
+                        }
+                    >
+                        {!isLocal && sourceUrl && (
+                            <Button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.open(sourceUrl, '_blank', 'noopener,noreferrer');
+                                }}
+                                buttonView={ButtonView.SMALL}
+                                className={'bg-surface text-sub hover:bg-text hover:text-base'}
+                            >
+                                <p className={'text-12 font-500 leading-6'}>Открыть</p>
+                            </Button>
                         )}
-                    </Button>
+                        <Button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (!isApplied) handleApply();
+                            }}
+                            disabled={isApplied}
+                            buttonView={ButtonView.SMALL}
+                            className={cn(
+                                isApplied
+                                    ? 'bg-surface-tertiary text-sub cursor-default'
+                                    : 'bg-mauve text-base hover:bg-text'
+                            )}
+                        >
+                            {isApplied ? (
+                                <p className={'text-12 font-500 leading-6'}>
+                                    Откликнулись
+                                </p>
+                            ) : (
+                                <>
+                                    <IconArrow className={'fill-base'} />
+                                    <p className={'text-12 font-500 leading-6'}>
+                                        {CONSTANTS.card.apply}
+                                    </p>
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 ) : null}
+                </div>
             </div>
         </Link>
         </>
@@ -289,7 +315,7 @@ export const VacancyCardComponent: React.FC<VacancyCardProps> = ({
 };
 
 export const VacancyCard: React.FC<VacancyCardProps> = (props) => (
-    <Suspense>
+    <Suspense fallback={<SkeletonVancy className={'w-full'} />}>
         <VacancyCardComponent {...props} />
     </Suspense>
 );

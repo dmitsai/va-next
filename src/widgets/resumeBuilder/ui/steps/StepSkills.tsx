@@ -170,8 +170,6 @@ const SkillTagInput = ({ skills, onSkillsChange }: SkillTagInputProps) => {
         } else if (e.key === 'Escape') {
             setOpen(false);
             setActiveIndex(-1);
-        } else if (e.key === 'Backspace' && input === '' && skills.length > 0) {
-            onSkillsChange(skills.slice(0, -1));
         }
     };
 
@@ -300,8 +298,7 @@ const SkillTagInput = ({ skills, onSkillsChange }: SkillTagInputProps) => {
                 </button>
             </div>
             <p className="text-11 text-sub/40">
-                Enter или запятая для добавления · ↑↓ для навигации · тяни чип
-                для сортировки
+                Enter или запятая для добавления · ↑↓ для навигации · тяни чип для сортировки
             </p>
         </div>
     );

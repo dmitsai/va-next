@@ -10,7 +10,7 @@ export default async () => {
 
     return (
         <main className="flex flex-col items-center justify-center gap-y-10 bg-base px-4 py-10 md:px-12 lg:px-20">
-            <div className="flex h-full min-h-72 w-full flex-row gap-x-16">
+            <div className={`flex h-full w-full flex-row gap-x-16${!isAuth ? ' min-h-72' : ''}`}>
                 {!isAuth && <TypingLabel />}
                 <div className={'flex w-full flex-col gap-y-8'}>
                     <Search />

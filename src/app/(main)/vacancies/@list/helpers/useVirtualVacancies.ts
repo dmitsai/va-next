@@ -23,7 +23,7 @@ export const useVirtualVacancies = ({
             count: hasNextPage ? rows + 1 : rows,
             estimateSize: () => 180 + 12,
             getScrollElement: () => containerRef.current,
-            overscan: 5,
+            overscan: 2,
         }),
         [hasNextPage, rows, containerRef.current]
     );

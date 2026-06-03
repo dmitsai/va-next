@@ -72,18 +72,18 @@ export async function analyzeResume(
   const marketData = await getMarketSkillGap(prisma, desired_position, userSkills);
   const summary = buildSectionSummary(sections);
 
-  const prompt = `Analyze this resume and return ONLY valid JSON:
+  const prompt = `Analyze this resume for position "${desired_position || 'не указана'}" and return ONLY valid JSON:
 {
   "score_total": <number 0-100>,
   "score_completeness": <number, filled sections out of 7 * 100>,
   "score_structure": <number, has about + experience + skills = good structure>,
-  "score_keywords": <number, relevant keywords for position present>,
+  "score_keywords": <number, relevant keywords for THIS specific position present>,
   "score_skills": ${marketData.score_skills},
-  "recommendations": <string array, 3-5 specific items in Russian starting with a verb>,
+  "recommendations": <string array, 3-5 specific actionable recommendations in Russian, tailored ONLY for position "${desired_position || 'не указана'}". Each starts with a verb. Do NOT mention requirements for other specializations (e.g., if position is Backend — do not mention Frontend portfolio, design, etc.)>,
   "trending_skills": ${JSON.stringify(marketData.trending_skills)}
 }
-Position: ${desired_position || 'не указана'}
-Market analysis: user is missing these popular skills: ${marketData.missing_skills.join(', ') || 'none'}
+Target position: ${desired_position || 'не указана'}
+Missing popular skills for this position: ${marketData.missing_skills.join(', ') || 'none'}
 Resume content:
 ${summary}`;
 

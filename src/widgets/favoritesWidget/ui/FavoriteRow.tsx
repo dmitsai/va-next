@@ -38,7 +38,7 @@ export const FavoriteRow: React.FC<FavoriteRowProps> = ({ vacancy }) => {
     );
 
     return (
-        <div className="group flex w-full flex-row items-start justify-between gap-x-3 rounded-8 border border-surface-secondary bg-mantle p-4 transition-colors duration-200 hover:border-surface-tertiary hover:bg-base">
+        <div className="group flex w-full flex-row items-center justify-between gap-x-3 rounded-8 border border-surface-secondary bg-mantle p-4 transition-colors duration-200 hover:border-surface-tertiary hover:bg-base">
             <Link
                 href={`/vacancies/${vacancy.vacancy_id}`}
                 className="flex min-w-0 flex-1 flex-col gap-y-1"

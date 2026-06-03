@@ -16,6 +16,7 @@ export const DetailedCandidate: React.FC<DetailedCandidateProps> = (props) => {
         aboutMe,
         imgUrl,
         pdfUrl,
+        attachedResume,
     } = props;
 
     return (
@@ -32,7 +33,7 @@ export const DetailedCandidate: React.FC<DetailedCandidateProps> = (props) => {
                 telegram={telegram}
                 phone={phone}
             />
-            <CandidateSpecInfo aboutMe={aboutMe} pdfUrl={pdfUrl} />
+            <CandidateSpecInfo aboutMe={aboutMe} pdfUrl={pdfUrl} attachedResume={attachedResume} />
         </div>
     );
 };
