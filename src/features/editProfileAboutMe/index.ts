@@ -1,0 +1,1 @@
+export {EditProfileAboutMe, type EditProfileAboutMeProps} from './ui/EditProfileAboutMe';

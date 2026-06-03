@@ -1,0 +1,180 @@
+@startuml er-diagram
+!theme plain
+
+hide circle
+skinparam linetype ortho
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam class {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  ArrowColor #475569
+}
+
+title ER Diagram - Vacancy Aggregator Database
+
+entity "Users" as Users {
+  * user_id : String <<PK>>
+  --
+  email : String <<UQ>>
+  password_hash : String
+  role : Roles
+}
+
+entity "ClientProfile" as ClientProfile {
+  * client_profile_id : String <<PK>>
+  --
+  user_id : String <<FK, UQ>>
+  name : String?
+  surname : String?
+  patronymic : String?
+  telegram : String? <<UQ>>
+  phone : String? <<UQ>>
+  email : String? <<UQ>>
+}
+
+entity "CompanyProfile" as CompanyProfile {
+  * company_id : String <<PK>>
+  --
+  user_id : String <<FK, UQ>>
+  title : String <<UQ>>
+  phone : String? <<UQ>>
+  email : String? <<UQ>>
+  website : String? <<UQ>>
+}
+
+entity "Vacancy" as Vacancy {
+  * vacancy_id : String <<PK>>
+  --
+  platform_id : String <<FK>>
+  externalId : String?
+  company_id : String? <<FK>>
+  currency_id : String? <<FK>>
+  location_id : String? <<FK>>
+  title : String
+  description : String
+  salaryFrom : Int?
+  salaryTo : Int?
+  published_at : DateTime
+  --
+  (platform_id, externalId) <<UQ>>
+}
+
+entity "Platform" as Platform {
+  * platform_id : String <<PK>>
+  --
+  name : String <<UQ>>
+  title : String
+  isActive : Boolean
+}
+
+entity "Currency" as Currency {
+  * currency_id : String <<PK>>
+  --
+  title : String <<UQ>>
+  char : String <<UQ>>
+  code : String? <<UQ>>
+}
+
+entity "Location" as Location {
+  * location_id : String <<PK>>
+  --
+  source : String?
+  externalId : String?
+  name : String
+  --
+  (source, externalId) <<UQ>>
+}
+
+entity "ImportRun" as ImportRun {
+  * import_run_id : String <<PK>>
+  --
+  source : String
+  status : ImportStatus
+  query : String?
+  startedAt : DateTime
+  finishedAt : DateTime?
+  itemsFound : Int
+  itemsCreated : Int
+  itemsUpdated : Int
+}
+
+entity "LoginAttempts" as LoginAttempts {
+  * attempt_id : String <<PK>>
+  --
+  user_id : String <<FK>>
+  ip_address : String
+  attempt_time : DateTime
+  is_successful : Boolean
+}
+
+entity "PasswordResetTokens" as PasswordResetTokens {
+  * token_id : String <<PK>>
+  --
+  user_id : String <<FK>>
+  token : String <<UQ>>
+  expiration_date : DateTime
+}
+
+entity "Account" as Account {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK>>
+  provider : String
+  provider_account_id : String
+  --
+  (provider, provider_account_id) <<UQ>>
+}
+
+entity "Session" as Session {
+  * id : String <<PK>>
+  --
+  user_id : String <<FK>>
+  session_token : String <<UQ>>
+  expires : DateTime
+}
+
+entity "VerificationToken" as VerificationToken {
+  --
+  identifier : String
+  token : String <<UQ>>
+  expires : DateTime
+  --
+  (identifier, token) <<UQ>>
+}
+
+entity "FavoriteVacancies" as FavoriteVacancies {
+  * client_profile_id : String <<FK>>
+  * vacancy_id : String <<FK>>
+}
+
+' Core profile/auth relations
+Users ||--o| ClientProfile : has
+Users ||--o| CompanyProfile : has
+Users ||--o{ LoginAttempts : logs
+Users ||--o{ PasswordResetTokens : resets
+Users ||--o{ Account : oauth
+Users ||--o{ Session : sessions
+
+' Vacancy domain relations
+Platform ||--o{ Vacancy : provides
+Currency ||--o{ Vacancy : currency
+Location ||--o{ Vacancy : location
+CompanyProfile ||--o{ Vacancy : posts
+
+' M:N favorites
+ClientProfile ||--o{ FavoriteVacancies : likes
+Vacancy ||--o{ FavoriteVacancies : favored
+
+note bottom of VerificationToken
+  Standalone NextAuth entity.
+  No explicit FK in schema.
+end note
+
+note right of ImportRun
+  Import job audit entity.
+  No FK relations in current schema.
+end note
+
+@enduml

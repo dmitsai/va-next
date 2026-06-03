@@ -1,0 +1,331 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Application {
+  application_id String @id @default(uuid())
+  vacancy_id     String
+  vacancy        Vacancy @relation(fields: [vacancy_id], references: [vacancy_id], onDelete: Cascade)
+  user_id        String
+  user           Users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  resume_id      String?
+  resume         Resume? @relation(fields: [resume_id], references: [resume_id], onDelete: SetNull)
+  created_at     DateTime @default(now())
+
+  @@unique([vacancy_id, user_id], name: "user_vacancy_unique")
+  @@index([vacancy_id])
+  @@index([user_id])
+}
+
+model Currency {
+  currency_id String  @id @default(uuid())
+  title       String  @unique
+  char        String  @unique
+  code        String? @unique
+
+  Vacancy Vacancy[]
+  ClientProfile ClientProfile[]
+}
+
+model Platform {
+  platform_id String  @id @default(uuid())
+  name        String  @unique
+  title       String
+  baseUrl     String?
+  logoUrl     String?
+  isActive    Boolean @default(true)
+
+  vacancies Vacancy[]
+}
+
+model Location {
+  location_id String  @id @default(uuid())
+  name        String
+  externalId  String?
+  source      String?
+
+  vacancies Vacancy[]
+
+  @@unique([source, externalId])
+  @@index([name])
+}
+
+model Vacancy {
+  vacancy_id     String   @id @default(uuid())
+  title          String
+  description    String
+
+  platform_id    String
+  platform       Platform        @relation(fields: [platform_id], references: [platform_id])
+  sourceUrl      String?
+  externalId     String?
+
+  company_id     String?
+  company        CompanyProfile? @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
+  companyName    String?
+  companyLogoUrl String?
+
+  salaryFrom     Int?
+  salaryTo       Int?
+  currency_id    String?
+  currency       Currency?       @relation(fields: [currency_id], references: [currency_id])
+
+  location_id    String?
+  location       Location?       @relation(fields: [location_id], references: [location_id])
+
+  tags           Json?
+  imgUrl         String?
+  published_at   DateTime @default(now())
+  favoritedBy    ClientProfile[] @relation("FavoriteVacancies")
+  Application    Application[]
+
+  @@unique([platform_id, externalId])
+  @@index([title], map: "title_search_idx")
+  // description full-text index is created manually via migration (GIN index)
+  @@index([platform_id])
+  @@index([published_at])
+}
+model CompanyProfile {
+    company_id String @id @default(uuid())
+    title String @unique
+    imgUrl String? 
+    pdfUrl String?
+    description String
+    phone String? @unique
+    email String? @unique
+    website String? @unique
+    vacancies Vacancy[]
+    user_id String @unique
+    user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model ClientProfile {
+    client_profile_id String @id @default(uuid())
+    name String?
+    surname String?
+    patronymic String?
+    imgUrl String?
+    telegram String? @unique
+    phone String? @unique
+    email String? @unique
+    about_me String?
+    preferences Json?
+    pdfUrl String?
+    favoriteVacancies Vacancy[] @relation("FavoriteVacancies")
+    user_id String @unique
+    user Users  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+    salaryFrom Int?
+    currency_id String?
+    currency    Currency? @relation(fields: [currency_id], references: [currency_id])
+
+    resumes Resume[]
+}
+
+model Users {
+  user_id       String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  role          Roles
+  passwordResetTokens PasswordResetTokens[]
+  loginAttempts LoginAttempts[]
+  accounts      Account[]
+  sessions      Session[]
+  CompanyProfile CompanyProfile?
+  ClientProfile ClientProfile?
+
+  Application Application[]
+  ai_logs     AiGenerationLog[]
+}
+
+model LoginAttempts {
+  attempt_id    String   @id @default(uuid())
+  ip_address    String
+  attempt_time  DateTime @default(now())
+  is_successful Boolean
+  user_id       String
+  user          Users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  
+  @@index([user_id])
+}
+
+model PasswordResetTokens {
+  token_id      String   @id @default(uuid())
+  token         String   @unique
+  expiration_date DateTime
+  user_id       String
+  user          Users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  
+  @@index([user_id])
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user Users @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         Users    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+ 
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum Roles {
+  ADMIN
+  USER
+  GUEST
+  COMPANY
+}
+
+enum SkillType {
+  HARD
+  SOFT
+}
+
+model Skill {
+  skill_id   String    @id @default(uuid())
+  name       String    @unique
+  slug       String    @unique
+  type       SkillType @default(HARD)
+  category   String?
+  mentions   Int       @default(0)
+  updated_at DateTime  @updatedAt
+
+  @@index([mentions])
+  @@index([name])
+}
+
+enum ImportStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model ImportRun {
+  import_run_id String       @id @default(uuid())
+  source        String
+  status        ImportStatus @default(RUNNING)
+  query         String?
+  triggeredBy   String       @default("manual")
+  startedAt     DateTime     @default(now())
+  finishedAt    DateTime?
+  itemsFound    Int          @default(0)
+  itemsCreated  Int          @default(0)
+  itemsUpdated  Int          @default(0)
+  errorMessage  String?
+
+  @@index([source])
+  @@index([triggeredBy])
+}
+
+enum ResumeStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ResumeSectionType {
+  BASIC
+  CONTACTS
+  ABOUT
+  EXPERIENCE
+  EDUCATION
+  SKILLS
+  PORTFOLIO
+}
+
+model Resume {
+  resume_id         String        @id @default(uuid())
+  client_profile_id String
+  client_profile    ClientProfile @relation(fields: [client_profile_id], references: [client_profile_id], onDelete: Cascade)
+  title             String
+  desired_position  String?
+  status            ResumeStatus  @default(DRAFT)
+  version           Int           @default(1)
+  is_active         Boolean       @default(false)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+
+  sections     ResumeSection[]
+  analysis     ResumeAnalysis?
+  ai_logs      AiGenerationLog[]
+  applications Application[]
+
+  @@index([client_profile_id])
+  @@index([status])
+}
+
+model ResumeSection {
+  section_id  String            @id @default(uuid())
+  resume_id   String
+  resume      Resume            @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
+  type        ResumeSectionType
+  order_index Int               @default(0)
+  content     Json
+  is_visible  Boolean           @default(true)
+  updated_at  DateTime          @updatedAt
+
+  @@unique([resume_id, type])
+  @@index([resume_id])
+}
+
+model ResumeAnalysis {
+  analysis_id        String   @id @default(uuid())
+  resume_id          String   @unique
+  resume             Resume   @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
+  score_total        Int
+  score_completeness Int
+  score_structure    Int
+  score_keywords     Int
+  score_skills       Int
+  recommendations    Json
+  trending_skills    Json
+  analyzed_at        DateTime @default(now())
+}
+
+model AiGenerationLog {
+  log_id       String             @id @default(uuid())
+  resume_id    String?
+  resume       Resume?            @relation(fields: [resume_id], references: [resume_id], onDelete: SetNull)
+  user_id      String
+  user         Users              @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  section_type ResumeSectionType
+  tokens_used  Int                @default(0)
+  created_at   DateTime           @default(now())
+
+  @@index([user_id])
+  @@index([resume_id])
+}

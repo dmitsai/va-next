@@ -8,6 +8,8 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
+    /** HeadHunter API: AppName/1.0 (your@email.com) */
+    HH_USER_AGENT: z.string().min(1),
   },
 
   /**
@@ -25,6 +27,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    HH_USER_AGENT: process.env.HH_USER_AGENT,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
